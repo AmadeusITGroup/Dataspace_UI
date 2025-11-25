@@ -1,0 +1,218 @@
+<table
+  class="table mb-0"
+  [attr.qa-id]="'table' + configId()"
+  [style.table-layout]="config().layout ?? 'auto'"
+  [ngClass]="{
+    'table-striped': config().alternateRowsColor,
+    'table-hover': true
+  }"
+>
+  <thead [attr.qa-id]="'header' + configId()">
+    <tr>
+      @for (column of columns(); track column.id) {
+        <ng-template #tooltipHeader>
+          <div [innerHTML]="column.headerTooltipKey"></div>
+        </ng-template>
+        <th
+          [attr.qa-id]="'header-' + column.id + configId()"
+          [style.width]="column.width ?? ''"
+          [style.minWidth]="column.minWidth ?? ''"
+          [style.maxWidth]="column.maxWidth ?? ''"
+        >
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <span
+              [ngbTooltip]="column.headerTooltipKey ? tooltipHeader : null"
+              [style.margin-bottom]="!column.sort ? '6px' : ''"
+            >
+              {{ column.labelKey }}
+              @if (column.enableFilter && filters()[column.field]) {
+                <span class="ms-2 fa-filter fs-6"></span>
+              }
+            </span>
+            @if (column.sort) {
+              <div>
+                <button
+                  class="btn df-btn-icononly btn-outline-primary border-0"
+                  [attr.qa-id]="'header-sort-btn-' + column.id + configId()"
+                  (click)="sortClicked(column)"
+                  [class]="{
+                    'fa-arrow-down-short-wide': column.sort === 'asc',
+                    'fa-arrow-up-wide-short': column.sort === 'desc',
+                    'fa-arrow-down-arrow-up': column.sort === 'none'
+                  }"
+                >
+                  <span class="visually-hidden">{{ I18N.COMMON.TABLE.SORT_HELP }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </th>
+      }
+      @if (config().expandedComponent) {
+        <th
+          [attr.qa-id]="'header-expand' + configId()"
+          [style.width]="COL_EXPAND_SIZE"
+          [style.minWidth]="COL_EXPAND_SIZE"
+          [style.maxWidth]="COL_EXPAND_SIZE"
+        >
+          <span class="visually-hidden">{{ I18N.COMMON.TABLE.EXPAND }}</span>
+        </th>
+      }
+    </tr>
+  </thead>
+  @if ($loading()) {
+    <tbody [attr.qa-id]="'loading' + configId()">
+      <tr>
+        <td [colSpan]="columns().length + (config().expandedComponent ? 1 : 0)" class="text-center">
+          <div class="mt-10 loading overlay">
+            <div role="status" class="spinner-border"></div>
+            <p>{{ config().loadingLabelKey ?? I18N.COMMON.TABLE.LOADING }}</p>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  } @else {
+    <tbody>
+      @if (data().length) {
+        @for (
+          row of rows() | slice: startItem() : endItem();
+          let rowIndex = $index;
+          track row.index
+        ) {
+          <!-- MAIN ROW -->
+          <tr
+            [attr.qa-id]="'row-' + rowIndex + configId()"
+            [class]="config().rowClasses"
+            [style]="config().rowStyles"
+            [style.background-color]="row.expanded ? config().backgroundColorExpandedRow || '' : ''"
+            (click)="rowClicked.emit(row.data)"
+            [style.cursor]="'pointer'"
+          >
+            @for (cell of row.cells; track trackByCell(cell); let cellIndex = $index) {
+              <td
+                (click)="cellClicked.emit({ row, cell })"
+                [attr.qa-id]="'cell-' + cell.id + configId()"
+                [style.border-bottom-color]="
+                  row.expanded ? config().backgroundColorExpandedRow || '' : ''
+                "
+                [class]="columns()[cellIndex].cellClass"
+                [style]="columns()[cellIndex].cellStyle"
+              >
+                @if (columns()[cellIndex].component) {
+                  <app-component-loader
+                    style="display: table-cell"
+                    [inputs]="{ value: cell.value, row: row }"
+                    [component]="columns()[cellIndex].component"
+                  ></app-component-loader>
+                } @else {
+                  <!-- TOOLTIP -->
+                  <ng-template #tooltipCell>
+                    <div [innerHTML]="cell.valueGetter ?? cell.value"></div>
+                  </ng-template>
+                  <span
+                    class="d-flex"
+                    [style]="columns()[cellIndex].contentStyle"
+                    [ngClass]="columns()[cellIndex].contentClass"
+                    [placement]="
+                      columns()[cellIndex].contentTooltipPlacement !== undefined
+                        ? columns()[cellIndex].contentTooltipPlacement!
+                        : 'top'
+                    "
+                    [ngbTooltip]="columns()[cellIndex].contentHasTooltip ? tooltipCell : null"
+                  >
+                    <span
+                      [ngClass]="columns()[cellIndex].contentClass"
+                      [style]="columns()[cellIndex].contentStyle"
+                    >
+                      {{ cell.valueGetter ?? cell.value }}
+                    </span>
+                    @if (columns()[cellIndex].canBeCopied) {
+                      <app-copy-button
+                        btnClass="btn btn-sm btn-light ms-2 bg-transparent"
+                        [text]="String(cell.valueGetter ?? cell.value)"
+                      ></app-copy-button>
+                    }
+                  </span>
+
+                  @if (columns()[cellIndex].actions?.length) {
+                    <div class="d-flex flex-row gap-2">
+                      @for (action of columns()[cellIndex].actions; track action) {
+                        <button
+                          class="btn btn-outline-primary"
+                          [ngClass]="action.class"
+                          [ngbTooltip]="action.tooltip"
+                          (click)="action.onClick(row.data, $event)"
+                        >
+                          <i class="bi" [ngClass]="action.icon"></i>{{ action.label }}
+                        </button>
+                      }
+                    </div>
+                  }
+                }
+              </td>
+            }
+            <!-- EXPAND CELL -->
+            @if (config().expandedComponent) {
+              <td
+                [attr.qa-id]="'cell-expand' + configId()"
+                [style.border-bottom-color]="
+                  row.expanded ? config().backgroundColorExpandedRow || '' : ''
+                "
+                class="py-2 px-5"
+              >
+                <button
+                  class="btn btn-outline-primary border-0 df-btn-icononly text-primary my-1"
+                  [attr.qa-id]="'btn-expand' + configId()"
+                  [class]="row.expanded ? 'fa-chevron-up bg-white' : 'fa-chevron-down'"
+                  (click)="row.expanded = !row.expanded"
+                >
+                  <span class="visually-hidden">{{ I18N.COMMON.TABLE.TOGGLE_HELP }}</span>
+                </button>
+              </td>
+            }
+          </tr>
+          <!-- SECOND ROW -->
+          <!-- TODO: We could do something nice with animation here, but I tried different and did not get a pleasing result so to be improved -->
+          @if (row.expanded) {
+            <tr
+              [attr.qa-id]="'row-expanded-' + rowIndex + configId()"
+              [class]="config().expandedRowClasses"
+              [style.background-color]="config().backgroundColorExpandedRow ?? ''"
+              [style]="config().expandedrowStyles"
+            >
+              <td [colSpan]="columns().length + 1">
+                <app-component-loader
+                  [inputs]="{ row: row }"
+                  [component]="config().expandedComponent"
+                ></app-component-loader>
+              </td>
+            </tr>
+          }
+        }
+      } @else {
+        <tr>
+          <td
+            [colSpan]="columns().length + (config().expandedComponent ? 1 : 0)"
+            class="text-center fw-bold pt-10 pb-10"
+          >
+            {{ config().noResultLabelKey ?? I18N.COMMON.TABLE.NO_RESULTS }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  }
+</table>
+@if (isInfiniteScrollEnabled()) {
+  <div class="d-flex justify-content-center">
+    <div>
+      <button
+        [attr.qa-id]="'btn-load-more' + configId()"
+        class="btn btn-outline-primary df-btn-primary"
+        [disabled]="isLastPage()"
+        (click)="currentIndexInfiniteScroll.set(currentIndexInfiniteScroll() + 1)"
+      >
+        {{ I18N.COMMON.TABLE.LOAD_MORE }}
+      </button>
+    </div>
+  </div>
+}

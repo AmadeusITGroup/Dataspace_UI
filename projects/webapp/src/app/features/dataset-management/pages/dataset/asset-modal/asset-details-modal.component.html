@@ -1,0 +1,102 @@
+@let assetVar = asset();
+@let modeVar = mode();
+<div class="modal-header">
+  <h3 class="modal-title text-primary">
+    {{
+      modeVar === CRUD.CREATE
+        ? 'Create Dataset'
+        : 'Dataset ' +
+          (assetVar?.properties?.name || !assetVar || assetVar['@id']) +
+          (modeVar === CRUD.UPDATE ? ' - Edit' : '')
+    }}
+  </h3>
+  <button
+    type="button"
+    class="btn-close me-2 mt-1 align-self-start"
+    aria-label="Close"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body d-flex flex-column gap-2">
+  @if (modeVar === CRUD.CREATE || modeVar === CRUD.UPDATE) {
+    @if (!secretByIdQuery.isPending() || modeVar === CRUD.CREATE) {
+      <!-- ASSET PROPERTIES -->
+      <app-asset-properties-form
+        [asset]="assetVar"
+        [mode]="modeVar"
+        (formSubmit)="onAssetFormSubmit($event)"
+      ></app-asset-properties-form>
+      <!-- ASSET PRIVATE CONNECTION SETTINGS -->
+      <div class="private-data-section p-3 rounded">
+        <app-asset-data-address-rest-component
+          [dataAddress]="asset()?.dataAddress"
+          [secret]="secret()"
+          [mode]="mode()"
+          (formSubmit)="onConnectorFormSubmit($event)"
+          (secretAction)="onSecretActionEmit($event)"
+        ></app-asset-data-address-rest-component>
+      </div>
+    } @else {
+      <p>Loading ...</p>
+    }
+  } @else if (modeVar === CRUD.READ && assetVar) {
+    <app-asset-view [asset]="assetVar" [secret]="secret()"></app-asset-view>
+  }
+  <div class="d-flex justify-content-between">
+    @if (assetVar && assetVar.properties && assetVar.properties.createdAt; as createdAt) {
+      <div><strong>Created</strong> {{ createdAt | date: 'mediumDate' }}</div>
+    }
+    @if (assetVar && assetVar.properties && assetVar.properties.updatedAt; as updatedAt) {
+      <div><strong>Last updated</strong> {{ updatedAt | date: 'mediumDate' }}</div>
+    }
+  </div>
+</div>
+<div class="modal-footer" [ngClass]="{ 'bg-light-danger-animated': !!footerAction() }">
+  <app-footer-action-modal
+    [(footerAction)]="footerAction"
+    (actionClicked)="onActionClicked($event)"
+  >
+    @if (modeVar === CRUD.CREATE || modeVar === CRUD.UPDATE) {
+      <div class="d-flex justify-content-end">
+        <button
+          type="button"
+          class="btn btn-outline-primary me-2"
+          title="Reverts form changes"
+          (click)="toggleEdit()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="submitAllForms()"
+          [disabled]="submitPending()"
+        >
+          Save
+        </button>
+      </div>
+    } @else if (modeVar === CRUD.READ) {
+      <div class="w-100 d-flex justify-content-between">
+        <div>
+          <button
+            type="button"
+            class="btn btn-outline-primary bi bi-pencil"
+            aria-label="Edit"
+            (click)="toggleEdit()"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-danger bi bi-trash ms-2"
+            aria-label="Delete"
+            (click)="footerAction.set(FooterAction.DELETE)"
+          >
+            Delete
+          </button>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="activeModal.close()">Close</button>
+      </div>
+    }
+  </app-footer-action-modal>
+</div>

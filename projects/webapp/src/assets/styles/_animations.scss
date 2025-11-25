@@ -1,0 +1,59 @@
+@use 'colors';
+
+.forward-animated {
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+.backward-animated {
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.highlight {
+  animation: highlight-animation 2s ease-in-out;
+  box-shadow: 0 0 10px rgb(0 123 255 / 50%); /* Blue glow */
+
+  .btn-group-vertical .btn {
+    background-color: transparent;
+  }
+}
+
+.bg-light-danger-animated {
+  background-color: colors.$danger-light-color !important;
+  transition: background-color 500ms ease-out;
+
+  @starting-style {
+    background-color: transparent;
+  }
+}
+
+@keyframes highlight-animation {
+  0% {
+    background-color: rgb(0 123 255 / 20%); /* Light blue background */
+  }
+
+  50% {
+    background-color: rgb(0 123 255 / 10%);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}

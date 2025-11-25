@@ -1,0 +1,23 @@
+<div class="position-relative w-100">
+  <span class="position-absolute top-50 translate-middle-y ps-3 pe-none">
+    <i class="bi bi-search text-secondary"></i>
+  </span>
+  <input
+    class="form-control search ps-5 w-50"
+    [id]="id()"
+    [formControl]="control()"
+    [placeholder]="placeholder()"
+    [type]="type()"
+  />
+  @if (control().value) {
+    <button
+      type="button"
+      class="btn btn-link p-0 position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center"
+      (click)="clear()"
+      tabindex="-1"
+      aria-label="Clear"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+  }
+</div>

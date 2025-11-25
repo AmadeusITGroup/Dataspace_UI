@@ -1,0 +1,9 @@
+<div class="d-flex justify-content-center mt-5">
+  <div class="d-flex flex-column align-items-center">
+    <i [class]="'bi fs-4 ' + icon()"></i>
+    <span class="fs-4">{{ message() }}</span>
+    @if (errorMessage()) {
+      <span class="fs-6">{{ errorMessage() }}</span>
+    }
+  </div>
+</div>

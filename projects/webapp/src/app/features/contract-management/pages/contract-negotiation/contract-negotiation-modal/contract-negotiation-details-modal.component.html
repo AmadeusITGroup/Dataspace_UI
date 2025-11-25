@@ -1,0 +1,236 @@
+@let negotiationVar = negotiation();
+@let enrichedNegotiationVar = enrichedNegotiation();
+@let agreementVar = agreement();
+@let datasetVar = dataset();
+
+<div class="modal-header">
+  <h3 class="modal-title text-primary">
+    Contract for {{ datasetVar?.name ?? agreementVar?.assetId ?? negotiationVar['@id'] }}
+  </h3>
+  <button
+    type="button"
+    class="btn-close me-2 mt-1 align-self-start"
+    aria-label="Close"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body">
+  @if (error()) {
+    <div class="d-flex flex-row w-100">
+      <ngb-alert type="danger" class="text-wrap text-ellipsis w-100" [dismissible]="false"
+        ><i class="bi bi-exclamation-circle-fill text-danger"></i>
+        <span class="text-danger fs-6"> Contract Terminated: {{ error() }}</span>
+      </ngb-alert>
+    </div>
+  }
+  @if (canTerminateContract()) {
+    <div class="d-flex flex-row w-100">
+      <ngb-alert type="danger" class="text-wrap text-ellipsis w-100" [dismissible]="false"
+        ><i class="bi bi-exclamation-circle-fill text-danger"></i>
+        <span class="text-danger fs-6">
+          Sorry, we face an issue to create the contract on our side. Please create a new
+          contract.</span
+        >
+      </ngb-alert>
+    </div>
+  }
+  <div class="row mt-3">
+    <!--Negotiation-->
+    <div class="col-md-6 d-flex flex-column">
+      <h4>Contract negotiation</h4>
+      <div class="mt-2 mb-2 d-flex">
+        <strong>Contract negotiation ID </strong>
+        <span class="text-truncate ms-2"> {{ negotiationVar['@id'] }}</span>
+        <app-copy-button
+          btnClass="btn btn-sm btn-light ms-2 bg-transparent"
+          [text]="negotiationVar['@id'] || ''"
+        ></app-copy-button>
+      </div>
+      <div class="mt-2 mb-2">
+        <strong>Your role </strong>
+        @if (negotiationVar?.type === 'CONSUMER') {
+          <i class="bi bi-box-arrow-in-down"></i>
+        } @else {
+          <i class="bi bi-box-arrow-up"></i>
+        }
+        {{ negotiationVar?.type }}
+      </div>
+      <div class="mt-2 mb-2">
+        <strong>Partner </strong>
+        <span class="text-uppercase">{{
+          extractParticipant(negotiationVar?.counterPartyId || '')
+        }}</span>
+      </div>
+      <div class="mt-2 mb-2">
+        <strong>State </strong>
+        <app-contract-state [contract]="enrichedNegotiationVar"></app-contract-state>
+      </div>
+    </div>
+    <!--Dataset-->
+    <div class="col-md-6 d-flex flex-column">
+      <h4>Dataset</h4>
+      @if (datasetVar?.id || agreementVar?.assetId; as id) {
+        <div class="mt-2 mb-2">
+          <strong>ID </strong>
+          <span class="text-truncate ms-2">{{ id }}</span>
+          <app-copy-button
+            btnClass="btn btn-sm btn-light ms-2 bg-transparent"
+            [text]="id || ''"
+          ></app-copy-button>
+        </div>
+      }
+
+      @if (datasetVar?.name; as name) {
+        <div class="mt-2 mb-2"><strong>Name </strong> {{ name }}</div>
+      }
+      @if (datasetVar?.description; as description) {
+        @let shortDescription = description.length > 125;
+        <div class="mt-2 mb-2">
+          <strong>Description</strong>
+          <span>
+            {{
+              showFullDescription
+                ? description
+                : shortDescription
+                  ? description.slice(0, 125) + '...'
+                  : description
+            }}
+            @if (shortDescription) {
+              <button
+                type="button"
+                class="btn p-0 ms-2 align-bottom"
+                (click)="showFullDescription = !showFullDescription"
+              >
+                {{ showFullDescription ? 'Less' : 'More' }}
+                <i
+                  [class.bi-chevron-up]="showFullDescription"
+                  [class.bi-chevron-down]="!showFullDescription"
+                ></i>
+              </button>
+            }
+          </span>
+        </div>
+      }
+      @if (datasetVar?.documentationUrl; as documentationUrl) {
+        <div>
+          <a target="_blank" [href]="documentationUrl">Check out the documentation</a>
+        </div>
+      }
+      <div class="mt-2 mb-2"><strong>Version </strong> {{ datasetVar?.version || '-' }}</div>
+    </div>
+  </div>
+  <!--Agreement-->
+  @if (agreementVar) {
+    <div class="row mt-3">
+      <div class="col-md-6 d-flex flex-column">
+        <div class="mt-2 mb-2">
+          <h4>Contract agreement</h4>
+          <div class="mt-2 mb-2">
+            <strong>Contract ID </strong> {{ agreementVar['@id'] }}
+            <app-copy-button
+              btnClass="btn btn-sm btn-light ms-2 bg-transparent"
+              [text]="agreementVar['@id'] || ''"
+            ></app-copy-button>
+          </div>
+          <div class="mt-2 mb-2">
+            <strong>Date </strong>
+            <span class="text-success ms-1">
+              <i class="bi bi-check-circle"></i> Signed at
+              {{ agreementVar.contractSigningDate || 0 | utcSecondsToDate }}
+            </span>
+          </div>
+          @if (agreementVar.policy; as policy) {
+            <div class="mt-2 mb-2">
+              <strong>Policy ID</strong> {{ policy['@id'] }}
+              <app-copy-button
+                btnClass="btn btn-sm btn-light ms-2 bg-transparent"
+                [text]="policy['@id'] || ''"
+              ></app-copy-button>
+            </div>
+          }
+        </div>
+      </div>
+      <!--Transfers-->
+      <div class="col-md-6 d-flex flex-column">
+        <div class="mt-2 mb-2">
+          <h4>Transfers</h4>
+          @if (negotiationVar?.type === 'CONSUMER') {
+            <p class="mt-2 mb-2">
+              Consumption of a dataset is possible after
+              <span class="fst-italic">Transfer</span> action below. This will open the transfer
+              channel (STARTED state).<br />
+            </p>
+          } @else {
+            <p class="mt-2 mb-2">
+              Consumption of a dataset is possible after the consumer opens the transfer channel
+              thru Transfer requests. Check transfer history for this contract in Transfer page
+            </p>
+          }
+          <div class="mt-2 mb-2">
+            <app-transfer-or-status
+              (click)="this.activeModal.close()"
+              [enrichedNegotiation]="enrichedNegotiationVar"
+              [transfersInProgress]="transferProcessesStarted()"
+            ></app-transfer-or-status>
+          </div>
+          @if (
+            negotiationVar?.state === ContractStateEnum.FINALIZED &&
+            !!negotiationVar?.contractAgreementId
+          ) {
+            <a
+              class="mt-2 mb-2"
+              [routerLink]="['/contract-management/contract-transfer']"
+              [queryParams]="{ contractId: agreementVar?.['@id'] }"
+              (click)="activeModal.close()"
+            >
+              See Transfers for contract
+              <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="mt-2 mb-2">
+      <app-policy-viewer
+        [showEmptyItems]="false"
+        [policy]="agreementVar?.policy"
+      ></app-policy-viewer>
+    </div>
+  }
+  <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+    <div><strong>Created</strong> {{ negotiationVar.createdAt | date }}</div>
+  </div>
+</div>
+<div class="modal-footer" [ngClass]="{ 'bg-light-danger-animated': !!footerAction() }">
+  <app-footer-action-modal
+    [(footerAction)]="footerAction"
+    (actionClicked)="onActionClicked($event)"
+  >
+    <div class="d-flex justify-content-between">
+      <div>
+        @if (canTerminateContract()) {
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="footerAction.set(FooterAction.TERMINATE)"
+          >
+            Terminate
+          </button>
+        }
+        @if (canDeleteContract()) {
+          <button
+            type="button"
+            class="btn btn-outline-danger bi bi-trash ms-2"
+            aria-label="Delete"
+            (click)="footerAction.set(FooterAction.DELETE)"
+          >
+            Delete
+          </button>
+        }
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary" (click)="activeModal.close()">Close</button>
+      </div>
+    </div>
+  </app-footer-action-modal>
+</div>

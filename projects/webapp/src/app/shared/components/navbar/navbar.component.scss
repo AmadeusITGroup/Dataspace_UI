@@ -1,0 +1,33 @@
+@use 'colors';
+@use 'variables';
+
+.navbar {
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%);
+  height: variables.$navbar-height;
+
+  .btn-nav {
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+
+    .icon-nav {
+      font-size: x-large;
+      display: block;
+    }
+  }
+}
+
+.refreshing {
+  animation: rotate 500ms linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

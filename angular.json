@@ -1,0 +1,160 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "webapp": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/webapp",
+      "sourceRoot": "projects/webapp/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/webapp",
+            "index": "projects/webapp/src/index.html",
+            "browser": "projects/webapp/src/main.ts",
+            "polyfills": ["zone.js", "@angular/localize/init"],
+            "tsConfig": "projects/webapp/tsconfig.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/webapp/public"
+              }
+            ],
+            "styles": ["projects/webapp/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/webapp/src/assets/styles"]
+            },
+            "scripts": [],
+            "server": "projects/webapp/src/main.server.ts",
+            "prerender": true
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1050kB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/webapp/src/app/config/auth.config.ts",
+                  "with": "projects/webapp/src/app/config/auth.config.prod.ts"
+                }
+              ],
+              "tsConfig": "projects/webapp/tsconfig.build.json",
+              "outputHashing": "all"
+            },
+            "dev-keys": {
+              "define": {
+                "BASE_PATH": "'/api'",
+                "AUTHORITY": "'authority'",
+                "CATALOG_API_KEY": "''",
+                "ENTRA_CLIENT_ID": "''",
+                "ENTRA_TENANT_ID": "''",
+                "ENTRA_REDIRECT_URI": "'http://localhost:4200'"
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "local-backend": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/webapp/src/app/config/api.config.ts",
+                  "with": "projects/webapp/src/app/config/api.config.local-backend.ts"
+                },
+                {
+                  "replace": "projects/webapp/src/app/config/auth.config.ts",
+                  "with": "projects/webapp/src/app/config/auth.config.noauth.ts"
+                },
+                {
+                  "replace": "projects/webapp/src/app/core/services/login.service.ts",
+                  "with": "projects/webapp/src/app/core/services/login.service.noauth.ts"
+                }
+              ]
+            },
+            "participant-consumer": {
+              "define": {
+                "PARTICIPANT_ID": "'consumer'",
+                "BASE_PATH": "'/api'"
+              }
+            },
+            "participant-provider": {
+              "define": {
+                "PARTICIPANT_ID": "'provider'",
+                "BASE_PATH": "'/api'"
+              }
+            },
+            "no-auth": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/webapp/src/app/config/auth.config.ts",
+                  "with": "projects/webapp/src/app/config/auth.config.noauth.ts"
+                },
+                {
+                  "replace": "projects/webapp/src/app/core/services/login.service.ts",
+                  "with": "projects/webapp/src/app/core/services/login.service.noauth.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "webapp:build:production"
+            },
+            "development": {
+              "buildTarget": "webapp:build:development,dev-keys"
+            },
+            "no-auth": {
+              "buildTarget": "webapp:build:development,no-auth"
+            },
+            "local-backend-consumer": {
+              "buildTarget": "webapp:build:local-backend,participant-consumer",
+              "proxyConfig": "projects/webapp/src/proxy.local-backend.conf.json"
+            },
+            "local-backend-provider": {
+              "buildTarget": "webapp:build:local-backend,participant-provider",
+              "proxyConfig": "projects/webapp/src/proxy.local-backend.conf.json"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "tsConfig": "./tsconfig.spec.json",
+            "configPath": "./jest.config.ts"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}

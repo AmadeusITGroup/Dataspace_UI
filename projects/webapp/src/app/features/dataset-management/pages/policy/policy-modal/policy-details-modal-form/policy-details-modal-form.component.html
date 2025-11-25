@@ -1,0 +1,102 @@
+<form [formGroup]="policyForm()">
+  <div class="d-flex flex-column gap-2">
+    <div class="mb-3">
+      <label for="id" class="form-label">Unique ID<span class="text-danger">*</span></label>
+      <input
+        id="id"
+        type="text"
+        class="form-control"
+        formControlName="id"
+        [class.is-invalid]="policyForm().get('id')?.invalid && policyForm().get('id')?.touched"
+      />
+
+      @if (policyForm().get('id')?.invalid && policyForm().get('id')?.touched) {
+        <div class="text-danger">ID is required.</div>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="permission" class="position-relative w-100 form-label"
+        >Permissions
+        <button
+          class="p-0 btn bi bi-question-circle"
+          [ngbTooltip]="I18N.POLICY.POLICY_TOOLTIPS.HELPER"
+          (click)="redirectToModel()"
+        >
+          <span class="d-none"></span>
+        </button>
+        <button
+          class="p-0 btn bi bi-box-arrow-down-left position-absolute top-0 end-0"
+          [ngbTooltip]="I18N.POLICY.POLICY_TOOLTIPS.COPY"
+          (click)="insertExample('permission')"
+        >
+          <span class="d-none"></span>
+        </button>
+      </label>
+      <textarea
+        id="permission"
+        type="text"
+        class="form-control"
+        formControlName="permission"
+      ></textarea>
+      @if (policyForm().get('permission')?.invalid) {
+        <div class="text-danger">The JSON is invalid</div>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="obligation" class="position-relative w-100 form-label"
+        >Obligations
+        <button
+          class="p-0 btn bi bi-question-circle"
+          [ngbTooltip]="I18N.POLICY.POLICY_TOOLTIPS.HELPER"
+          (click)="redirectToModel()"
+        >
+          <span class="d-none"></span>
+        </button>
+        <button
+          class="p-0 btn bi bi-box-arrow-down-left position-absolute top-0 end-0"
+          [ngbTooltip]="I18N.POLICY.POLICY_TOOLTIPS.COPY"
+          (click)="insertExample('obligation')"
+        >
+          <span class="d-none"></span>
+        </button>
+      </label>
+      <textarea
+        id="obligation"
+        type="text"
+        class="form-control"
+        formControlName="obligation"
+      ></textarea>
+      @if (policyForm().get('obligation')?.invalid) {
+        <div class="text-danger">The JSON is invalid</div>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="prohibition" class="position-relative w-100 form-label"
+        >Prohibitions
+        <button
+          class="p-0 btn bi bi-question-circle"
+          [ngbTooltip]="I18N.POLICY.POLICY_TOOLTIPS.HELPER"
+          (click)="redirectToModel()"
+        >
+          <span class="d-none"></span>
+        </button>
+        <button
+          class="p-0 btn bi bi-box-arrow-down-left position-absolute top-0 end-0"
+          [ngbTooltip]="I18N.POLICY.POLICY_TOOLTIPS.COPY"
+          (click)="insertExample('prohibition')"
+        >
+          <span class="d-none"></span>
+        </button>
+      </label>
+      <textarea
+        id="prohibition"
+        type="text"
+        class="form-control"
+        formControlName="prohibition"
+      ></textarea>
+      @if (policyForm().get('prohibition')?.invalid) {
+        <div class="text-danger">The JSON is invalid</div>
+      }
+    </div>
+  </div>
+</form>

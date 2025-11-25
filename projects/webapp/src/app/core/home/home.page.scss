@@ -1,0 +1,36 @@
+.img-container {
+  background-color: #fff;
+  height: calc(100dvh - 56px);
+  /* stylelint-disable-next-line custom-property-pattern */
+  width: calc(100vw - var(--scrollbarWidth));
+
+  &.logged {
+    height: 150px;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: height 0.75s ease-in-out;
+    }
+
+    @media (width <= 1199px) {
+      height: 120px;
+    }
+
+    @media (width <= 768px) {
+      height: 100px;
+    }
+  }
+}
+
+.title-div {
+  top: 15%;
+}
+
+h1 {
+  font-family: Poppins, sans-serif;
+}
+
+.header-img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}

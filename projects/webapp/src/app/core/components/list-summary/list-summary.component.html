@@ -1,0 +1,20 @@
+<div class="mb-2 mt-2 d-flex flex-row align-items-baseline">
+  @if (shown() !== total()) {
+    Filtered {{ shown() }} of {{ total() }} results
+  } @else {
+    Showing {{ shown() }} results
+  }
+
+  @if (toggable()) {
+    <div class="d-flex flex-row align-items-end ms-auto">
+      <button
+        class="btn btn-outline-primary mt-2"
+        [ngbTooltip]="'Switch to ' + (isTableLayout() ? 'cards mode' : 'table mode')"
+        (click)="onToggleLayout()"
+        title="Switch view mode"
+      >
+        <i class="bi" [class]="isTableLayout() ? 'bi-grid-fill' : 'bi-list-task'"></i>
+      </button>
+    </div>
+  }
+</div>

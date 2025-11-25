@@ -1,0 +1,15 @@
+<div class="d-flex flex-column pe-2">
+  <div class="mb-3"><strong>Unique ID:</strong> {{ policyR()['@id'] }}</div>
+</div>
+<div class="d-flex flex-row mb-5">
+  <app-policy-viewer
+    class="w-100"
+    [policy]="policyR().policy"
+    [showEmptyItems]="true"
+  ></app-policy-viewer>
+</div>
+<div class="d-flex flex-column pe-2">
+  <div>
+    <strong>Created:</strong> {{ policyR().createdAt ? (policyR().createdAt | date) : '-' }}
+  </div>
+</div>

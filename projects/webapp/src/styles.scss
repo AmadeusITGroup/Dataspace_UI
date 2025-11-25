@@ -1,0 +1,53 @@
+/* You can add global styles to this file, and also import other style files */
+
+$font-family-sans-serif: inter, sans-serif;
+$offcanvas-horizontal-width: min(calc(100vw - 20px), 600px);
+
+@use 'assets/styles/colors';
+@use 'assets/styles/variables';
+@use 'assets/styles/animations';
+@use 'assets/styles/cards';
+@use 'bootstrap/scss/bootstrap' with (
+  $primary: colors.$primary
+);
+@use 'bootstrap-icons';
+
+.filter-select {
+  .form-select,
+  .form-label {
+    height: 100%;
+  }
+
+  .form-label {
+    align-content: center;
+    min-width: 100px;
+  }
+
+  .form-select {
+    padding-left: 25px;
+    min-width: 200px;
+  }
+
+  height: 60px;
+}
+
+.dropdown-icon {
+  .dropdown-toggle::after {
+    display: none !important;
+  }
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.typeahead-popup {
+  height: 100% !important;
+  overflow-y: auto;
+}
+
+.offers .typeahead-popup {
+  width: 71% !important;
+}

@@ -1,0 +1,29 @@
+@use 'colors';
+
+.btn-outline-dark-danger {
+  border-color: colors.$danger-dark-color !important;
+}
+
+.btn-container {
+  color: colors.$danger-dark-color !important;
+}
+
+.btn-content {
+  top: 8px;
+  z-index: 3;
+  position: relative;
+}
+
+.btn-progressbar {
+  position: relative;
+  left: 0;
+  z-index: 2;
+
+  .progress {
+    height: 100%;
+
+    .text-bg-light-danger {
+      background-color: colors.$danger-progress-bar-color !important;
+    }
+  }
+}

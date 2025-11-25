@@ -1,0 +1,167 @@
+<div class="modal-header">
+  <h3 class="modal-title text-primary">
+    {{ mode() === CRUD.UPDATE ? 'Update offer ' + contractDef()['@id'] : 'Create Offer' }}
+  </h3>
+  <button
+    type="button"
+    class="btn-close me-2 mt-1 align-self-start"
+    aria-label="Close"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body offers">
+  <form [formGroup]="contractForm" class="needs-validation" novalidate>
+    <!-- OFFER ID -->
+    <div class="row mb-3 align-items-center">
+      <label for="contractId" class="col-sm-3 col-form-label text-end"
+        >Offer ID <span class="text-danger">*</span></label
+      >
+      <div class="col-sm-9">
+        <input
+          id="contractId"
+          [class.is-invalid]="
+            contractForm.get('contractId')?.invalid && contractForm.get('contractId')?.touched
+          "
+          type="text"
+          class="form-control"
+          formControlName="contractId"
+        />
+        @if (contractForm.get('contractId')?.invalid && contractForm.get('contractId')?.touched) {
+          <div class="text-danger">Offer ID is required.</div>
+        }
+      </div>
+    </div>
+
+    <!-- ASSET ID -->
+    <div class="row mb-3 align-items-center">
+      <label [for]="'asset'" class="col-sm-3 col-form-label text-end"
+        >Dataset ID <span class="text-danger">*</span></label
+      >
+      <div class="col-sm-9">
+        <app-input-typehead
+          [id]="'asset'"
+          [fc]="contractForm.get('asset')"
+          [list]="assetIds"
+          [displayInvalidOn]="['invalid', 'touched']"
+        ></app-input-typehead>
+        <app-error-message
+          [fc]="contractForm.get('asset')"
+          [attributes]="['invalid', 'touched']"
+          [errorKey]="'required'"
+        >
+          Please select an asset from the dropdown list.
+        </app-error-message>
+        <app-error-message
+          [fc]="contractForm.get('asset')"
+          [attributes]="'invalid'"
+          [errorKey]="'resourceNotFound'"
+        >
+          The selected dataset does not exist anymore.
+        </app-error-message>
+      </div>
+    </div>
+
+    <!-- ACCESS POLICY ID -->
+    <div class="row mb-3 align-items-center">
+      <label [for]="'accessPolicyId'" class="col-sm-3 col-form-label text-end"
+        >Access Policy ID
+        <span class="text-danger">*</span>
+        <i
+          class="ms-1 bi bi-question-circle"
+          [ngbTooltip]="I18N.CONTRACT_DEFINITION.CONTRACT_DEFINITION_TOOLTIPS.ACCESS_POLICY"
+        ></i>
+      </label>
+      <div class="col-sm-9">
+        <app-input-typehead
+          [id]="'accessPolicyId'"
+          [fc]="contractForm.get('accessPolicyId')"
+          [list]="policiesIds"
+          [displayInvalidOn]="['invalid', 'touched']"
+        ></app-input-typehead>
+        <app-error-message
+          [fc]="contractForm.get('accessPolicyId')"
+          [attributes]="['invalid', 'touched']"
+          [errorKey]="'required'"
+        >
+          Please select an policy from the dropdown list.
+        </app-error-message>
+        <app-error-message
+          [fc]="contractForm.get('accessPolicyId')"
+          [attributes]="'invalid'"
+          [errorKey]="'resourceNotFound'"
+        >
+          The policy does not exist anymore.
+        </app-error-message>
+      </div>
+    </div>
+
+    <!-- CONTRACT POLICY ID -->
+    <div class="row mb-3 align-items-center">
+      <label [for]="'contractPolicyId'" class="col-sm-3 col-form-label text-end"
+        >Contract Policy ID
+        <span class="text-danger">*</span>
+        <i
+          class="ms-1 bi bi-question-circle"
+          [ngbTooltip]="I18N.CONTRACT_DEFINITION.CONTRACT_DEFINITION_TOOLTIPS.CONTRACT_POLICY"
+        ></i
+      ></label>
+      <div class="col-sm-9">
+        <app-input-typehead
+          [id]="'contractPolicyId'"
+          [fc]="contractForm.get('contractPolicyId')"
+          [list]="policiesIds"
+          [displayInvalidOn]="['invalid', 'touched']"
+        ></app-input-typehead>
+        <app-error-message
+          [fc]="contractForm.get('contractPolicyId')"
+          [attributes]="['invalid', 'touched']"
+          [errorKey]="'required'"
+        >
+          Please select an policy from the dropdown list.
+        </app-error-message>
+        <app-error-message
+          [fc]="contractForm.get('contractPolicyId')"
+          [attributes]="'invalid'"
+          [errorKey]="'resourceNotFound'"
+        >
+          The policy does not exist anymore.
+        </app-error-message>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer" [ngClass]="{ 'bg-light-danger-animated': !!footerAction() }">
+  <app-footer-action-modal
+    [(footerAction)]="footerAction"
+    (actionClicked)="onActionClicked($event)"
+  >
+    <div class="justify-content-between d-flex">
+      <div>
+        @if (mode() !== CRUD.CREATE) {
+          <button
+            type="button"
+            class="btn btn-outline-danger me-2"
+            title="Reverts form changes"
+            (click)="footerAction.set(FooterAction.DELETE)"
+          >
+            <i class="bi bi-trash me-2"></i>
+            <span>Delete</span>
+          </button>
+        }
+      </div>
+      <div>
+        <button
+          type="button"
+          class="btn btn-outline-primary me-2"
+          title="Reverts form changes"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" (click)="save()" [disabled]="submitPending()">
+          Save
+        </button>
+      </div>
+    </div>
+  </app-footer-action-modal>
+</div>

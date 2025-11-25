@@ -1,0 +1,118 @@
+<div>
+  <h1 class="pb-2 mb-4 border-bottom fs-3 text-primary d-flex justify-content-between">
+    <span>My Offers</span>
+    <button class="btn btn-primary" (click)="createUpdateContractDefinition(null, CRUD.CREATE)">
+      Create Offer
+    </button>
+  </h1>
+  <div class="mb-3 mt-3 d-flex flex-row align-items-baseline">
+    <app-filters
+      title="Filters"
+      [filters]="filters()"
+      (filtersChanged)="filterValues.set($event)"
+    ></app-filters>
+  </div>
+  <app-list-summary
+    [shown]="filteredContractDefinitions().length"
+    [total]="contractDefinitionQuery.data()?.length || 0"
+    [isTableLayout]="isTableLayout"
+    (toggleLayout)="isTableLayout = !isTableLayout"
+  ></app-list-summary>
+  @if (contractDefinitionQuery.isLoading()) {
+  <div class="d-flex flex-column align-items-center m-3">
+    <i class="mb-5">Fetching contract definitions...</i>
+    <app-spinner></app-spinner>
+  </div>
+  } @else if (contractDefinitionQuery.isError()) {
+  <app-empty-page-message
+    icon="bi-exclamation-triangle"
+    message="Error fetching contract definitions"
+  ></app-empty-page-message>
+  } @else if (!contractDefinitionQuery.isLoading() && filteredContractDefinitions().length === 0) {
+  <app-empty-page-message
+    icon="bi-truck-flatbed"
+    message="No contract definitions found"
+  ></app-empty-page-message>
+  } @else { @if (isTableLayout) { @if (filteredContractDefinitions().length) {
+  <app-table [columns]="columns" [data]="filteredContractDefinitions()"></app-table>
+  } } @else {
+  <div class="row g-4 py-3 row-cols-1 row-cols-md-2 row-cols-xl-3 align-items-stretch">
+    @for (contractDefinition of filteredContractDefinitions(); track contractDefinition['@id']) {
+    <div class="col">
+      <div
+        class="card w-100 text-start h-100"
+        [appHighlight]="idToHighlight === contractDefinition['@id']"
+        (highlightTimeout)="idToHighlight = null"
+      >
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex w-100 h-100 justify-content-between mb-2">
+            <h2 class="card-title text-primary">Offer {{ contractDefinition['@id'] }}</h2>
+          </div>
+          <div class="h-100">
+            <div class="row">
+              <div class="d-flex flex-column gap-1 text-ellipsis">
+                <div>
+                  <strong>Dataset ID</strong>
+                  <span
+                    class="ms-2 text-secondary"
+                    [attr.title]="contractDefinition.assetName"
+                    [class.text-danger]="isAssetNotFound(contractDefinition.assetName, assetsQuery.data())"
+                  >
+                    {{ contractDefinition.assetName }}</span
+                  >
+                </div>
+                <div>
+                  <strong
+                    [ngbTooltip]="I18N.CONTRACT_DEFINITION.CONTRACT_DEFINITION_TOOLTIPS.ACCESS_POLICY"
+                  >
+                    Access Policy ID <i class="bi bi-question-circle"></i>
+                  </strong>
+                  <span
+                    class="ms-2 text-secondary"
+                    [attr.title]="contractDefinition.accessPolicyId"
+                    [class.text-danger]="isPolicyNotFound(contractDefinition.accessPolicyId, policiesQuery.data())"
+                    >{{ contractDefinition.accessPolicyId || '-' }}</span
+                  >
+                </div>
+                <div>
+                  <strong
+                    [ngbTooltip]="I18N.CONTRACT_DEFINITION.CONTRACT_DEFINITION_TOOLTIPS.CONTRACT_POLICY"
+                  >
+                    Contract Policy ID <i class="bi bi-question-circle"></i>
+                  </strong>
+                  <span
+                    class="ms-2 text-secondary"
+                    [class.text-danger]="isPolicyNotFound(contractDefinition.contractPolicyId, policiesQuery.data())"
+                    [attr.title]="contractDefinition.contractPolicyId"
+                    >{{ contractDefinition.contractPolicyId || '-' }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="mt-3 d-flex justify-content-between d-flex">
+            <div>
+              <button
+                class="btn btn-outline-danger border-0 end-0"
+                (click)="deleteContractDefinitionConfirmation(contractDefinition)"
+              >
+                <i class="bi bi-trash me-2"></i> Delete
+              </button>
+            </div>
+            <div>
+              <button
+                class="btn btn-outline-primary start-0"
+                (click)="createUpdateContractDefinition(contractDefinition, CRUD.UPDATE)"
+              >
+                <i class="bi bi-pencil me-2"></i> Edit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } }
+</div>

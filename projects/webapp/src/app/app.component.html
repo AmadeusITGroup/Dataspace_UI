@@ -1,0 +1,24 @@
+<div class="h-100">
+  @if (isNavigationEnabled()) {
+    <app-navbar></app-navbar>
+  }
+  <app-toasts></app-toasts>
+  <div class="d-flex flex-row position-relative" [class]="{ wrapper: isNavigationEnabled() }">
+    @if (isNavigationEnabled()) {
+      <div class="sidebar">
+        <app-sidebar />
+      </div>
+    }
+    <div class="w-100" [class]="{ 'overflow-y-scroll': isNavigationEnabled() }">
+      <main>
+        <div
+          [ngClass]="{
+            'container-fluid p-5 bg-body-tertiary page-container': isNavigationEnabled()
+          }"
+        >
+          <router-outlet />
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

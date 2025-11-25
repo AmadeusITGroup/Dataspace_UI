@@ -1,0 +1,40 @@
+<div class="modal-header {{ skin() }}">
+  <h5 class="modal-title">{{ title() }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+<div class="modal-body">
+  <p>{{ message() }}</p>
+  @if (requireReason()) {
+    <div class="mb-3">
+      <label for="reasonInput" class="form-label">Reason</label>
+      <input
+        id="reasonInput"
+        class="form-control"
+        [(ngModel)]="reason"
+        placeholder="Enter reason"
+        required
+      />
+    </div>
+  }
+</div>
+<div class="modal-footer {{ skin() }}">
+  <div class="d-flex w-100 justify-content-end gap-2">
+    <button
+      type="button"
+      class="btn"
+      [class]="skin() === 'danger' ? 'btn-outline-danger' : 'btn-outline-primary'"
+      (click)="onCancel()"
+    >
+      {{ cancelButtonText() }}
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class]="skin() === 'danger' ? 'btn-danger' : 'btn-primary'"
+      [disabled]="requireReason() && !reason()"
+      (click)="onConfirm()"
+    >
+      {{ confirmButtonText() }}
+    </button>
+  </div>
+</div>

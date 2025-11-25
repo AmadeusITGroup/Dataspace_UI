@@ -1,0 +1,273 @@
+<form [formGroup]="assetForm">
+  <!-- PROPERTIES -->
+
+  <!-- UNIQUE ID & VERSION -->
+  <div class="row mb-3">
+    <div class="col-7">
+      <label for="id" class="form-label">Unique ID <span class="text-danger">*</span></label>
+      <input
+        id="id"
+        type="text"
+        class="form-control"
+        formControlName="id"
+        [class.is-invalid]="assetForm.get('id')?.invalid && assetForm.get('id')?.touched"
+      />
+      @if (assetForm.get('id')?.invalid && assetForm.get('id')?.touched) {
+        <div class="text-danger">ID is required.</div>
+      }
+    </div>
+    <div class="col-5">
+      <label for="version" class="form-label">Version</label>
+      <input id="version" type="text" class="form-control" formControlName="version" />
+    </div>
+  </div>
+
+  <!-- INFORMATION -->
+  <div class="properties-section w-100" formGroupName="properties">
+    <div class="row mb-3">
+      <div class="col-7">
+        <label for="name" class="form-label"> Name <span class="text-danger">*</span> </label>
+        <input
+          id="name"
+          type="text"
+          class="form-control"
+          formControlName="name"
+          [class.is-invalid]="
+            assetForm.get('properties.name')?.invalid && assetForm.get('properties.name')?.touched
+          "
+        />
+        @if (
+          assetForm.get('properties.name')?.invalid && assetForm.get('properties.name')?.touched
+        ) {
+          <div class="text-danger">Name is required.</div>
+        }
+      </div>
+      <div class="col-5">
+        <label for="contentType" class="form-label">
+          Content Type <span class="text-danger">*</span>
+        </label>
+        <input
+          id="contentType"
+          type="text"
+          class="form-control"
+          formControlName="contenttype"
+          [class.is-invalid]="
+            assetForm.get('properties.contenttype')?.invalid &&
+            assetForm.get('properties.contenttype')?.touched
+          "
+        />
+        @if (
+          assetForm.get('properties.contenttype')?.invalid &&
+          assetForm.get('properties.contenttype')?.touched
+        ) {
+          <div class="text-danger">Content Type is required.</div>
+        }
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea id="description" class="form-control" formControlName="description"></textarea>
+    </div>
+
+    <!-- LOGO & DOCUMENTATION URL -->
+    <div class="mb-3 row d-flex align-items-start">
+      <div class="col-6">
+        <label for="logoUrl" class="form-label">Logo URL</label>
+        <div class="input-group">
+          <input
+            id="logoUrl"
+            type="text"
+            class="form-control"
+            formControlName="logoUrl"
+            [class.is-invalid]="
+              assetForm.get('properties.logoUrl')?.invalid &&
+              assetForm.get('properties.logoUrl')?.touched
+            "
+          />
+          @if (
+            assetForm.get('properties.logoUrl')?.valid && assetForm.get('properties.logoUrl')?.value
+          ) {
+            <span class="input-group-text bg-white border-start-0 p-0" style="height: 100%">
+              <img
+                class="thumbnail"
+                [src]="assetForm.get('properties.logoUrl')?.value"
+                alt="logo entered"
+              />
+            </span>
+          }
+        </div>
+        @if (
+          assetForm.get('properties.logoUrl')?.invalid &&
+          assetForm.get('properties.logoUrl')?.touched
+        ) {
+          <div class="text-danger">Invalid URL format. Please enter a valid URL.</div>
+        }
+      </div>
+
+      <!-- DOCUMENTATION URL -->
+      <div class="col-6 mb-3">
+        <label for="documentationUrl" class="form-label">Documentation URL</label>
+        <div class="input-group">
+          <input
+            id="documentationUrl"
+            type="text"
+            class="form-control"
+            formControlName="documentationUrl"
+            [class.is-invalid]="
+              assetForm.get('properties.documentationUrl')?.invalid &&
+              assetForm.get('properties.documentationUrl')?.touched
+            "
+          />
+          @if (
+            assetForm.get('properties.documentationUrl')?.valid &&
+            assetForm.get('properties.documentationUrl')?.value
+          ) {
+            <app-field-link
+              [url]="assetForm.get('properties.documentationUrl')?.value"
+            ></app-field-link>
+          }
+        </div>
+        @if (
+          assetForm.get('properties.documentationUrl')?.invalid &&
+          assetForm.get('properties.documentationUrl')?.touched
+        ) {
+          <div class="text-danger">Invalid URL format. Please enter a valid URL.</div>
+        }
+      </div>
+
+      <!-- DELIVERY METHOD -->
+      <div class="col-6">
+        <label for="deliveryMethod" class="form-label">Delivery Method</label>
+        <select class="form-select" id="deliveryMethod" formControlName="deliveryMethod">
+          @for (method of deliveryMethods; track method.value) {
+            <option [value]="method.value" [disabled]="method.disabled">{{ method.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- ACCESS TYPE -->
+      <div class="col-6" #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+        <label for="accessType" class="form-label">Access Type</label>
+        <select class="form-select" id="accessType" formControlName="accessType">
+          @for (type of accessTypes; track type.value) {
+            <option [value]="type.value">{{ type.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXTRA INFORMATION -->
+  <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+    <div class="row" formGroupName="properties">
+      <!-- DOMAIN CATEGORY -->
+      <div class="col-6">
+        <label for="domainCategories" class="form-label">Domain Category</label>
+        <select class="form-select" id="domainCategories" formControlName="domainCategories">
+          @for (category of domainCategories; track category.value) {
+            <option [value]="category.value">{{ category.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- PII -->
+      <div class="col-6">
+        <label for="containsPII" class="form-label">PII constraint</label>
+        <select class="form-select" id="containsPII" formControlName="containsPII">
+          @for (constraint of piiConstraints; track constraint.value) {
+            <option [value]="constraint.value">{{ constraint.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="row mt-4" formGroupName="properties">
+      <!-- PAYMENT -->
+      <div class="col-6">
+        <label for="containsPaymentInfo" class="form-label">Payment constraint</label>
+        <select class="form-select" id="containsPaymentInfo" formControlName="containsPaymentInfo">
+          @for (constraint of paymentConstraints; track constraint.value) {
+            <option [value]="constraint.value">{{ constraint.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- ACCSESS LEVEL -->
+      <div class="col-6">
+        <label for="accessLevel" class="form-label">Access level</label>
+        <select class="form-select" id="accessLevel" formControlName="accessLevel">
+          @for (level of accessLevels; track level.value) {
+            <option [value]="level.value">{{ level.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="row mt-4" formGroupName="properties">
+      <!-- AVERAGE RECORD SIZE -->
+      <div class="col-6">
+        <label for="averageRecordSizeBytes" class="form-label">Average Record Size</label>
+        <input
+          id="averageRecordSizeBytes"
+          type="number"
+          class="form-control"
+          formControlName="averageRecordSizeBytes"
+        />
+      </div>
+
+      <!-- LICENSES -->
+      <div class="col-6">
+        <label for="licenses" class="form-label">Licences</label>
+        <input
+          id="licenses"
+          type="text"
+          class="form-control mb-3"
+          formControlName="currentLicense"
+          placeholder="Put a license and press 'Enter'"
+          (keydown)="onKeydownLicense($event)"
+        />
+
+        <!-- LOOP ALL LICENSES  -->
+        <div class="mt-2">
+          @for (
+            license of assetForm.get('properties.licenses')?.value;
+            track license;
+            let i = $index
+          ) {
+            <span class="badge text-bg-primary me-2 p-2"
+              >{{ license }}
+              <i
+                class="bi bi-x"
+                aria-disabled="false"
+                role="button"
+                aria-label="Remove License"
+                tabindex="0"
+                (click)="removeLicense(i)"
+              ></i>
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center my-3">
+    <button
+      type="button"
+      class="btn btn-link"
+      (click)="collapse.toggle()"
+      [attr.aria-expanded]="!isCollapsed"
+      aria-controls="collapseExample"
+    >
+      @if (isCollapsed) {
+        Show
+      } @else {
+        Hide
+      }
+      optional information
+      <i class="bi" [ngClass]="isCollapsed ? 'bi-chevron-down ms-2' : 'bi-chevron-up ms-2'"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,14 @@
+{
+  "/api": {
+    "target": "",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "headers": {
+      "Origin": ""
+    },
+    "logLevel": "debug"
+  }
+}

@@ -1,0 +1,359 @@
+<h5 class="section-label mb-2">
+  <i class="bi bi-gear me-2"></i>{{ I18N.ASSET.FIELDS.DATA_ADDRESS.TITLE }}
+</h5>
+<p [innerHTML]="I18N.ASSET.FIELDS.DATA_ADDRESS.DESCRIPTION"></p>
+<div class="data-address border-top d-flex pe-3" [formGroup]="dataAddressForm">
+  <div class="data-address-section w-50 p-3 border-end">
+    <div class="mb-3">
+      <label for="baseUrl" class="form-label">
+        Base URL
+        <i
+          class="bi bi-question-circle me-2"
+          [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.BASE_URL"
+        ></i>
+        <span class="text-danger">*</span>
+      </label>
+      <div class="input-group">
+        <input
+          id="baseUrl"
+          type="text"
+          class="form-control"
+          formControlName="baseUrl"
+          [class.is-invalid]="
+            dataAddressForm.get('baseUrl')?.invalid && dataAddressForm.get('baseUrl')?.touched
+          "
+        />
+        @if (dataAddressForm.get('baseUrl')?.valid && dataAddressForm.get('baseUrl')?.value) {
+          <app-field-link [url]="dataAddressForm.get('baseUrl')?.value"></app-field-link>
+        }
+      </div>
+      @if (dataAddressForm.get('baseUrl')?.invalid && dataAddressForm.get('baseUrl')?.touched) {
+        @if (dataAddressForm.get('baseUrl')?.errors?.['pattern']) {
+          <div class="text-danger">Invalid URL format. Please enter a valid URL.</div>
+        } @else {
+          <div class="text-danger">Base URL is required.</div>
+        }
+      }
+    </div>
+    <div class="mb-3">
+      <label for="path" class="form-label"
+        >Path
+        <i
+          class="bi bi-question-circle"
+          [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PATH"
+        ></i
+      ></label>
+      <input id="path" type="text" class="form-control" formControlName="path" />
+    </div>
+    <div class="mb-3">
+      <label for="queryParams" class="form-label"
+        >Query Parameters
+        <i
+          class="bi bi-question-circle"
+          [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.QUERY_PARAMS"
+        ></i
+      ></label>
+      <input id="queryParams" type="text" class="form-control" formControlName="queryParams" />
+    </div>
+    <div class="row mb-3">
+      <div class="col-6">
+        <label for="proxyPath" class="form-label me-2"
+          >Proxy Path
+          <i
+            class="bi bi-question-circle"
+            [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PROXY_PATH"
+          ></i
+        ></label>
+        <input
+          id="proxyPath"
+          type="checkbox"
+          class="form-check-input"
+          formControlName="proxyPath"
+        />
+      </div>
+      <div class="col-6">
+        <label for="proxyQueryParams" class="form-label me-2"
+          >Proxy Query Parameters
+          <i
+            class="bi bi-question-circle"
+            [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PROXY_QUERY_PARAMS"
+          ></i
+        ></label>
+        <input
+          id="proxyQueryParams"
+          type="checkbox"
+          class="form-check-input"
+          formControlName="proxyQueryParams"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="authentication-section w-50 ps-3">
+    <div class="mb-3">
+      <label for="authType" class="form-label">Authorization Type</label>
+      <select id="authType" class="form-select" formControlName="authType">
+        @for (method of authMethods; track method.value) {
+          <option [value]="method.value">{{ method.label }}</option>
+        }
+      </select>
+    </div>
+
+    @if (dataAddressForm.get('authType')?.value === AuthTypesEnum.BaseAuth) {
+      <div formGroupName="baseAuth">
+        <div class="mb-3">
+          <label for="authKey" class="form-label"
+            >Authorization Key
+            <i
+              class="bi bi-question-circle"
+              [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.AUTH_KEY"
+            ></i
+          ></label>
+          <input id="authKey" type="text" class="form-control" formControlName="authKey" />
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <label for="secretName" class="form-label">
+              Secret Name
+              <i
+                class="bi bi-question-circle"
+                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.SECRET_NAME"
+              ></i
+            ></label>
+            <ng-container *ngTemplateOutlet="secretDelete; context: { secret }"></ng-container>
+          </div>
+          <input id="secretName" type="text" class="form-control" formControlName="secretName" />
+        </div>
+        <div class="mb-3">
+          <label for="authCode" class="form-label">
+            {{
+              this.dataAddressForm.get('baseAuth.secretName')?.value
+                ? 'Secret Value'
+                : 'Authorization Code'
+            }}
+            <i
+              class="bi bi-question-circle"
+              [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.AUTH_CODE"
+            ></i
+          ></label>
+
+          <div class="input-group">
+            <input
+              id="authCode"
+              type="password"
+              class="form-control"
+              formControlName="authCode"
+              [class.is-invalid]="dataAddressForm.get('baseAuth')?.invalid"
+              [attr.type]="showSecret ? 'text' : 'password'"
+            />
+            <ng-container *ngTemplateOutlet="secretMasking"></ng-container>
+          </div>
+          @if (
+            dataAddressForm.get('baseAuth')?.invalid &&
+            dataAddressForm.get('baseAuth')?.errors?.['makeOthersRequired']
+          ) {
+            <div class="text-danger">Secret Value is required to create a secret.</div>
+          }
+        </div>
+        @if (!secret() && !this.dataAddressForm.get('baseAuth.secretName')?.value) {
+          <div class="mb-3">
+            <p class="text-warning">
+              <i class="bi bi-exclamation-triangle ms-2"></i>
+              {{ I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.AUTH_CODE_RECOMMENDED }}
+            </p>
+          </div>
+        }
+      </div>
+    } @else if (dataAddressForm.get('authType')?.value === AuthTypesEnum.OAuth2) {
+      <div formGroupName="oAuth2">
+        <div class="mb-3">
+          <label for="tokenUrl" class="form-label">
+            Token URL
+            <i
+              class="bi bi-question-circle me-2"
+              [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.TOKEN_URL"
+            ></i>
+            <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <input
+              id="tokenUrl"
+              type="text"
+              class="form-control"
+              formControlName="tokenUrl"
+              [class.is-invalid]="
+                dataAddressForm.get('oAuth2.tokenUrl')?.invalid &&
+                dataAddressForm.get('oAuth2.tokenUrl')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('oAuth2.tokenUrl')?.valid &&
+              dataAddressForm.get('oAuth2.tokenUrl')?.value
+            ) {
+              <app-field-link
+                [url]="dataAddressForm.get('oAuth2.tokenUrl')?.value"
+              ></app-field-link>
+            }
+          </div>
+          @if (
+            dataAddressForm.get('oAuth2.tokenUrl')?.invalid &&
+            dataAddressForm.get('oAuth2.tokenUrl')?.touched
+          ) {
+            @if (dataAddressForm.get('oAuth2.tokenUrl')?.errors?.['pattern']) {
+              <div class="text-danger">Invalid URL format. Please enter a valid URL.</div>
+            } @else {
+              <div class="text-danger">Token URL is required.</div>
+            }
+          }
+        </div>
+        <div class="mb-3">
+          <label for="clientId" class="form-label">
+            Client ID <span class="text-danger">*</span>
+          </label>
+          <input
+            id="clientId"
+            type="text"
+            class="form-control"
+            formControlName="clientId"
+            [class.is-invalid]="
+              dataAddressForm.get('oAuth2.clientId')?.invalid &&
+              dataAddressForm.get('oAuth2.clientId')?.touched
+            "
+          />
+          @if (
+            dataAddressForm.get('oAuth2.clientId')?.invalid &&
+            dataAddressForm.get('oAuth2.clientId')?.touched
+          ) {
+            <div class="text-danger">Client ID is required.</div>
+          }
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <label for="clientSecretKey" class="form-label">
+              Client Secret Key
+              <i
+                class="bi bi-question-circle"
+                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.CLIENT_SECRET_KEY"
+              ></i>
+            </label>
+            @if (dataAddressForm.get('oAuth2.clientSecretKey')?.value) {
+              <ng-container *ngTemplateOutlet="secretDelete; context: { secret }"></ng-container>
+            }
+          </div>
+
+          <input
+            id="clientSecretKey"
+            type="text"
+            class="form-control"
+            formControlName="clientSecretKey"
+            [class.is-invalid]="
+              dataAddressForm.get('oAuth2')?.hasError('atLeastOneRequired') &&
+              dataAddressForm.get('oAuth2.clientSecretKey')?.touched
+            "
+          />
+          @if (
+            dataAddressForm.get('oAuth2')?.hasError('atLeastOneRequired') &&
+            dataAddressForm.get('oAuth2.clientSecretKey')?.touched
+          ) {
+            <div
+              class="text-danger"
+              [innerHTML]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.AT_LEAST_ONE_REQUIRED"
+            ></div>
+          }
+        </div>
+        @if (!dataAddressForm.get('oAuth2.clientSecretKey')?.value) {
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <label for="privateKeyName" class="form-label"
+                >Private key name
+                <i
+                  class="bi bi-question-circle"
+                  [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.PRIVATE_KEY_NAME"
+                ></i
+              ></label>
+              @if (dataAddressForm.get('oAuth2.clientSecretKey')?.value) {
+                <ng-container *ngTemplateOutlet="secretDelete; context: { secret }"></ng-container>
+              }
+            </div>
+            <input
+              id="privateKeyName"
+              type="text"
+              class="form-control"
+              formControlName="privateKeyName"
+              [class.is-invalid]="
+                dataAddressForm.get('oAuth2')?.hasError('atLeastOneRequired') &&
+                dataAddressForm.get('oAuth2.privateKeyName')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('oAuth2')?.hasError('atLeastOneRequired') &&
+              dataAddressForm.get('oAuth2.privateKeyName')?.touched
+            ) {
+              <div
+                class="text-danger"
+                [innerHTML]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.AT_LEAST_ONE_REQUIRED"
+              ></div>
+            }
+          </div>
+        }
+        <div class="mb-3">
+          <label for="secretValue" class="form-label"
+            >Secret Value <span class="text-danger">*</span></label
+          >
+          <div class="input-group">
+            <input
+              id="secretValue"
+              type="password"
+              class="form-control"
+              formControlName="secretValue"
+              [attr.type]="showSecret ? 'text' : 'password'"
+              [class.is-invalid]="
+                dataAddressForm.get('oAuth2.secretValue')?.invalid &&
+                dataAddressForm.get('oAuth2.secretValue')?.touched
+              "
+            />
+            <ng-container *ngTemplateOutlet="secretMasking"></ng-container>
+          </div>
+          @if (
+            dataAddressForm.get('oAuth2.secretValue')?.invalid &&
+            dataAddressForm.get('oAuth2.secretValue')?.touched
+          ) {
+            <div class="text-danger">Secret Value is required.</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="kid" class="form-label"
+            >KID
+            <i
+              class="bi bi-question-circle"
+              [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.KID"
+            ></i
+          ></label>
+          <input id="kid" type="text" class="form-control" formControlName="kid" />
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<ng-template #secretDelete let-secret="secret">
+  @if (secret()) {
+    <button
+      type="button"
+      class="btn btn-sm btn-light ms-2 bg-transparent btn-danger text-danger"
+      (click)="deleteSecret()"
+      title="Delete Secret"
+    >
+      <i class="bi bi-trash"></i>
+    </button>
+  }
+</ng-template>
+
+<ng-template #secretMasking>
+  <button
+    type="button"
+    class="btn btn-outline-secondary"
+    [ngClass]="showSecret ? 'bi-eye-slash' : 'bi-eye'"
+    (click)="toggleSecret()"
+    title="Show/hide secret"
+  ></button>
+</ng-template>

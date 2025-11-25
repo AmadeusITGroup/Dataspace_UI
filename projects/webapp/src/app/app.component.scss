@@ -1,0 +1,14 @@
+@use 'variables';
+
+.wrapper {
+  height: calc(100vh - variables.$navbar-height);
+}
+
+.sidebar {
+  width: variables.$sidebar-width;
+  flex: 0 0 auto;
+}
+
+.page-container {
+  min-height: calc(100vh - variables.$navbar-height);
+}

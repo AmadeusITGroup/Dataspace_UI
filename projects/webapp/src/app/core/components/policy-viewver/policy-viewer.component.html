@@ -1,0 +1,71 @@
+<div ngbAccordion class="w-100" [closeOthers]="true">
+  <!-- PERMISSIONS -->
+  @let permissions = transformInArray(policy()?.['odrl:permission']);
+  @let obligations = transformInArray(policy()?.['odrl:obligation']);
+  @let prohibitions = transformInArray(policy()?.['odrl:prohibition']);
+  @if (permissions.length || showEmptyItems()) {
+    <div ngbAccordionItem>
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton>
+          Permissions
+          <span class="ms-2 badge rounded-pill bg-primary">{{ permissions.length || 0 }}</span>
+        </button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            @if (permissions.length) {
+              <ngx-json-viewer [json]="permissions"></ngx-json-viewer>
+            } @else {
+              <i class="text-secondary">No permissions found</i>
+            }
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- OBLIGATIONS -->
+  @if (obligations.length || showEmptyItems()) {
+    <div ngbAccordionItem>
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton>
+          Obligations
+          <span class="ms-2 badge rounded-pill bg-primary">{{ obligations.length || 0 }}</span>
+        </button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            @if (obligations.length) {
+              <ngx-json-viewer [json]="obligations"></ngx-json-viewer>
+            } @else {
+              <i class="text-secondary">No obligations found</i>
+            }
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- PROHIBITIONS -->
+  @if (prohibitions.length || showEmptyItems()) {
+    <div ngbAccordionItem>
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton>
+          Prohibitions
+          <span class="ms-2 badge rounded-pill bg-primary">{{ prohibitions.length || 0 }}</span>
+        </button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            @if (prohibitions.length) {
+              <ngx-json-viewer [json]="prohibitions"></ngx-json-viewer>
+            } @else {
+              <i class="text-secondary">No prohibitions found</i>
+            }
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  }
+</div>

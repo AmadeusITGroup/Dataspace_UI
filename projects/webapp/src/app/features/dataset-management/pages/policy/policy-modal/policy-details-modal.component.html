@@ -1,0 +1,69 @@
+<div class="modal-header">
+  <h3 class="modal-title text-primary">Policy {{ title }}</h3>
+  <button
+    type="button"
+    class="btn-close me-2 mt-1 align-self-start"
+    aria-label="Close"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body">
+  @if (mode() === CRUD.READ) {
+    <app-policy-details-modal-view [policyR]="policyR()"></app-policy-details-modal-view>
+  } @else {
+    <app-policy-details-modal-form [policyForm]="policyForm"></app-policy-details-modal-form>
+  }
+</div>
+<div class="modal-footer" [ngClass]="{ 'bg-light-danger-animated': footerAction() }">
+  <app-footer-action-modal
+    [(footerAction)]="footerAction"
+    (actionClicked)="onActionChanged($event)"
+  >
+    @if (mode() === CRUD.READ) {
+      <div class="w-100 d-flex justify-content-between">
+        <div>
+          <button
+            type="button"
+            class="btn btn-outline-primary bi bi-pencil me-2"
+            (click)="mode.set(CRUD.UPDATE); handleDisableForm()"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-danger bi bi-trash"
+            (click)="footerAction.set(FooterAction.DELETE)"
+          >
+            Delete
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" (click)="activeModal.close()">Close</button>
+        </div>
+      </div>
+    } @else {
+      <div class="d-flex justify-content-end">
+        <div>
+          <button
+            type="button"
+            class="btn btn-outline-primary me-2"
+            title="Reverts form changes"
+            (click)="cancel()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="save()"
+            [disabled]="submitPending()"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    }
+  </app-footer-action-modal>
+</div>

@@ -1,0 +1,98 @@
+<div>
+  <h1 class="pb-2 mb-4 border-bottom fs-3 text-primary">Data Catalog</h1>
+  @if (catalogQuery.isPending() || contractNegotiationService.agreementsQuery.isPending()) {
+  <div class="d-flex flex-column align-items-center m-3">
+    <i class="mb-5">Fetching datasets...</i>
+    <app-spinner></app-spinner>
+  </div>
+  } @else if (catalogQuery.isError()) {
+  <app-empty-page-message
+    icon="bi-exclamation-triangle"
+    message="Error fetching datasets"
+    [errorMessage]="errorMessage"
+  ></app-empty-page-message>
+  } @else {
+  <app-filters
+    title="Filters"
+    [filters]="filters()"
+    (filtersChanged)="onFiltersChanged($event)"
+  ></app-filters>
+
+  @if (filteredCatalog().length === 0) {
+  <app-empty-page-message
+    icon="bi-truck-flatbed"
+    message="No datasets found"
+  ></app-empty-page-message>
+  } @else {
+  <app-list-summary
+    [shown]="filteredCatalog().length"
+    [total]="enrichDatasets().length"
+    [isTableLayout]="isTableLayout"
+    (toggleLayout)="isTableLayout = !isTableLayout"
+  ></app-list-summary>
+  @if (isTableLayout) {
+  <app-table
+    [columns]="columns"
+    [data]="filteredCatalog()"
+    (rowClicked)="viewDataset($event)"
+    [id]="'trackId'"
+  ></app-table>
+  } @else {
+  <div class="row g-4 py-3 row-cols-1 row-cols-md-2 row-cols-xl-3 align-items-stretch">
+    @for (dataset of filteredCatalog(); track dataset.trackId) {
+    <div class="col">
+      <div class="card w-100 text-start h-100">
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex w-100 h-100 justify-content-between mb-2 text-truncate">
+            <div>
+              <h2 class="card-title text-primary mb-0">{{ dataset.name }}</h2>
+              <small class="text-muted text-secondary"
+                >by {{ dataset.shortParticipantId.toUpperCase() }}</small
+              >
+            </div>
+            @if (dataset.logoUrl; as logoUrl) {
+            <img
+              class="card-logo ms-3"
+              [src]="logoUrl"
+              [alt]="dataset.shortParticipantId + ' logo'"
+              [title]="dataset.shortParticipantId + ' logo'"
+            />
+            } @else { {{ dataset.shortParticipantId }} }
+          </div>
+          <div class="h-100">
+            <p class="card-text card-description text-muted">{{ dataset.description }}</p>
+          </div>
+          <hr />
+          <div class="d-flex flex-row justify-content-between">
+            @if (dataset.createdAt) {
+            <span class="text-muted">Created: {{ dataset.createdAt | date }}</span>
+            } @if (dataset.updatedAt) {
+            <span class="text-muted">Last updated: {{ dataset.updatedAt | date }}</span>
+            }
+          </div>
+          <div class="mt-3 d-flex justify-content-between align-items-center">
+            @if (dataset.owned) {
+            <span class="text-success me-2"><i class="bi bi-person-check-fill"></i> Own</span>
+            } @else { @if (dataset.negotiated) {
+            <a
+              class="text-success text-decoration-none text-nowrap"
+              [routerLink]="['/contract-management/contract-negotiation']"
+              [queryParams]="{ searchBy: 'counterPartyId=' + dataset.shortParticipantId + ',id=' + dataset.id }"
+            >
+              <i class="bi bi-briefcase-fill text-success me-2"></i> Contracts
+              <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+            </a>
+            } @else {
+            <div></div>
+            } }
+            <button class="btn btn-outline-primary" (click)="viewDataset(dataset)">
+              <i class="bi bi-eye"></i> View details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } } }
+</div>

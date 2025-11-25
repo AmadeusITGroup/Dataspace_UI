@@ -1,0 +1,131 @@
+<div>
+  <div class="d-flex flex-row justify-content-between border-bottom">
+    <h1 class="pb-2 mb-4 fs-3 text-primary">My Datasets</h1>
+    <div>
+      <button class="btn btn-primary" (click)="viewCreateUpdateAsset(null, CRUD.CREATE)">
+        Create Dataset
+      </button>
+    </div>
+  </div>
+  @if (assetQuery.isPending()) {
+  <div class="d-flex flex-column align-items-center m-3">
+    <i class="mb-5">Fetching datasets...</i>
+    <app-spinner></app-spinner>
+  </div>
+  } @else if (assetQuery.isError()) {
+  <app-empty-page-message
+    icon="bi-exclamation-triangle"
+    message="Error fetching assets"
+    [errorMessage]="errorMessage"
+  ></app-empty-page-message>
+  } @else {
+
+  <!-- FILTERS -->
+  <div class="mb-3 mt-3 d-flex flex-row align-items-end gap-3 flex-wrap">
+    <app-filters
+      [filters]="filters()"
+      (filtersChanged)="filterValues.set($event)"
+      title="Filters"
+    ></app-filters>
+  </div>
+
+  <app-list-summary
+    [shown]="filteredAssets().length"
+    [total]="assetQuery.data()?.length || 0"
+    [isTableLayout]="isTableLayout"
+    (toggleLayout)="isTableLayout = !isTableLayout"
+  >
+  </app-list-summary>
+  @if (!filteredAssets().length) {
+  <app-empty-page-message
+    icon="bi-truck-flatbed"
+    message="No assets found"
+  ></app-empty-page-message>
+  }
+  <!-- TABLE MODE -->
+  @if (isTableLayout) { @if (filteredAssets().length) {
+  <app-table
+    [columns]="columns"
+    [data]="filteredAssets()"
+    (rowClicked)="viewCreateUpdateAsset($event, CRUD.READ)"
+  ></app-table>
+  } } @else {
+  <!-- CARD MODE -->
+  <div class="row g-4 py-3 row-cols-1 row-cols-md-2 row-cols-xl-3 align-items-stretch">
+    @for (assetItem of filteredAssets(); track assetItem['@id']; let index = $index) {
+    <div class="col">
+      <div
+        class="card w-100 text-start h-100"
+        [appHighlight]="idToHighlight === assetItem['@id']"
+        (highlightTimeout)="idToHighlight = null"
+      >
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex w-100 h-100 justify-content-between mb-2">
+            <h2 class="card-title text-primary">
+              {{ assetItem.properties.name || assetItem['@id'] }}
+            </h2>
+            @if (assetItem.properties.logoUrl; as logoUrl) {
+            <img class="card-logo ms-3" [src]="logoUrl" alt="asset logo" />
+            }
+          </div>
+          <div class="h-100">
+            <p class="card-text card-description text-muted">
+              {{ assetItem.properties.description }}
+            </p>
+          </div>
+          <div class="d-flex flex-row justify-content-between">
+            <span class="text-muted" *ngIf="assetItem.properties.version">
+              Version: {{ assetItem.properties.version }}
+            </span>
+          </div>
+          <hr />
+          <div class="d-flex flex-row justify-content-between">
+            <span class="text-muted">Created : {{ assetItem.properties.createdAt | date }}</span>
+            @if (assetItem.properties && assetItem.properties.updatedAt) {
+            <span class="text-muted"
+              >Last updated : {{ assetItem.properties.updatedAt | date }}</span
+            >
+            }
+          </div>
+
+          <div class="mt-3 d-flex justify-content-between align-items-center">
+            <!-- Grouped Buttons for Edit and Delete -->
+            <div ngbDropdown class="dropdown-icon">
+              <button type="button" class="btn" id="dropdown" ngbDropdownToggle>
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                <button
+                  ngbDropdownItem
+                  class="text-primary"
+                  (click)="viewCreateUpdateAsset(assetItem, CRUD.UPDATE)"
+                >
+                  <i class="bi bi-pencil me-2"></i>Edit
+                </button>
+                @if(permissionService.canRead()) {
+                <button
+                  ngbDropdownItem
+                  class="text-danger"
+                  (click)="deleteAssetConfirmation(assetItem)"
+                >
+                  <i class="bi bi-trash me-2"></i>Delete
+                </button>
+                }
+              </div>
+            </div>
+
+            <!-- View Details Button -->
+            <button
+              class="btn btn-outline-primary"
+              (click)="viewCreateUpdateAsset(assetItem, CRUD.READ)"
+            >
+              <i class="bi bi-eye"></i> View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } }
+</div>

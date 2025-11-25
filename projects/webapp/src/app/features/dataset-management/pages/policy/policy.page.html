@@ -1,0 +1,124 @@
+<div>
+  <h1 class="pb-2 mb-4 border-bottom fs-3 text-primary d-flex justify-content-between">
+    <span>My Policies</span>
+    <button class="btn btn-primary" (click)="viewCreateUpdatePolicy(null, CRUD.CREATE)">
+      Create policy
+    </button>
+  </h1>
+  @if (policyQuery.isPending()) {
+  <div class="d-flex flex-column align-items-center m-3">
+    <i class="mb-5">Fetching policies...</i>
+    <app-spinner></app-spinner>
+  </div>
+  } @else if (policyQuery.isError()) {
+  <app-empty-page-message
+    icon="bi-exclamation-triangle"
+    message="Error fetching policies"
+    [errorMessage]="errorMessage"
+  ></app-empty-page-message>
+  } @else {
+  <div class="mb-3 mt-3 d-flex flex-row align-items-baseline">
+    <app-filters
+      [filters]="filters()"
+      (filtersChanged)="filterValues.set($event)"
+      title="Filters"
+    ></app-filters>
+  </div>
+  <app-list-summary
+    [shown]="filteredPolicies().length"
+    [total]="policyQuery.data()?.length || 0"
+    [isTableLayout]="isTableLayout"
+    (toggleLayout)="isTableLayout = !isTableLayout"
+  ></app-list-summary>
+  @if(filteredPolicies().length === 0) {
+  <app-empty-page-message
+    icon="bi-truck-flatbed"
+    message="No policies found"
+  ></app-empty-page-message>
+  } @if(isTableLayout) { @if(filteredPolicies().length) {
+  <app-table
+    (rowClicked)="viewCreateUpdatePolicy($event, CRUD.READ)"
+    [data]="filteredPolicies()"
+    [columns]="columns"
+  ></app-table>
+
+  } } @else {
+  <!-- CARD MODE -->
+  <div class="row g-4 py-3 row-cols-1 row-cols-md-2 row-cols-xl-3 align-items-stretch">
+    @for (policyR of filteredPolicies(); track policyR['@id']) {
+    <div class="col">
+      <div
+        class="card w-100 text-start h-100"
+        [appHighlight]="idToHighlight === policyR['@id']"
+        (highlightTimeout)="idToHighlight = null"
+      >
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex w-100 h-100 justify-content-between mb-2">
+            <h2 class="card-title text-primary">{{ policyR['@id'] }}</h2>
+          </div>
+          <div class="h-100">
+            <div class="row">
+              <div class="col-6">
+                <div class="d-flex flex-column gap-1">
+                  <div>
+                    <span>Permissions</span>
+                    <span class="ms-2 badge rounded-pill bg-primary"
+                      >{{ policyR.policy['odrl:permission'].length || 0 }}</span
+                    >
+                  </div>
+                  <div>
+                    <span>Obligations</span>
+                    <span class="ms-2 badge rounded-pill bg-primary"
+                      >{{ policyR.policy['odrl:obligation'].length || 0 }}</span
+                    >
+                  </div>
+                  <div>
+                    <span>Prohibitions</span>
+                    <span class="ms-2 badge rounded-pill bg-primary"
+                      >{{ policyR.policy['odrl:prohibition'].length || 0 }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="mt-3 d-flex justify-content-between align-items-center">
+            <!-- Grouped Buttons for Edit and Delete -->
+            <div ngbDropdown class="dropdown-icon">
+              <button type="button" class="btn" id="dropdown" ngbDropdownToggle>
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <div ngbDropdownMenu aria-labelledby="dropdown">
+                <button
+                  ngbDropdownItem
+                  class="text-primary"
+                  (click)="viewCreateUpdatePolicy(policyR, CRUD.UPDATE)"
+                >
+                  <i class="bi bi-pencil me-2"></i> Edit
+                </button>
+                <button
+                  ngbDropdownItem
+                  class="text-danger"
+                  (click)="deletePolicyConfirmation(policyR)"
+                >
+                  <i class="bi bi-trash me-2"></i> Delete
+                </button>
+              </div>
+            </div>
+
+            <!-- View Details Button -->
+            <button
+              class="btn btn-outline-primary"
+              (click)="viewCreateUpdatePolicy(policyR, CRUD.READ)"
+            >
+              <i class="bi bi-eye me-2"></i>View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } }
+</div>

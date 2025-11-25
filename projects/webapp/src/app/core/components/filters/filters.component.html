@@ -1,0 +1,56 @@
+<div class="filters-container">
+  <div class="d-flex align-items-center mb-2">
+    @if (title()) {
+      <h5 class="me-auto">{{ title() }}</h5>
+    }
+    @if (anyFilterSet) {
+      <button
+        type="button"
+        class="bg-transparent btn btn-light p-0 ms-2 fs-6"
+        aria-label="Clear all filters"
+        (click)="clearAll()"
+        title="Clear all filters"
+      >
+        Clear all <i class="bi bi-x-lg"></i>
+      </button>
+    }
+  </div>
+  <form class="row g-2 align-items-end">
+    @for (filter of filters(); track filter.id) {
+      <div class="col-12 col-md-auto filter-control p-md-1 me-2">
+        <label [for]="filter.id" class="form-label me-2">{{ filter.label }}</label>
+        @switch (filter.type) {
+          @case ('select') {
+            <select
+              [ngClass]="{ 'form-select': true, small: filter.widthSize === 'small' }"
+              [id]="filter.id"
+              [formControl]="filter.control"
+            >
+              @for (option of filter.options ?? []; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          }
+          @case ('search') {
+            <app-search-input
+              [id]="filter.id"
+              [control]="filter.control"
+              [placeholder]="filter.placeholder || ''"
+              (cleared)="filter.extraCallbackForReset?.()"
+              [type]="filter.inputType || 'text'"
+            ></app-search-input>
+          }
+          @case ('typehead') {
+            <app-input-typehead
+              [id]="filter.id"
+              [fc]="filter.control"
+              [placeholder]="filter.placeholder || ''"
+              [classes]="'filter'"
+              [list]="filter.typeaheadList || []"
+            ></app-input-typehead>
+          }
+        }
+      </div>
+    }
+  </form>
+</div>

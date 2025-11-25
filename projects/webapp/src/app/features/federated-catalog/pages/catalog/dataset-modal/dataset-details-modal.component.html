@@ -1,0 +1,149 @@
+<div class="modal-header">
+  <h3 class="modal-title text-primary">{{ dataset().name }}</h3>
+  <button
+    type="button"
+    class="btn-close me-2 mt-1 align-self-start"
+    aria-label="Close"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="d-flex flex-row mb-3">
+    <div class="d-flex flex-column col-6 pe-2">
+      <div class="mb-2">
+        <h4 class="fs-5">Version</h4>
+        <div>{{ dataset().version }}</div>
+      </div>
+      <div>
+        <h4 class="fs-5">Content Type</h4>
+        <div>{{ dataset().contenttype }}</div>
+      </div>
+    </div>
+    <div class="d-flex flex-column col-6 ps-2">
+      @if (dataset().logoUrl; as logoUrl) {
+        <img [src]="logoUrl" [alt]="dataset().shortParticipantId + ' logo'" />
+      } @else {
+        <div class="fst-italic">No logo specified</div>
+      }
+    </div>
+  </div>
+  <div class="d-flex flex-column mb-3">
+    <h4 class="fs-5">Description</h4>
+    <div>{{ dataset().description }}</div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+    <div>
+      @if (dataset().documentationUrl; as documentationUrl) {
+        <a class="flex-column" target="_blank" [href]="documentationUrl">
+          Check out the documentation
+        </a>
+      }
+    </div>
+    @if (dataset().owned || dataset().negotiated) {
+      <a
+        class="flex-column align-items-center"
+        [routerLink]="['/contract-management/contract-transfer']"
+        [queryParams]="{ assetId: dataset().id || '' }"
+        (click)="activeModal.close()"
+        title="Check transfers in Transfer page"
+        style="max-width: 200px"
+      >
+        <span class="text-truncate overflow-hidden" style="max-width: 150px"
+          >See existing transfers
+        </span>
+        <i aria-hidden="true" class="bi bi-arrow-right ms-1"></i>
+      </a>
+    }
+  </div>
+
+  <div class="d-flex flex-column mt-3">
+    <div class="d-flex flex-row justify-content-between">
+      <h4 class="fs-5">Available offers</h4>
+      @if (dataset().owned) {
+        <i class="bi bi-person-check-fill text-success me-2"> Own </i>
+        @let contractsSearch = 'type=Provider,id=' + dataset().id;
+        <a
+          class="text-success text-decoration-none"
+          [routerLink]="['/contract-management/contract-negotiation']"
+          [queryParams]="{ searchBy: contractsSearch }"
+          (click)="activeModal.close()"
+        >
+          <i class="bi bi-briefcase-fill text-success me-2"></i> Contracts Negotiated
+          <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+        </a>
+      } @else if (dataset().negotiated) {
+        @let contractsSearch =
+          'counterPartyId=' +
+          extractShortParticipantId(dataset().participantId) +
+          ',id=' +
+          dataset().id;
+        <a
+          class="text-success text-decoration-none"
+          [routerLink]="['/contract-management/contract-negotiation']"
+          [queryParams]="{ searchBy: contractsSearch }"
+          (click)="activeModal.close()"
+        >
+          <i class="bi bi-briefcase-fill text-success me-2"></i> Contracts Negotiated
+          <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+        </a>
+      }
+    </div>
+    @if (dataset().hasPolicy; as offers) {
+      @for (offer of offers; track offer['@id']; let i = $index) {
+        <div class="border border-light-subtle border-1 p-2">
+          <div class="d-flex flex-row justify-content-between mb-2">
+            <div class="text-ellipsis fw-bold" [title]="offer['@id']">
+              {{ extractDefinitionId(offer['@id']) }}
+            </div>
+            @let negotiationId = nonPersistentNegotiationId();
+            @if (negotiationId && isOfferTemporarilyDisabled(i)) {
+              @let specificContractSearch = '@id=' + negotiationId;
+              <div>
+                <a
+                  class="text-success text-decoration-none"
+                  [routerLink]="['/contract-management/contract-negotiation']"
+                  [queryParams]="{ searchBy: specificContractSearch }"
+                  (click)="activeModal.close()"
+                >
+                  See New Contract
+                  <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                </a>
+              </div>
+            } @else {
+              @let canNegotiate = !dataset().owned;
+              @if (canNegotiate) {
+                <button
+                  class="btn btn-outline-primary"
+                  [disabled]="isOfferTemporarilyDisabled(i)"
+                  (click)="negotiate(offer, dataset(), i)"
+                >
+                  <i class="bi bi-briefcase"></i> Negotiate
+                </button>
+              }
+            }
+          </div>
+          <app-policy-viewer
+            class="w-50"
+            [policy]="offer"
+            [showEmptyItems]="false"
+          ></app-policy-viewer>
+        </div>
+      }
+    }
+  </div>
+  <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+    @if (dataset().createdAt; as createdAt) {
+      <div>
+        <strong>Created</strong> {{ createdAt | date }} by
+        {{ dataset().shortParticipantId.toUpperCase() }}
+      </div>
+    }
+    @if (dataset().updatedAt; as updatedAt) {
+      <div><strong>Last updated</strong> {{ updatedAt | date }}</div>
+    }
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Close</button>
+</div>

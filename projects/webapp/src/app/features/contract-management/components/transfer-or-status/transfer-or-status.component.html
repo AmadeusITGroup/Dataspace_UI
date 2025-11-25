@@ -1,0 +1,64 @@
+<div class="d-flex align-items-center">
+  @if (isTransferAllowed()) {
+    @if (transferId()) {
+      <ng-container *ngTemplateOutlet="statusTextTemplate"></ng-container>
+    } @else {
+      <button
+        class="btn btn-outline-primary me-2 bi bi-arrow-right-circle"
+        (click)="onTransfer($event)"
+        [title]="isTransferInProgress() ? 'A Transfer is already registered' : 'Start Transfer'"
+        [disabled]="transferPending()"
+      >
+        Transfer
+      </button>
+    }
+  }
+</div>
+
+<ng-template #statusTextTemplate>
+  @if (!transferId()) {
+    <ng-container *ngTemplateOutlet="transferStartedText"></ng-container>
+  } @else {
+    <ng-container *ngTemplateOutlet="transferStatusText"></ng-container>
+  }
+</ng-template>
+
+<ng-template #transferStartedText>
+  <span class="badge bg-warning text-dark p-2"> A Transfer is Started </span></ng-template
+>
+
+<ng-template #transferStatusText>
+  <div class="d-flex align-items-center flex-wrap">
+    <a
+      class="d-inline-flex align-items-center me-2"
+      [routerLink]="['/contract-management/contract-transfer']"
+      [queryParams]="{ id: transferId() || '' }"
+      title="Check new Transfer in My Transfers"
+      style="max-width: 200px"
+    >
+      <span class="text-truncate overflow-hidden" style="max-width: 150px"> Transfer </span>
+      <i aria-hidden="true" class="bi bi-arrow-right ms-1"></i>
+    </a>
+    <div class="d-inline-flex align-items-center">
+      <span
+        class="badge text-uppercase"
+        [ngClass]="{
+          'bg-success': transferState() === TransferStateEnum.STARTED,
+          'bg-warning text-dark': transferState() !== TransferStateEnum.STARTED
+        }"
+      >
+        {{ transferState() ? transferState() : TransferStateEnum.INITIAL }}
+      </span>
+      @if (showRefresh()) {
+        <button
+          class="btn btn-sm btn-light ms-2 bg-transparent"
+          title="Refresh transfer state"
+          (click)="refreshTransferStateCheck($event)"
+        >
+          <i class="bi bi-arrow-clockwise"></i>
+          <span class="visually-hidden">Refresh</span>
+        </button>
+      }
+    </div>
+  </div>
+</ng-template>

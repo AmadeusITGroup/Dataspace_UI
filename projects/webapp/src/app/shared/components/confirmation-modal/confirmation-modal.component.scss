@@ -1,0 +1,6 @@
+@use 'colors';
+
+.modal-header.danger {
+  background-color: colors.$danger-light-color;
+  color: colors.$danger-dark-color;
+}

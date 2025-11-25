@@ -1,0 +1,55 @@
+<div>
+  <h1 class="pb-2 mb-4 border-bottom fs-3 text-primary">My Transfers</h1>
+
+  <!-- PENDING -->
+  @if (isFetching()) {
+  <div class="d-flex flex-column align-items-center m-3">
+    <i class="mb-5">Fetching transfers...</i>
+    <app-spinner></app-spinner>
+  </div>
+  } @else if (isError()) {
+  <!-- ERROR -->
+  <app-empty-page-message
+    icon="bi-exclamation-triangle"
+    message="Error fetching transfers"
+    [errorMessage]="errorMessage"
+  ></app-empty-page-message>
+  }
+
+  <!-- FILTERS -->
+  <div [hidden]="isFetching()">
+    <app-filters
+      [filters]="filters()"
+      (filtersChanged)="filterValues.set($event)"
+      title="Filters"
+    ></app-filters>
+
+    <!-- SUMMARY -->
+    @if (filteredTransfers().length) {
+    <div class="mt-4">
+      <app-list-summary
+        [shown]="filteredTransfers()!.length"
+        [total]="transfers()!.length"
+        [isTableLayout]="false"
+        [toggable]="false"
+      ></app-list-summary>
+    </div>
+    }
+
+    <!-- EMPTY MSG -->
+    @if (filteredTransfers() && filteredTransfers().length === 0) {
+
+    <app-empty-page-message
+      icon="bi-truck-flatbed"
+      message="No transfer found"
+    ></app-empty-page-message>
+    }
+
+    <!-- TABLE -->
+    @if (filteredTransfers() && filteredTransfers().length) {
+    <div class="mt-4">
+      <app-table [columns]="columns" [data]="filteredTransfers()!"></app-table>
+    </div>
+    }
+  </div>
+</div>

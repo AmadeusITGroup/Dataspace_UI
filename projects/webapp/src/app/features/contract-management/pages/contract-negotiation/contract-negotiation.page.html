@@ -1,0 +1,104 @@
+<div>
+  <h1 class="pb-2 mb-4 border-bottom fs-3 text-primary">My Contract Negotiations</h1>
+  @if (isPendingQueries()) {
+  <div class="d-flex flex-column align-items-center m-3">
+    <i class="mb-5">Fetching contract negotiations...</i>
+    <app-spinner></app-spinner>
+  </div>
+  } @else if (hasQueriesError()) {
+  <app-empty-page-message
+    icon="bi-exclamation-triangle"
+    message="Error fetching contract negociations"
+    [errorMessage]="errorMessage"
+  ></app-empty-page-message>
+  } @else {
+  <app-filters
+    [filters]="filters()"
+    (filtersChanged)="filterValues.set($event)"
+    title="Filters"
+  ></app-filters>
+  @if (enrichedNegotiations().length) {
+  <app-list-summary
+    [shown]="filteredNegotiations().length"
+    [total]="enrichedNegotiations().length"
+    [isTableLayout]="isTableLayout"
+    (toggleLayout)="isTableLayout = !isTableLayout"
+  ></app-list-summary>
+  } @if (filteredNegotiations().length === 0) {
+  <app-empty-page-message
+    icon="bi-truck-flatbed"
+    message="No contract negotiations found"
+  ></app-empty-page-message>
+  } @if (isTableLayout) { @if (filteredNegotiations().length) {
+  <app-table
+    [columns]="columns"
+    [data]="filteredNegotiations()"
+    (rowClicked)="viewDetails($event)"
+    [config]="{alternateRowsColor: false}"
+  ></app-table>
+  } } @else {
+  <div class="row g-4 py-3 row-cols-1 row-cols-md-2 row-cols-xl-3 align-items-stretch">
+    @for (enrichedNegotiation of filteredNegotiations(); track
+    enrichedNegotiation.negotiation['@id']) { @let negotiation = enrichedNegotiation.negotiation;
+    @let agreement = enrichedNegotiation.agreement; @let dataset = enrichedNegotiation.dataset ;
+    <div class="col">
+      <div class="card w-100 text-start h-100">
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex w-100 h-100 justify-content-between mb-2">
+            <div>
+              <h2 class="card-title text-primary mb-0">
+                {{ dataset?.name ?? agreement?.assetId ?? negotiation['@id'] }}
+              </h2>
+              <small class="text-muted text-secondary"
+                >{{negotiation.type === 'CONSUMER' ? 'by':'with'}} {{
+                extractShortParticipant(negotiation.counterPartyId || '').toUpperCase() }}</small
+              >
+            </div>
+            @if (dataset?.logoUrl; as logoUrl) {
+            <img class="card-logo ms-3" [src]="logoUrl" alt="dataset logo" />
+            }
+          </div>
+          <div>
+            Your role: @if (negotiation.type === 'CONSUMER') {
+            <i class="bi bi-box-arrow-in-down"></i>
+            } @else {
+            <i class="bi bi-box-arrow-up"></i>
+            } {{ negotiation.type }}
+          </div>
+          <div>
+            <span class="me-2"> State:</span>
+            <app-contract-state [contract]="enrichedNegotiation"></app-contract-state>
+          </div>
+          <hr />
+          <div class="d-flex flex-row justify-content-between">
+            <span class="text-muted">Created : {{ negotiation.createdAt | date }}</span>
+            @if (agreement) {
+            <span class="text-success ms-1">
+              <i class="bi bi-check-circle"></i> Signed: {{ agreement?.contractSigningDate |
+              utcSecondsToDate }}
+            </span>
+            }
+          </div>
+
+          <div class="mt-3 d-flex justify-content-between d-flex">
+            <app-transfer-or-status
+              [enrichedNegotiation]="enrichedNegotiation"
+              [transfersInProgress]="transfersInProgress()"
+            >
+            </app-transfer-or-status>
+            <div>
+              <button
+                class="btn btn-outline-primary ms-2 bi bi-eye"
+                (click)="viewDetails(enrichedNegotiation)"
+              >
+                View details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } }
+</div>
