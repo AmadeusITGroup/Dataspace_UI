@@ -64,9 +64,9 @@
               "define": {
                 "BASE_PATH": "'/api'",
                 "AUTHORITY": "'authority'",
-                "CATALOG_API_KEY": "''",
-                "ENTRA_CLIENT_ID": "''",
-                "ENTRA_TENANT_ID": "''",
+                "CATALOG_API_KEY": "'<YOUR_DEV_CATALOG_API_KEY>'",
+                "ENTRA_CLIENT_ID": "'<YOUR_DEV_ENTRA_CLIENT_ID>'",
+                "ENTRA_TENANT_ID": "'<YOUR_DEV_ENTRA_TENANT_ID>'",
                 "ENTRA_REDIRECT_URI": "'http://localhost:4200'"
               }
             },
