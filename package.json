@@ -46,7 +46,7 @@
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "buffer": "^6.0.3",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "jsonld": "divdavem/jsonld#a6d44038133bede19549c07d7f527b8da3a80ede",
     "lodash.get": "^4.4.2",
     "lodash.uniq": "^4.4.2",
