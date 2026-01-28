@@ -93,131 +93,210 @@
     <p [innerHTML]="I18N.ASSET.FIELDS.DATA_ADDRESS.DESCRIPTION"></p>
     <div class="data-address border-top d-flex">
       @if (asset().dataAddress; as dataAddress) {
-        <div class="data-address-section w-50 p-3 border-end">
-          <div class="mb-3">
-            <strong class="me-2"
-              >Base URL
-              <i
-                class="bi bi-question-circle"
-                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.BASE_URL"
-              ></i>
-            </strong>
-            <a [href]="dataAddress.baseUrl" target="_blank">{{ dataAddress.baseUrl || '-' }}</a>
-          </div>
-          <div class="mb-3">
-            <strong
-              >Path
-              <i
-                class="bi bi-question-circle"
-                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PATH"
-              ></i>
-            </strong>
-            {{ dataAddress.path || '-' }}
-          </div>
-          <div class="mb-3">
-            <strong
-              >Query Parameters
-              <i
-                class="bi bi-question-circle"
-                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.QUERY_PARAMS"
-              ></i>
-            </strong>
-            {{ dataAddress.queryParams || '-' }}
-          </div>
-          <div class="mb-3">
-            <strong
-              >Proxy Path
-              <i
-                class="bi bi-question-circle"
-                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PROXY_PATH"
-              ></i>
-            </strong>
-            {{ dataAddress.proxyPath === 'true' ? 'Enabled' : 'Disabled' }}
-          </div>
-          <div class="mb-3">
-            <strong
-              >Proxy Query Parameters
-              <i
-                class="bi bi-question-circle"
-                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PROXY_QUERY_PARAMS"
-              ></i>
-            </strong>
-            {{ dataAddress.proxyQueryParams === 'true' ? 'Enabled' : 'Disabled' }}
-          </div>
-        </div>
-        <div class="authentication-section w-50 p-3">
-          @if (authType) {
-            <div class="mb-3"><strong>Authorization Type</strong> {{ authType }}</div>
-          } @else {
+        <!-- Check if it's Kafka or REST based on type -->
+        @if (kafkaDataAddress; as kafkaData) {
+          <!-- KAFKA DATA ADDRESS VIEW -->
+          <div class="data-address-section w-50 p-3 border-end">
+            <h6 class="mb-3">Broker Configuration</h6>
             <div class="mb-3">
-              {{ I18N.ASSET.FIELDS.DATA_ADDRESS.AUTHORIZATION.NO_AUTH }}
+              <strong class="me-2">Bootstrap Servers</strong>
+              {{ kafkaData['kafka.bootstrap.servers'] || '-' }}
             </div>
-          }
-
-          @if (authType === 'Basic') {
-            <div class="base-auth">
-              <div class="mb-3">
-                <strong>Authorization Key</strong> {{ dataAddress.authKey || '-' }}
-              </div>
-              @if (!secret()) {
-                <div class="mb-3">
-                  <strong>Authorization Code</strong> {{ dataAddress.authCode || '-' }}
-                </div>
-              }
-              @if (dataAddress.secretName) {
-                <div class="mb-3">
-                  <strong>Secret Name</strong> {{ dataAddress.secretName || '-' }}
-                </div>
-              }
-              <div class="mb-3">
-                <ng-container
-                  *ngTemplateOutlet="
-                    secretDisplay;
-                    context: { secret, secretLabel: 'Secret Value' }
-                  "
-                ></ng-container>
-              </div>
+            <div class="mb-3">
+              <strong class="me-2">Topic</strong>
+              {{ kafkaData.topic || '-' }}
             </div>
-          } @else if (authType === 'OAuth2') {
-            <div class="oauth2">
+            <div class="mb-3">
+              <strong class="me-2">Security Protocol</strong>
+              {{ kafkaData['security.protocol'] || '-' }}
+            </div>
+          </div>
+          <div class="authentication-section w-50 p-3">
+            <h6 class="mb-3">Authentication</h6>
+            @if (kafkaData['sasl.mechanism']) {
               <div class="mb-3">
-                <strong class="me-2">Token URL</strong>
-                <a [href]="dataAddress['oauth2:tokenUrl']" target="_blank">
-                  {{ dataAddress['oauth2:tokenUrl'] || '-' }}</a
-                >
+                <strong>SASL Mechanism</strong> {{ kafkaData['sasl.mechanism'] || '-' }}
               </div>
-              <div class="mb-3">
-                <strong>Client ID</strong> {{ dataAddress['oauth2:clientId'] || '-' }}
-              </div>
-              @if (dataAddress['oauth2:clientSecretKey']) {
+              @if (kafkaData['sasl.jaas.config']) {
                 <div class="mb-3">
-                  <strong>Client Secret Key</strong>
-                  {{ dataAddress['oauth2:clientSecretKey'] }}
+                  <strong>JAAS Config </strong>
+                  <span class="font-monospace small">{{
+                    kafkaData['sasl.jaas.config'] || '-'
+                  }}</span>
                 </div>
               }
-              @if (dataAddress['oauth2:privateKeyName']) {
+              @if (kafkaData.secretName) {
                 <div class="mb-3">
-                  <strong>Private Key Name:</strong> {{ dataAddress['oauth2:privateKeyName'] }}
+                  <strong>Secret Name</strong> {{ kafkaData.secretName || '-' }}
+                </div>
+                <div class="mb-3">
+                  <ng-container
+                    *ngTemplateOutlet="
+                      secretDisplay;
+                      context: { secret, secretLabel: 'Secret Value' }
+                    "
+                  ></ng-container>
                 </div>
               }
-              <ng-container
-                *ngTemplateOutlet="secretDisplay; context: { secret, secretLabel: 'Secret Value' }"
-              >
-              </ng-container>
-
+            }
+            @if (kafkaData.tls_ca_secret) {
               <div class="mb-3">
-                <strong
-                  >KID
+                <strong>TLS CA Secret</strong> {{ kafkaData.tls_ca_secret || '-' }}
+              </div>
+            }
+            @if (kafkaData.tls_client_cert) {
+              <div class="mb-3">
+                <strong>TLS Client Certificate</strong>
+                {{ kafkaData.tls_client_cert || '-' }}
+              </div>
+            }
+            @if (kafkaData.tls_client_key) {
+              <div class="mb-3">
+                <strong>TLS Client Key</strong> {{ kafkaData.tls_client_key || '-' }}
+              </div>
+            }
+            @if (
+              !kafkaData['sasl.mechanism'] &&
+              !kafkaData.tls_ca_secret &&
+              !kafkaData.tls_client_cert &&
+              !kafkaData.tls_client_key
+            ) {
+              <div class="mb-3 text-muted">No authentication configured</div>
+            }
+          </div>
+        } @else {
+          <!-- REST DATA ADDRESS VIEW (existing) -->
+          @if (httpDataAddress; as httpData) {
+            <div class="data-address-section w-50 p-3 border-end">
+              <div class="mb-3">
+                <strong class="me-2"
+                  >Base URL
                   <i
                     class="bi bi-question-circle"
-                    [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.KID"
-                  ></i
-                ></strong>
-                {{ dataAddress['oauth2:kid'] || '-' }}
+                    [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.BASE_URL"
+                  ></i>
+                </strong>
+                <a [href]="httpData.baseUrl" target="_blank">{{ httpData.baseUrl || '-' }}</a>
+              </div>
+              <div class="mb-3">
+                <strong
+                  >Path
+                  <i
+                    class="bi bi-question-circle"
+                    [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PATH"
+                  ></i>
+                </strong>
+                {{ httpData.path || '-' }}
+              </div>
+              <div class="mb-3">
+                <strong
+                  >Query Parameters
+                  <i
+                    class="bi bi-question-circle"
+                    [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.QUERY_PARAMS"
+                  ></i>
+                </strong>
+                {{ httpData.queryParams || '-' }}
+              </div>
+              <div class="mb-3">
+                <strong
+                  >Proxy Path
+                  <i
+                    class="bi bi-question-circle"
+                    [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PROXY_PATH"
+                  ></i>
+                </strong>
+                {{ httpData.proxyPath === 'true' ? 'Enabled' : 'Disabled' }}
+              </div>
+              <div class="mb-3">
+                <strong
+                  >Proxy Query Parameters
+                  <i
+                    class="bi bi-question-circle"
+                    [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.BASE_AUTH.PROXY_QUERY_PARAMS"
+                  ></i>
+                </strong>
+                {{ httpData.proxyQueryParams === 'true' ? 'Enabled' : 'Disabled' }}
               </div>
             </div>
+            <div class="authentication-section w-50 p-3">
+              @if (authType) {
+                <div class="mb-3"><strong>Authorization Type</strong> {{ authType }}</div>
+              } @else {
+                <div class="mb-3">
+                  {{ I18N.ASSET.FIELDS.DATA_ADDRESS.AUTHORIZATION.NO_AUTH }}
+                </div>
+              }
+
+              @if (authType === 'Basic') {
+                <div class="base-auth">
+                  <div class="mb-3">
+                    <strong>Authorization Key</strong> {{ httpData.authKey || '-' }}
+                  </div>
+                  @if (!secret()) {
+                    <div class="mb-3">
+                      <strong>Authorization Code</strong> {{ httpData.authCode || '-' }}
+                    </div>
+                  }
+                  @if (httpData.secretName) {
+                    <div class="mb-3">
+                      <strong>Secret Name</strong> {{ httpData.secretName || '-' }}
+                    </div>
+                  }
+                  <div class="mb-3">
+                    <ng-container
+                      *ngTemplateOutlet="
+                        secretDisplay;
+                        context: { secret, secretLabel: 'Secret Value' }
+                      "
+                    ></ng-container>
+                  </div>
+                </div>
+              } @else if (authType === 'OAuth2') {
+                <div class="oauth2">
+                  <div class="mb-3">
+                    <strong class="me-2">Token URL</strong>
+                    <a [href]="httpData['oauth2:tokenUrl']" target="_blank">
+                      {{ httpData['oauth2:tokenUrl'] || '-' }}</a
+                    >
+                  </div>
+                  <div class="mb-3">
+                    <strong>Client ID</strong> {{ httpData['oauth2:clientId'] || '-' }}
+                  </div>
+                  @if (httpData['oauth2:clientSecretKey']) {
+                    <div class="mb-3">
+                      <strong>Client Secret Key</strong>
+                      {{ httpData['oauth2:clientSecretKey'] }}
+                    </div>
+                  }
+                  @if (httpData['oauth2:privateKeyName']) {
+                    <div class="mb-3">
+                      <strong>Private Key Name:</strong> {{ httpData['oauth2:privateKeyName'] }}
+                    </div>
+                  }
+                  <ng-container
+                    *ngTemplateOutlet="
+                      secretDisplay;
+                      context: { secret, secretLabel: 'Secret Value' }
+                    "
+                  >
+                  </ng-container>
+
+                  <div class="mb-3">
+                    <strong
+                      >KID
+                      <i
+                        class="bi bi-question-circle"
+                        [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.OAUTH2.KID"
+                      ></i
+                    ></strong>
+                    {{ httpData['oauth2:kid'] || '-' }}
+                  </div>
+                </div>
+              }
+            </div>
           }
-        </div>
+        }
       } @else {
         <div class="mb-3">No data address specified</div>
       }

@@ -1,14 +1,12 @@
-import { type ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { Configuration as CatalogApiConfig } from 'catalog-sdk/configuration';
-import { Configuration as ManagementApiConfig } from 'management-sdk/configuration';
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
   withFetch,
   withInterceptorsFromDi
 } from '@angular/common/http';
+import { type ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 import {
   MSAL_GUARD_CONFIG,
   MSAL_INSTANCE,
@@ -22,16 +20,13 @@ import {
 } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { Configuration as CatalogApiConfig } from 'catalog-sdk/configuration';
+import { Configuration as ManagementBEApiConfig } from 'management-sdk-be/configuration';
+import { Configuration as ManagementApiConfig } from 'management-sdk/configuration';
 import { routes } from './app.routes';
-import {
-  basePath,
-  catalogContextPath,
-  managementBEContextPath,
-  managementContextPath
-} from './config/api.config';
+import { basePath, managementBEContextPath, managementContextPath } from './config/api.config';
 import { catalogApiKeyAuth, msalConfig } from './config/auth.config';
 import { HomeGuard } from './core/home/home.guard';
-import { Configuration as ManagementBEApiConfig } from 'management-sdk-be/configuration';
 
 export const authProviders: ApplicationConfig['providers'] = [];
 
@@ -102,7 +97,7 @@ export const appConfig: ApplicationConfig = {
         credentials: {
           ApiKeyAuth: catalogApiKeyAuth
         },
-        basePath: catalogContextPath
+        basePath: managementContextPath
       })
     },
     ...authProviders

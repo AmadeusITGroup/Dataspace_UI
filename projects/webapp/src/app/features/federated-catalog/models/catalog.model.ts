@@ -1,5 +1,5 @@
-import { PolicyCondition } from '../../../core/models/policy-condition';
 import { ContractAgreement } from 'management-sdk';
+import { PolicyCondition } from '../../../core/models/policy-condition';
 
 export interface CatalogItem {
   participantId: string;
@@ -18,6 +18,7 @@ export interface Dataset {
   documentationUrl?: string;
   contenttype?: string;
   hasPolicy: Offer[];
+  type?: string;
 }
 export interface DatasetEnriched extends Dataset {
   negotiations: ContractAgreement[];

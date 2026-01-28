@@ -1,6 +1,7 @@
 export interface AssetProperties {
   name: string;
   description: string;
+  type?: string;
   documentationUrl?: string;
   logoUrl?: string;
   contenttype?: string;

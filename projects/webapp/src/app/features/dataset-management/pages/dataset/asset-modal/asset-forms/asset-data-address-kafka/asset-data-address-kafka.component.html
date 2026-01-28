@@ -1,0 +1,462 @@
+<h5 class="section-label mb-2">
+  <i class="bi bi-diagram-3 me-2"></i>{{ I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.TITLE }}
+</h5>
+<p [innerHTML]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.DESCRIPTION"></p>
+
+<div class="data-address border-top d-flex pe-3" [formGroup]="dataAddressForm">
+  <!-- Left Section: Broker Configuration -->
+  <div class="data-address-section w-50 p-3 border-end">
+    <h6 class="mb-3">Broker Configuration</h6>
+
+    <!-- Bootstrap Servers -->
+    <div class="mb-3">
+      <label for="bootstrapServers" class="form-label">
+        Bootstrap Servers
+        <i
+          class="bi bi-question-circle me-2"
+          [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.BOOTSTRAP_SERVERS"
+        ></i>
+        <span class="text-danger">*</span>
+      </label>
+      <textarea
+        id="bootstrapServers"
+        class="form-control"
+        formControlName="bootstrapServers"
+        rows="2"
+        placeholder="localhost:9092,broker2:9093"
+        [class.is-invalid]="
+          dataAddressForm.get('bootstrapServers')?.invalid &&
+          dataAddressForm.get('bootstrapServers')?.touched
+        "
+      ></textarea>
+      @if (
+        dataAddressForm.get('bootstrapServers')?.invalid &&
+        dataAddressForm.get('bootstrapServers')?.touched
+      ) {
+        @if (dataAddressForm.get('bootstrapServers')?.errors?.['pattern']) {
+          <div class="text-danger">Invalid format. Use: host:port or host1:port1,host2:port2</div>
+        } @else {
+          <div class="text-danger">Bootstrap Servers is required.</div>
+        }
+      }
+    </div>
+
+    <!-- Topic -->
+    <div class="mb-3">
+      <label for="topic" class="form-label">
+        Topic
+        <i
+          class="bi bi-question-circle me-2"
+          [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.TOPIC"
+        ></i>
+        <span class="text-danger">*</span>
+      </label>
+      <input
+        id="topic"
+        type="text"
+        class="form-control"
+        formControlName="topic"
+        placeholder="my-topic"
+        [class.is-invalid]="
+          dataAddressForm.get('topic')?.invalid && dataAddressForm.get('topic')?.touched
+        "
+      />
+      @if (dataAddressForm.get('topic')?.invalid && dataAddressForm.get('topic')?.touched) {
+        @if (dataAddressForm.get('topic')?.errors?.['pattern']) {
+          <div class="text-danger">Only alphanumeric, hyphen, underscore, and dot allowed.</div>
+        } @else {
+          <div class="text-danger">Topic is required.</div>
+        }
+      }
+    </div>
+
+    <!-- Security Protocol Selector -->
+    <div class="mb-3">
+      <label for="securityProtocol" class="form-label">
+        Security Protocol
+        <span class="text-danger">*</span>
+      </label>
+      <select id="securityProtocol" class="form-select" formControlName="securityProtocol">
+        @for (protocol of kafkaSecurityProtocolOptions; track protocol.value) {
+          <option [value]="protocol.value">{{ protocol.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Right Section: Authentication -->
+  <div class="authentication-section w-50 ps-3">
+    @if (dataAddressForm.get('securityProtocol')?.value !== KafkaSecurityProtocolEnum.PLAINTEXT) {
+      <h6 class="mb-3">Authentication</h6>
+    }
+
+    <!-- SSL/TLS Authentication (for SSL and SASL_SSL) -->
+    @if (
+      dataAddressForm.get('securityProtocol')?.value === KafkaSecurityProtocolEnum.SSL ||
+      dataAddressForm.get('securityProtocol')?.value === KafkaSecurityProtocolEnum.SASL_SSL
+    ) {
+      <div formGroupName="sslAuth">
+        <h6 class="mb-2 text-muted">{{ I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SSL.TITLE }}</h6>
+
+        <!-- TLS CA Secret -->
+        <div class="mb-3">
+          <label for="tlsCaSecret" class="form-label">
+            TLS CA Secret
+            <i
+              class="bi bi-question-circle me-2"
+              [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SSL.TLS_CA_SECRET"
+            ></i>
+            <span class="text-danger">*</span>
+          </label>
+          <input
+            id="tlsCaSecret"
+            type="text"
+            class="form-control"
+            formControlName="tlsCaSecret"
+            placeholder="kafka-tls-ca"
+            [class.is-invalid]="
+              dataAddressForm.get('sslAuth.tlsCaSecret')?.invalid &&
+              dataAddressForm.get('sslAuth.tlsCaSecret')?.touched
+            "
+          />
+          @if (
+            dataAddressForm.get('sslAuth.tlsCaSecret')?.invalid &&
+            dataAddressForm.get('sslAuth.tlsCaSecret')?.touched
+          ) {
+            <div class="text-danger">TLS CA Secret is required.</div>
+          }
+        </div>
+
+        <!-- Mutual TLS Checkbox -->
+        <div class="mb-3 form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="mutualTls"
+            formControlName="mutualTls"
+          />
+          <label class="form-check-label" for="mutualTls"> Enable Mutual TLS </label>
+        </div>
+
+        <!-- Mutual TLS Fields -->
+        @if (dataAddressForm.get('sslAuth.mutualTls')?.value) {
+          <!-- TLS Client Cert -->
+          <div class="mb-3">
+            <label for="tlsClientCert" class="form-label">
+              TLS Client Cert
+              <span class="text-danger">*</span>
+            </label>
+            <input
+              id="tlsClientCert"
+              type="text"
+              class="form-control"
+              formControlName="tlsClientCert"
+              placeholder="client.crt"
+              [class.is-invalid]="
+                dataAddressForm.get('sslAuth.tlsClientCert')?.invalid &&
+                dataAddressForm.get('sslAuth.tlsClientCert')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('sslAuth.tlsClientCert')?.invalid &&
+              dataAddressForm.get('sslAuth.tlsClientCert')?.touched
+            ) {
+              <div class="text-danger">TLS Client Cert is required.</div>
+            }
+          </div>
+
+          <!-- TLS Client Key -->
+          <div class="mb-3">
+            <label for="tlsClientKey" class="form-label">
+              TLS Client Key
+              <span class="text-danger">*</span>
+            </label>
+            <input
+              id="tlsClientKey"
+              type="text"
+              class="form-control"
+              formControlName="tlsClientKey"
+              placeholder="client.key"
+              [class.is-invalid]="
+                dataAddressForm.get('sslAuth.tlsClientKey')?.invalid &&
+                dataAddressForm.get('sslAuth.tlsClientKey')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('sslAuth.tlsClientKey')?.invalid &&
+              dataAddressForm.get('sslAuth.tlsClientKey')?.touched
+            ) {
+              <div class="text-danger">TLS Client Key is required.</div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- SASL Authentication (for SASL_PLAINTEXT and SASL_SSL) -->
+    @if (
+      dataAddressForm.get('securityProtocol')?.value === KafkaSecurityProtocolEnum.SASL_PLAINTEXT ||
+      dataAddressForm.get('securityProtocol')?.value === KafkaSecurityProtocolEnum.SASL_SSL
+    ) {
+      <div formGroupName="saslAuth">
+        <h6 class="mb-2 text-muted">{{ I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SASL.TITLE }}</h6>
+
+        <!-- SASL Mechanism -->
+        <div class="mb-3">
+          <label for="mechanism" class="form-label">
+            SASL Mechanism
+            <i
+              class="bi bi-question-circle me-2"
+              [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SASL.MECHANISM"
+            ></i>
+            <span class="text-danger">*</span>
+          </label>
+          <select id="mechanism" class="form-select" formControlName="mechanism">
+            @for (mech of kafkaSaslMechanisms; track mech.value) {
+              <option [value]="mech.value">{{ mech.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Username (not for OAuth) -->
+        @if (dataAddressForm.get('saslAuth.mechanism')?.value !== 'OAUTHBEARER') {
+          <div class="mb-3">
+            <label for="username" class="form-label">
+              Username
+              <i
+                class="bi bi-question-circle me-2"
+                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SASL.USERNAME"
+              ></i>
+              <span class="text-danger">*</span>
+            </label>
+            <input
+              id="username"
+              type="text"
+              class="form-control"
+              formControlName="username"
+              [class.is-invalid]="
+                dataAddressForm.get('saslAuth.username')?.invalid &&
+                dataAddressForm.get('saslAuth.username')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('saslAuth.username')?.invalid &&
+              dataAddressForm.get('saslAuth.username')?.touched
+            ) {
+              <div class="text-danger">Username is required.</div>
+            }
+          </div>
+        }
+
+        <!-- OAuth Fields (only for OAUTHBEARER mechanism) -->
+        @if (dataAddressForm.get('saslAuth.mechanism')?.value === 'OAUTHBEARER') {
+          <!-- Client ID -->
+          <div class="mb-3">
+            <label for="clientId" class="form-label">
+              Client ID
+              <i class="bi bi-question-circle me-2" ngbTooltip="OAuth client identifier"></i>
+              <span class="text-danger">*</span>
+            </label>
+            <input
+              id="clientId"
+              type="text"
+              class="form-control"
+              formControlName="clientId"
+              placeholder="abc-123"
+              [class.is-invalid]="
+                dataAddressForm.get('saslAuth.clientId')?.invalid &&
+                dataAddressForm.get('saslAuth.clientId')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('saslAuth.clientId')?.invalid &&
+              dataAddressForm.get('saslAuth.clientId')?.touched
+            ) {
+              <div class="text-danger">Client ID is required.</div>
+            }
+          </div>
+
+          <!-- Client Secret -->
+          <div class="mb-3">
+            <label for="clientSecret" class="form-label">
+              Client Secret
+              <i class="bi bi-question-circle me-2" ngbTooltip="OAuth client secret"></i>
+              <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <input
+                id="clientSecret"
+                class="form-control"
+                formControlName="clientSecret"
+                placeholder="xyz-secret"
+                [class.is-invalid]="
+                  dataAddressForm.get('saslAuth.clientSecret')?.invalid &&
+                  dataAddressForm.get('saslAuth.clientSecret')?.touched
+                "
+                [attr.type]="showSecret ? 'text' : 'password'"
+              />
+              <ng-container *ngTemplateOutlet="secretMasking"></ng-container>
+            </div>
+            @if (
+              dataAddressForm.get('saslAuth.clientSecret')?.invalid &&
+              dataAddressForm.get('saslAuth.clientSecret')?.touched
+            ) {
+              <div class="text-danger">Client Secret is required.</div>
+            }
+          </div>
+
+          <!-- Tenant ID -->
+          <div class="mb-3">
+            <label for="tenantId" class="form-label">
+              Tenant ID
+              <i class="bi bi-question-circle me-2" ngbTooltip="OAuth tenant identifier"></i>
+              <span class="text-danger">*</span>
+            </label>
+            <input
+              id="tenantId"
+              type="text"
+              class="form-control"
+              formControlName="tenantId"
+              placeholder="tenant-id"
+              [class.is-invalid]="
+                dataAddressForm.get('saslAuth.tenantId')?.invalid &&
+                dataAddressForm.get('saslAuth.tenantId')?.touched
+              "
+            />
+            @if (
+              dataAddressForm.get('saslAuth.tenantId')?.invalid &&
+              dataAddressForm.get('saslAuth.tenantId')?.touched
+            ) {
+              <div class="text-danger">Tenant ID is required.</div>
+            }
+          </div>
+
+          <!-- Scope -->
+          <div class="mb-3">
+            <label for="scope" class="form-label">
+              Scope
+              <i
+                class="bi bi-question-circle"
+                ngbTooltip="OAuth scope, e.g., api://kafka-proxy/.default"
+              ></i>
+            </label>
+            <input
+              id="scope"
+              type="text"
+              class="form-control"
+              formControlName="scope"
+              placeholder="api://kafka-proxy/.default"
+            />
+          </div>
+        }
+
+        <!-- Secret Name (only for SASL_SSL with non-PLAIN and non-OAuth mechanisms) -->
+        @if (
+          dataAddressForm.get('securityProtocol')?.value === KafkaSecurityProtocolEnum.SASL_SSL &&
+          dataAddressForm.get('saslAuth.mechanism')?.value !== 'PLAIN' &&
+          dataAddressForm.get('saslAuth.mechanism')?.value !== 'OAUTHBEARER'
+        ) {
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <label for="secretName" class="form-label">
+                Secret Name
+                <i
+                  class="bi bi-question-circle"
+                  [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SASL.SECRET_NAME"
+                ></i>
+              </label>
+              <ng-container *ngTemplateOutlet="secretDelete; context: { secret }"></ng-container>
+            </div>
+            <input id="secretName" type="text" class="form-control" formControlName="secretName" />
+          </div>
+        }
+
+        <!-- Password (not for OAuth) -->
+        @if (dataAddressForm.get('saslAuth.mechanism')?.value !== 'OAUTHBEARER') {
+          <div class="mb-3">
+            <label for="password" class="form-label">
+              {{
+                this.dataAddressForm.get('saslAuth.secretName')?.value &&
+                dataAddressForm.get('securityProtocol')?.value ===
+                  KafkaSecurityProtocolEnum.SASL_SSL &&
+                dataAddressForm.get('saslAuth.mechanism')?.value !== 'PLAIN'
+                  ? 'Secret Value'
+                  : 'Password'
+              }}
+              <i
+                class="bi bi-question-circle me-2"
+                [ngbTooltip]="I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SASL.PASSWORD"
+              ></i>
+              <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <input
+                id="password"
+                class="form-control"
+                formControlName="password"
+                [class.is-invalid]="
+                  (dataAddressForm.get('saslAuth.password')?.invalid &&
+                    dataAddressForm.get('saslAuth.password')?.touched) ||
+                  (dataAddressForm.get('saslAuth')?.errors?.['makeOthersRequired'] &&
+                    dataAddressForm.get('saslAuth')?.touched)
+                "
+                [attr.type]="showSecret ? 'text' : 'password'"
+              />
+              <ng-container *ngTemplateOutlet="secretMasking"></ng-container>
+            </div>
+            @if (
+              dataAddressForm.get('saslAuth.password')?.invalid &&
+              dataAddressForm.get('saslAuth.password')?.touched
+            ) {
+              <div class="text-danger">Password is required.</div>
+            }
+            @if (
+              dataAddressForm.get('saslAuth')?.errors?.['makeOthersRequired'] &&
+              dataAddressForm.get('saslAuth')?.touched
+            ) {
+              <div class="text-danger">Secret Value is required to create a secret.</div>
+            }
+          </div>
+
+          @if (
+            !secret() &&
+            !this.dataAddressForm.get('saslAuth.secretName')?.value &&
+            dataAddressForm.get('securityProtocol')?.value === KafkaSecurityProtocolEnum.SASL_SSL &&
+            dataAddressForm.get('saslAuth.mechanism')?.value !== 'PLAIN'
+          ) {
+            <div class="mb-3">
+              <p class="text-warning">
+                <i class="bi bi-exclamation-triangle ms-2"></i>
+                {{ I18N.ASSET.FIELDS.DATA_ADDRESS.KAFKA.SASL.PASSWORD_RECOMMENDED }}
+              </p>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Secret Management Templates -->
+<ng-template #secretDelete let-secret="secret">
+  @if (secret()) {
+    <button
+      type="button"
+      class="btn btn-sm btn-light ms-2 bg-transparent btn-danger text-danger"
+      (click)="deleteSecret()"
+      title="Delete Secret"
+    >
+      <i class="bi bi-trash"></i>
+    </button>
+  }
+</ng-template>
+
+<ng-template #secretMasking>
+  <button
+    type="button"
+    class="btn btn-outline-secondary"
+    [ngClass]="showSecret ? 'bi-eye-slash' : 'bi-eye'"
+    (click)="toggleSecret()"
+    title="Show/hide secret"
+  ></button>
+</ng-template>

@@ -16,6 +16,7 @@ import { FiltersComponent } from '../../../../core/components/filters/filters.co
 import { ListSummaryComponent } from '../../../../core/components/list-summary/list-summary.component';
 import { HighlightDirective } from '../../../../core/directives/highlight.directive';
 import { CRUD } from '../../../../core/models/crud';
+import { PermissionService } from '../../../../core/services/permission.service';
 import { ToastService } from '../../../../core/toasts/toast-service';
 import { retrieveErrorMessage } from '../../../../core/utils/object.util';
 import { ConfirmationModalService } from '../../../../shared/components/confirmation-modal/confirmation-modal.service';
@@ -24,11 +25,11 @@ import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { ColumnDefinition } from '../../../../shared/components/table/table.model';
 import { Asset } from '../../model/asset/asset';
+import { HttpDataAddress } from '../../model/asset/dataAddress';
 import { AssetManagementService } from '../../services/asset-management.service';
 import { SecretManagementService } from '../../services/secret-management.service';
 import * as datasetUtils from '../../utils/dataset.util';
 import { AssetDetailsModalComponent } from './asset-modal/asset-details-modal.component';
-import { PermissionService } from '../../../../core/services/permission.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -203,10 +204,20 @@ export default class DatasetPageComponent {
 
   deleteSecret(asset: Asset): Promise<void> {
     return new Promise((resolve) => {
-      const secretId =
-        asset.dataAddress?.secretName ||
-        asset.dataAddress?.['oauth2:privateKeyName'] ||
-        asset.dataAddress?.['oauth2:clientSecretKey'];
+      const dataAddress = asset.dataAddress;
+      let secretId: string | undefined;
+
+      if (dataAddress) {
+        if (dataAddress.type === 'Kafka') {
+          secretId = dataAddress.secretName;
+        } else {
+          const httpDataAddress = dataAddress as HttpDataAddress;
+          secretId =
+            httpDataAddress.secretName ||
+            httpDataAddress['oauth2:privateKeyName'] ||
+            httpDataAddress['oauth2:clientSecretKey'];
+        }
+      }
 
       if (!secretId) {
         resolve(); // No secret ID, no action needed

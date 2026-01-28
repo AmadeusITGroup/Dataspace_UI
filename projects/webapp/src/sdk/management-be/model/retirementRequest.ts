@@ -9,10 +9,8 @@
  */
 
 
-export interface ApiErrorDetail {
-    invalidValue?: string;
-    message?: string;
-    path?: string;
-    type?: string;
+export interface RetirementRequest {
+    '@id'?: string;
+    reason?: string;
 }
 

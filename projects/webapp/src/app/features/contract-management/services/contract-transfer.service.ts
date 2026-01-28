@@ -8,9 +8,9 @@ import {
 } from '@tanstack/angular-query-experimental';
 import {
   QuerySpec,
-  TerminateTransfer,
   TransferProcess as SdkTransferProcess,
   TransferProcessV3 as SdkTransferProcessV3,
+  TerminateTransfer,
   TransferProcessV3Service,
   TransferRequestV3
 } from 'management-sdk';
@@ -20,7 +20,7 @@ import { composedErrorMessage } from '../../../core/utils/object.util';
 import { noPaginationQuerySpec, normalizeJsonLDID } from '../../../jsonld';
 import { ContractRoleEnum } from '../constants/role.enum';
 import { TransferStateEnum } from '../constants/transfer-state.enum';
-import { ContractNegotiation } from '../models/contract-negotiation.model';
+import { EnrichedNegotiation } from '../models/contract-negotiation.model';
 import { TransferProcess } from '../models/transfer-process.model';
 import { buildTransferFilterOptions } from '../utils/contract-transfer.util';
 
@@ -60,7 +60,16 @@ export class TransferService {
   };
 
   readonly transfer = injectMutation(() => ({
-    mutationFn: async (contractNegotiation: ContractNegotiation) => {
+    mutationFn: async (enrichedNegotiation: EnrichedNegotiation) => {
+      const contractNegotiation = enrichedNegotiation.negotiation;
+
+      // Determine transferType based on asset's dataAddress type
+      let transferType = 'HttpData-PULL'; // Default
+
+      if (enrichedNegotiation.dataset?.type?.toLowerCase() === 'kafka') {
+        transferType = 'KafkaBroker-PULL';
+      }
+
       const payload = {
         '@context': {
           '@vocab': 'https://w3id.org/edc/v0.0.1/ns/'
@@ -70,7 +79,7 @@ export class TransferService {
         protocol: 'dataspace-protocol-http',
         contractId: contractNegotiation.contractAgreementId!,
         privateProperties: {},
-        transferType: 'HttpData-PULL'
+        transferType
       } as TransferRequestV3;
       const response = await lastValueFrom(
         this.#transferService.initiateTransferProcessV3(payload)

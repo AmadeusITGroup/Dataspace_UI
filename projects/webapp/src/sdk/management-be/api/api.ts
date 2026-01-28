@@ -1,15 +1,3 @@
-export * from './catalogApi.service';
-import { CatalogApiService } from './catalogApi.service';
-export * from './dspApi.service';
-import { DspApiService } from './dspApi.service';
-export * from './identityApi.service';
-import { IdentityApiService } from './identityApi.service';
-export * from './issuerAdminApi.service';
-import { IssuerAdminApiService } from './issuerAdminApi.service';
-export * from './issuerApi.service';
-import { IssuerApiService } from './issuerApi.service';
 export * from './managementApi.service';
 import { ManagementApiService } from './managementApi.service';
-export * from './presentationApi.service';
-import { PresentationApiService } from './presentationApi.service';
-export const APIS = [CatalogApiService, DspApiService, IdentityApiService, IssuerAdminApiService, IssuerApiService, ManagementApiService, PresentationApiService];
+export const APIS = [ManagementApiService];

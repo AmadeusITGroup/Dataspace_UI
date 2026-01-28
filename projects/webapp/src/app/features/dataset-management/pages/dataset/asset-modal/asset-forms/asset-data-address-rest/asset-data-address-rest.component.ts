@@ -8,8 +8,8 @@ import { I18N } from '../../../../../../../core/i18n/translation.en';
 import { CRUD } from '../../../../../../../core/models/crud';
 import { atLeastOneRequiredValidator } from '../../../../../../../core/validators/at-least-one-required.validator';
 import { makeOthersRequiredValidator } from '../../../../../../../core/validators/make-others-required.validator';
-import { DataAddress } from '../../../../../model/asset/dataAddress';
 import { FieldLinkComponent } from '../../../../../../../shared/components/field-link/field-link.component';
+import { DataAddress, HttpDataAddress } from '../../../../../model/asset/dataAddress';
 import {
   authMethods,
   AuthTypesEnum,
@@ -86,6 +86,11 @@ export class AssetDataAddressRestComponent {
 
   showSecret = false;
 
+  private get httpDataAddress(): HttpDataAddress | null {
+    const dataAddress = this.dataAddress();
+    return dataAddress?.type !== 'Kafka' ? (dataAddress as HttpDataAddress) : null;
+  }
+
   constructor() {
     effect(() => {
       if (this.dataAddress()) {
@@ -102,26 +107,28 @@ export class AssetDataAddressRestComponent {
       return;
     }
     const authType = this.getAuthType();
+    const httpData = this.httpDataAddress;
     this.dataAddressForm.patchValue({
-      baseUrl: this.dataAddress()?.baseUrl || '',
-      path: this.dataAddress()?.path || '',
-      queryParams: this.dataAddress()?.queryParams || '',
-      proxyPath: this.dataAddress()?.proxyPath === 'true',
-      proxyQueryParams: this.dataAddress()?.proxyQueryParams === 'true',
+      baseUrl: httpData?.baseUrl || '',
+      path: httpData?.path || '',
+      queryParams: httpData?.queryParams || '',
+      proxyPath: httpData?.proxyPath === 'true',
+      proxyQueryParams: httpData?.proxyQueryParams === 'true',
       authType: authType
     });
     this.initializeAuthType(authType);
   }
 
   private initializeAuthType(authType: string | undefined): void {
+    const httpData = this.httpDataAddress;
     if (authType === AuthTypesEnum.BaseAuth) {
       if (this.dataAddressForm.get('oAuth2')) {
         this.dataAddressForm.removeControl('oAuth2');
       }
       this.baseAuthGroup.patchValue({
-        authKey: this.dataAddress()?.authKey || '',
-        authCode: this.dataAddress()?.authCode || this.secret()?.value || '',
-        secretName: this.dataAddress()?.secretName || this.secret()?.['@id'] || ''
+        authKey: httpData?.authKey || '',
+        authCode: httpData?.authCode || this.secret()?.value || '',
+        secretName: httpData?.secretName || this.secret()?.['@id'] || ''
       });
       this.dataAddressForm.addControl('baseAuth', this.baseAuthGroup);
       if (this.secret()) {
@@ -134,12 +141,12 @@ export class AssetDataAddressRestComponent {
         this.dataAddressForm.removeControl('baseAuth');
       }
       this.oAuth2Group.patchValue({
-        tokenUrl: this.dataAddress()?.['oauth2:tokenUrl'] || '',
-        clientId: this.dataAddress()?.['oauth2:clientId'] || '',
-        clientSecretKey: this.dataAddress()?.['oauth2:clientSecretKey'] || '',
-        privateKeyName: this.dataAddress()?.['oauth2:privateKeyName'] || '',
+        tokenUrl: httpData?.['oauth2:tokenUrl'] || '',
+        clientId: httpData?.['oauth2:clientId'] || '',
+        clientSecretKey: httpData?.['oauth2:clientSecretKey'] || '',
+        privateKeyName: httpData?.['oauth2:privateKeyName'] || '',
         secretValue: this.secret()?.value || '',
-        kid: this.dataAddress()?.['oauth2:kid'] || ''
+        kid: httpData?.['oauth2:kid'] || ''
       });
       this.dataAddressForm.addControl('oAuth2', this.oAuth2Group);
       if (this.secret()) {
@@ -161,11 +168,11 @@ export class AssetDataAddressRestComponent {
   }
 
   getAuthType(): string | undefined {
-    const dataAddress = this.dataAddress();
-    if (dataAddress && (dataAddress?.['oauth2:tokenUrl'] || dataAddress?.['oauth2:clientId'])) {
+    const httpData = this.httpDataAddress;
+    if (httpData && (httpData?.['oauth2:tokenUrl'] || httpData?.['oauth2:clientId'])) {
       return AuthTypesEnum.OAuth2;
     }
-    if (dataAddress?.authKey || dataAddress?.authCode || dataAddress?.secretName) {
+    if (httpData?.authKey || httpData?.authCode || httpData?.secretName) {
       return AuthTypesEnum.BaseAuth;
     }
     return AuthTypesEnum.None;

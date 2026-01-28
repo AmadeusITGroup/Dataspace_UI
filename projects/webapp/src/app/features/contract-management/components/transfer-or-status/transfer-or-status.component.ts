@@ -2,11 +2,11 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { injectQuery } from '@tanstack/angular-query-experimental';
+import { ContractStateEnum } from '../../../../core/enums/contract-state.enum';
+import { TransferStateEnum } from '../../constants/transfer-state.enum';
 import { EnrichedNegotiation } from '../../models/contract-negotiation.model';
 import { TransferProcess } from '../../models/transfer-process.model';
 import { TransferService } from '../../services/contract-transfer.service';
-import { ContractStateEnum } from '../../../../core/enums/contract-state.enum';
-import { TransferStateEnum } from '../../constants/transfer-state.enum';
 
 @Component({
   selector: 'app-transfer-or-status',
@@ -54,7 +54,7 @@ export class TransferOrStatusComponent {
     event.stopPropagation();
     const enrichedNegotiation = this.enrichedNegotiation();
     if (enrichedNegotiation) {
-      this.transferService.transfer.mutate(enrichedNegotiation.negotiation, {
+      this.transferService.transfer.mutate(enrichedNegotiation, {
         onSuccess: (transferId) => {
           this.enrichedNegotiation()?.negotiation.createdTransferId.set(transferId!);
         }

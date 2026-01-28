@@ -22,10 +22,13 @@ This is the monorepo handling the website Dataset Portal.
 The project requires `npm` and can be launched in local by running `npm install` and `npm start`.  
 The website is then available at http://localhost:4200
 
+By default, `npm start` connects to the test environment. To connect to the dev environment instead, use `npm run dev`.
+
 ## Commands
 
 The following commands can be launched in local:
 
+- `npm run dev` - launch the website connected to the dev environment
 - `npm run start:no-auth` - launch the website in local without the login flow
 - `npm run test` - launch the unit tests with jest
 - `npm run e2e` - launch the e2e tests with playwright

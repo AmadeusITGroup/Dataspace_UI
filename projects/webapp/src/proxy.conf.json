@@ -1,13 +1,13 @@
 {
   "/api": {
-    "target": "",
+    "target": "https://TEST_API_SERVER_PLACEHOLDER_URL",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api": ""
     },
     "headers": {
-      "Origin": ""
+      "Origin": "https://TEST_PORTAL_PLACEHOLDER_URL"
     },
     "logLevel": "debug"
   }

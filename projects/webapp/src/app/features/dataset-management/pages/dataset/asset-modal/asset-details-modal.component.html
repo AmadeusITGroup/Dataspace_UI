@@ -25,16 +25,28 @@
         [asset]="assetVar"
         [mode]="modeVar"
         (formSubmit)="onAssetFormSubmit($event)"
+        (deliveryMethodChange)="onDeliveryMethodChange($event)"
       ></app-asset-properties-form>
-      <!-- ASSET PRIVATE CONNECTION SETTINGS -->
+
+      <!-- ASSET PRIVATE CONNECTION SETTINGS - Conditional based on delivery method -->
       <div class="private-data-section p-3 rounded">
-        <app-asset-data-address-rest-component
-          [dataAddress]="asset()?.dataAddress"
-          [secret]="secret()"
-          [mode]="mode()"
-          (formSubmit)="onConnectorFormSubmit($event)"
-          (secretAction)="onSecretActionEmit($event)"
-        ></app-asset-data-address-rest-component>
+        @if (deliveryMethod() === 'Kafka') {
+          <app-asset-data-address-kafka-component
+            [dataAddress]="asset()?.dataAddress"
+            [secret]="secret()"
+            [mode]="mode()"
+            (formSubmit)="onConnectorFormSubmit($event)"
+            (secretAction)="onSecretActionEmit($event)"
+          ></app-asset-data-address-kafka-component>
+        } @else {
+          <app-asset-data-address-rest-component
+            [dataAddress]="asset()?.dataAddress"
+            [secret]="secret()"
+            [mode]="mode()"
+            (formSubmit)="onConnectorFormSubmit($event)"
+            (secretAction)="onSecretActionEmit($event)"
+          ></app-asset-data-address-rest-component>
+        }
       </div>
     } @else {
       <p>Loading ...</p>

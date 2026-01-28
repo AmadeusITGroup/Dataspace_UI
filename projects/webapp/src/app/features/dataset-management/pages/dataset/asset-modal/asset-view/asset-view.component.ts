@@ -5,6 +5,7 @@ import { SecretInputV3 } from 'management-sdk';
 import { CopyButtonComponent } from '../../../../../../core/components/copy-button.component';
 import { I18N } from '../../../../../../core/i18n/translation.en';
 import { Asset } from '../../../../model/asset/asset';
+import { HttpDataAddress, KafkaCompleteDataAddress } from '../../../../model/asset/dataAddress';
 
 @Component({
   selector: 'app-asset-view',
@@ -29,19 +30,27 @@ export class AssetViewComponent {
   isCollapsed = true;
 
   get authType(): string | undefined {
-    if (
-      this.asset()?.dataAddress?.authKey ||
-      this.asset()?.dataAddress?.authCode ||
-      this.asset()?.dataAddress?.secretName
-    ) {
+    const dataAddress = this.asset()?.dataAddress;
+    if (!dataAddress || dataAddress.type === 'Kafka') {
+      return '';
+    }
+    const httpDataAddress = dataAddress as HttpDataAddress;
+    if (httpDataAddress.authKey || httpDataAddress.authCode || httpDataAddress.secretName) {
       return 'Basic';
-    } else if (
-      this.asset()?.dataAddress &&
-      (this.asset()?.dataAddress['oauth2:tokenUrl'] || this.asset()?.dataAddress['oauth2:clientId'])
-    ) {
+    } else if (httpDataAddress['oauth2:tokenUrl'] || httpDataAddress['oauth2:clientId']) {
       return 'OAuth2';
     }
     return ''; // Default if no authType-related properties exist
+  }
+
+  get httpDataAddress(): HttpDataAddress | null {
+    const dataAddress = this.asset()?.dataAddress;
+    return dataAddress?.type !== 'Kafka' ? (dataAddress as HttpDataAddress) : null;
+  }
+
+  get kafkaDataAddress(): KafkaCompleteDataAddress | null {
+    const dataAddress = this.asset()?.dataAddress;
+    return dataAddress?.type === 'Kafka' ? (dataAddress as KafkaCompleteDataAddress) : null;
   }
 
   toggleMask() {

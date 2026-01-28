@@ -1,6 +1,6 @@
 ## @
 
-**API Versions:** - Catalog API: 1.0.0-alpha - Control Plane Management API: 3.0.4 - Control Plane DSP API: 0.10.0-SNAPSHOT - Identity Hub Resolution API: 1.0.0  - EDC Version: 0.13.0
+Minimal backend API for participant catalog and contract agreement retirements
 
 The version of the OpenAPI document: 0.5.5
 

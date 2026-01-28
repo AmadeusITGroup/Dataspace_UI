@@ -2,10 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { AssetV3Service, QuerySpec } from 'management-sdk';
 import { lastValueFrom } from 'rxjs';
-import { addContext, noPaginationQuerySpec, normalizeJsonLD } from '../../../jsonld';
-import { Asset } from '../model/asset/asset';
 import { ToastService } from '../../../core/toasts/toast-service';
 import { composedErrorMessage } from '../../../core/utils/object.util';
+import { addContext, noPaginationQuerySpec, normalizeJsonLD } from '../../../jsonld';
+import { Asset } from '../model/asset/asset';
 
 @Injectable()
 export class AssetManagementService {
@@ -23,7 +23,24 @@ export class AssetManagementService {
       });
       return lastValueFrom(
         this.#assetV3.requestAssetsV3(normalizedQuerySpec as QuerySpec, undefined)
-      ).then(async (items) => await Promise.all(items.map(normalizeJsonLD<Asset>)));
+      ).then(async (items) => {
+        const normalized = await Promise.all(items.map(normalizeJsonLD<Asset>));
+        // [BUGFIX] - TODO Proper fix in the backend
+        // Normalize asset properties to ensure all filter fields exist -
+        return normalized.map((asset) => ({
+          ...asset,
+          properties: {
+            ...asset.properties,
+            accessType: asset.properties?.accessType || '',
+            deliveryMethod: asset.properties?.deliveryMethod || asset.properties?.type || 'Api',
+            domainCategories: asset.properties?.domainCategories || [],
+            containsPII: asset.properties?.containsPII ?? false,
+            containsPaymentInfo: asset.properties?.containsPaymentInfo ?? false,
+            accessLevel: asset.properties?.accessLevel || '',
+            licenses: asset.properties?.licenses || []
+          }
+        }));
+      });
     }
   }));
 

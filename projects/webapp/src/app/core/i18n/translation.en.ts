@@ -57,6 +57,53 @@ export const I18N = {
           KID: 'Value of the kid header sent in the request to the authorization server',
           SECRET_VALUE:
             "The value of the secret to be used for the 'Client Secret Key' or 'Private Key Name' field"
+        },
+        KAFKA: {
+          TITLE: 'Kafka Connector Settings',
+          DESCRIPTION:
+            'Configure Kafka broker connection, consumer settings, and authentication for streaming data access',
+          BOOTSTRAP_SERVERS:
+            'Comma-separated list of Kafka broker addresses in host:port format (e.g., localhost:9092,broker2:9093)',
+          TOPIC:
+            'The Kafka topic name to consume messages from. Must contain only alphanumeric characters, hyphens, underscores, and dots',
+          GROUP_ID:
+            'Consumer group ID for coordinating message consumption across multiple consumers',
+          CLIENT_ID: 'Unique identifier for this consumer client instance',
+          AUTO_OFFSET_RESET:
+            'Where to start consuming when no committed offset exists: earliest (from beginning) or latest (from end)',
+          ENABLE_AUTO_COMMIT:
+            'Automatically commit message offsets periodically. Disable for manual offset management',
+          MAX_POLL_RECORDS: 'Maximum number of records to fetch in a single poll request (1-10000)',
+          SASL: {
+            TITLE: 'SASL Authentication',
+            DESCRIPTION:
+              'Simple Authentication and Security Layer for secure broker authentication',
+            MECHANISM:
+              'SASL mechanism: PLAIN (simple username/password), SCRAM-SHA-256/512 (salted challenge), or OAUTHBEARER (token-based)',
+            USERNAME: 'Username for SASL authentication',
+            PASSWORD: 'Password for SASL authentication or secret value when using Secret Name',
+            SECRET_NAME: 'Alias of the secret stored in the vault containing the SASL password',
+            PASSWORD_RECOMMENDED:
+              "Using 'Secret Name' is strongly recommended for security. Storing passwords directly in the database is discouraged"
+          },
+          SSL: {
+            TITLE: 'SSL/TLS Configuration',
+            DESCRIPTION: 'Secure socket layer encryption for broker connections',
+            ENABLED: 'Enable SSL/TLS encrypted connections to Kafka brokers',
+            TLS_CA_SECRET:
+              'Name of the secret containing the TLS certificate authority for broker verification'
+          },
+          OAUTH2: {
+            TITLE: 'OAuth2 Authentication',
+            DESCRIPTION:
+              'Modern token-based authentication using OAuth2/OIDC (e.g., Azure AD, Keycloak)',
+            CLIENT_ID: 'OAuth2 application/client identifier',
+            CLIENT_SECRET: 'OAuth2 client secret for authentication',
+            TENANT_ID: 'OAuth2 tenant/realm identifier (e.g., Azure AD tenant ID)',
+            SCOPE: 'OAuth2 scope for access permissions (e.g., api://kafka-proxy/.default)',
+            SECRET_NAME:
+              'Alias of the secret stored in the vault containing the OAuth2 client secret'
+          }
         }
       }
     }

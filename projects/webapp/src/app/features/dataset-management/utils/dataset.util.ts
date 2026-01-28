@@ -1,10 +1,10 @@
 import { FormControl } from '@angular/forms';
+import { SecretInputV3 } from 'management-sdk';
 import { FilterOption } from '../../../core/components/filters/filter-option.model';
+import { removeEmptyProperties } from '../../../core/utils/object.util';
 import { Asset } from '../model/asset/asset';
 import { AssetProperties } from '../model/asset/assetProperties';
-import { removeEmptyProperties } from '../../../core/utils/object.util';
-import { SecretInputV3 } from 'management-sdk';
-import { DataAddress } from '../model/asset/dataAddress';
+import { DataAddress, HttpDataAddress } from '../model/asset/dataAddress';
 
 export const accessTypes = [
   {
@@ -24,23 +24,18 @@ export const accessTypes = [
 export const deliveryMethods = [
   {
     label: 'API',
-    value: '',
-    disabled: false
-  },
-  {
-    label: 'File',
-    value: 'file',
+    value: 'Api',
     disabled: false
   },
   {
     label: 'Kafka',
     value: 'Kafka',
-    disabled: true
+    disabled: false
   },
   {
-    label: 'Streaming',
-    value: 'streaming',
-    disabled: false
+    label: 'File',
+    value: 'File',
+    disabled: true
   }
 ];
 
@@ -109,6 +104,14 @@ export enum AuthTypesEnum {
   BaseAuth = 'BaseAuth',
   None = 'None'
 }
+
+export enum KafkaSecurityProtocolEnum {
+  PLAINTEXT = 'PLAINTEXT',
+  SSL = 'SSL',
+  SASL_PLAINTEXT = 'SASL_PLAINTEXT',
+  SASL_SSL = 'SASL_SSL'
+}
+
 export const authMethods = [
   {
     label: AuthTypesEnum.OAuth2,
@@ -122,6 +125,30 @@ export const authMethods = [
     label: AuthTypesEnum.None,
     value: ''
   }
+];
+
+export const kafkaSecurityProtocolOptions = [
+  { label: 'None (PLAINTEXT)', value: KafkaSecurityProtocolEnum.PLAINTEXT },
+  { label: 'SSL', value: KafkaSecurityProtocolEnum.SSL },
+  { label: 'SASL + PLAINTEXT', value: KafkaSecurityProtocolEnum.SASL_PLAINTEXT },
+  { label: 'SASL + SSL/TLS', value: KafkaSecurityProtocolEnum.SASL_SSL }
+];
+
+export const kafkaSaslMechanisms = [
+  { label: 'PLAIN', value: 'PLAIN' },
+  { label: 'OauthBearer', value: 'OAUTHBEARER' }
+];
+
+export const kafkaAutoOffsetReset = [
+  { label: 'Earliest', value: 'earliest' },
+  { label: 'Latest', value: 'latest' }
+];
+
+export const kafkaSecurityProtocols = [
+  { label: 'PLAINTEXT', value: 'PLAINTEXT' },
+  { label: 'SASL_PLAINTEXT', value: 'SASL_PLAINTEXT' },
+  { label: 'SASL_SSL', value: 'SASL_SSL' },
+  { label: 'SSL', value: 'SSL' }
 ];
 
 // export function filterAssetBySearch(assets: Asset[], values: [key: string]): Asset[] {
@@ -248,13 +275,13 @@ export function buildFilterOptions(controls: {
           value: 'api'
         },
         {
-          label: 'File',
-          value: 'file'
-        },
-        {
-          label: 'Streaming',
-          value: 'streaming'
+          label: 'Kafka',
+          value: 'kafka'
         }
+        // {
+        //   label: 'File',
+        //   value: 'file'
+        // }
       ],
       widthSize: 'small'
     },
@@ -401,7 +428,7 @@ export function transformInDataAddressRest(
   },
   deleteSecretInfo = false
 ): DataAddress {
-  const dataAddressPartial: Partial<DataAddress> = formValues
+  const dataAddressPartial: Partial<HttpDataAddress> = formValues
     ? {
         type: 'HttpData',
         baseUrl: formValues.baseUrl,
@@ -410,7 +437,7 @@ export function transformInDataAddressRest(
         proxyPath: (formValues.proxyPath || false).toString(),
         proxyQueryParams: (formValues.proxyQueryParams || false).toString()
       }
-    : {};
+    : ({} as Partial<HttpDataAddress>);
   // Handle BaseAuth
   if (formValues.authType === 'BaseAuth') {
     dataAddressPartial.authKey = formValues.baseAuth.authKey;
@@ -431,4 +458,123 @@ export function transformInDataAddressRest(
 
   // Clean up empty or undefined properties
   return removeEmptyProperties((dataAddressPartial as DataAddress) || {});
+}
+
+export function transformInSecretKafka(formValues: {
+  securityProtocol: string;
+  saslAuth?: { secretName: string; password: string };
+}): SecretInputV3 | undefined {
+  const securityProtocol = formValues.securityProtocol;
+
+  // Handle SASL Authentication (for both SASL_PLAINTEXT and SASL_SSL)
+  if (
+    (securityProtocol === KafkaSecurityProtocolEnum.SASL_PLAINTEXT ||
+      securityProtocol === KafkaSecurityProtocolEnum.SASL_SSL) &&
+    formValues.saslAuth?.secretName &&
+    formValues.saslAuth?.password
+  ) {
+    return {
+      '@context': { '@vocab': '' },
+      '@type': 'Secret',
+      '@id': formValues.saslAuth.secretName,
+      value: formValues.saslAuth.password
+    };
+  }
+
+  return undefined;
+}
+
+export function transformInDataAddressKafka(
+  formValues: {
+    bootstrapServers: string;
+    topic: string;
+    securityProtocol: string;
+    saslAuth?: {
+      mechanism: string;
+      username: string;
+      password: string;
+      secretName: string;
+      clientId?: string;
+      clientSecret?: string;
+      tenantId?: string;
+      scope?: string;
+    };
+    sslAuth?: {
+      tlsCaSecret: string;
+      mutualTls?: boolean;
+      tlsClientCert?: string;
+      tlsClientKey?: string;
+    };
+  },
+  deleteSecretInfo = false
+): DataAddress {
+  const dataAddress: Record<string, unknown> = {
+    '@type': 'DataAddress',
+    type: 'Kafka',
+    topic: formValues.topic,
+    'kafka.bootstrap.servers': formValues.bootstrapServers,
+    'security.protocol': formValues.securityProtocol
+  };
+
+  // Handle SASL Authentication
+  if (
+    formValues.securityProtocol === KafkaSecurityProtocolEnum.SASL_PLAINTEXT ||
+    formValues.securityProtocol === KafkaSecurityProtocolEnum.SASL_SSL
+  ) {
+    if (formValues.saslAuth) {
+      dataAddress['sasl.mechanism'] = formValues.saslAuth.mechanism;
+
+      // Build JAAS config based on mechanism
+      let jaasConfig = '';
+      const mechanism = formValues.saslAuth.mechanism;
+
+      if (mechanism === 'PLAIN') {
+        jaasConfig = `org.apache.kafka.common.security.plain.PlainLoginModule required username='${formValues.saslAuth.username}' password='${formValues.saslAuth.password || formValues.saslAuth.secretName}';`;
+      } else if (mechanism === 'OAUTHBEARER') {
+        jaasConfig = `org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId='${formValues.saslAuth.clientId}' clientSecret='${formValues.saslAuth.clientSecret}' tenantId='${formValues.saslAuth.tenantId}' scope='${formValues.saslAuth.scope}';`;
+        // Store OAuth config for potential editing
+        dataAddress['oauth.clientId'] = formValues.saslAuth.clientId;
+        dataAddress['oauth.clientSecret'] = formValues.saslAuth.clientSecret;
+        dataAddress['oauth.tenantId'] = formValues.saslAuth.tenantId;
+        dataAddress['oauth.scope'] = formValues.saslAuth.scope;
+      }
+
+      dataAddress['sasl.jaas.config'] = jaasConfig;
+
+      // Handle secret reference for SASL_SSL (not for OAuth)
+      if (
+        formValues.securityProtocol === KafkaSecurityProtocolEnum.SASL_SSL &&
+        mechanism !== 'OAUTHBEARER'
+      ) {
+        if (deleteSecretInfo) {
+          dataAddress['secretName'] = '';
+        } else if (formValues.saslAuth.secretName) {
+          dataAddress['secretName'] = formValues.saslAuth.secretName;
+        }
+      }
+    }
+  }
+
+  // Handle SSL/TLS Authentication
+  if (
+    formValues.securityProtocol === KafkaSecurityProtocolEnum.SSL ||
+    formValues.securityProtocol === KafkaSecurityProtocolEnum.SASL_SSL
+  ) {
+    if (formValues.sslAuth) {
+      if (formValues.sslAuth.tlsCaSecret) {
+        dataAddress['tls_ca_secret'] = formValues.sslAuth.tlsCaSecret;
+      }
+      if (formValues.sslAuth.mutualTls) {
+        if (formValues.sslAuth.tlsClientCert) {
+          dataAddress['tls_client_cert'] = formValues.sslAuth.tlsClientCert;
+        }
+        if (formValues.sslAuth.tlsClientKey) {
+          dataAddress['tls_client_key'] = formValues.sslAuth.tlsClientKey;
+        }
+      }
+    }
+  }
+
+  // Clean up empty or undefined properties
+  return removeEmptyProperties(dataAddress) as unknown as DataAddress;
 }

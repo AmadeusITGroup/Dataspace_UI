@@ -1,12 +1,10 @@
-// TypeScript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FieldLinkComponent } from './field-link.component';
 import { By } from '@angular/platform-browser';
-import { FieldLinkComponent } from './field-link-component';
 
 describe('FieldLinkComponent', () => {
   let component: FieldLinkComponent;
   let fixture: ComponentFixture<FieldLinkComponent>;
-  let nativeEl: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -15,68 +13,68 @@ describe('FieldLinkComponent', () => {
 
     fixture = TestBed.createComponent(FieldLinkComponent);
     component = fixture.componentInstance;
-    nativeEl = fixture.nativeElement;
   });
 
   it('should create', () => {
-    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should not render anchor when url is empty or null', () => {
-    component.url = '';
+  it('should display link for valid URL', () => {
+    fixture.componentRef.setInput('url', 'https://example.com');
     fixture.detectChanges();
-    expect(nativeEl.querySelector('a')).toBeNull();
 
-    component.url = null;
-    fixture.detectChanges();
-    expect(nativeEl.querySelector('a')).toBeNull();
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link).toBeTruthy();
+    expect(link.nativeElement.getAttribute('href')).toBe('https://example.com');
   });
 
-  it('should not render anchor for an invalid url', () => {
-    component.url = 'not-a-valid-url';
+  it('should not display link for invalid URL', () => {
+    fixture.componentRef.setInput('url', 'invalid-url');
     fixture.detectChanges();
-    expect(nativeEl.querySelector('a')).toBeNull();
+
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link).toBeFalsy();
   });
 
-  it('should render anchor when url is valid and set attributes', () => {
-    const testUrl = 'https://example.com/path?query=1';
-    component.url = testUrl;
+  it('should not display link when url is empty', () => {
+    fixture.componentRef.setInput('url', '');
     fixture.detectChanges();
 
-    const anchor = nativeEl.querySelector('a') as HTMLAnchorElement | null;
-    expect(anchor).not.toBeNull();
-    expect(anchor!.getAttribute('href')).toBe(testUrl);
-    expect(anchor!.getAttribute('target')).toBe('_blank');
-    expect(anchor!.getAttribute('rel')).toContain('noopener');
-    expect(anchor!.getAttribute('rel')).toContain('noreferrer');
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link).toBeFalsy();
   });
 
-  it('should use default title when not provided', () => {
-    component.url = 'https://example.com';
-    component.title = undefined as unknown as string; // explicit undefined
+  it('should use default title', () => {
+    fixture.componentRef.setInput('url', 'https://example.com');
     fixture.detectChanges();
 
-    const anchor = nativeEl.querySelector('a') as HTMLAnchorElement | null;
-    expect(anchor).not.toBeNull();
-    expect(anchor!.getAttribute('title')).toBe('Validate link');
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link.nativeElement.getAttribute('title')).toBe('Validate link');
   });
 
-  it('should use provided title input', () => {
-    component.url = 'https://example.com';
-    component.title = 'Open docs';
+  it('should use custom title when provided', () => {
+    fixture.componentRef.setInput('url', 'https://example.com');
+    fixture.componentRef.setInput('title', 'Custom Title');
     fixture.detectChanges();
 
-    const anchor = nativeEl.querySelector('a') as HTMLAnchorElement | null;
-    expect(anchor).not.toBeNull();
-    expect(anchor!.getAttribute('title')).toBe('Open docs');
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link.nativeElement.getAttribute('title')).toBe('Custom Title');
   });
 
-  it('should render the icon inside the anchor when url is valid', () => {
-    component.url = 'https://example.com';
+  it('should open link in new tab', () => {
+    fixture.componentRef.setInput('url', 'https://example.com');
     fixture.detectChanges();
 
-    const icon = fixture.debugElement.query(By.css('a i.bi-arrow-right'));
-    expect(icon).not.toBeNull();
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link.nativeElement.getAttribute('target')).toBe('_blank');
+    expect(link.nativeElement.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
+  it('should validate http URLs', () => {
+    fixture.componentRef.setInput('url', 'http://example.com');
+    fixture.detectChanges();
+
+    const link = fixture.debugElement.query(By.css('a'));
+    expect(link).toBeTruthy();
   });
 });

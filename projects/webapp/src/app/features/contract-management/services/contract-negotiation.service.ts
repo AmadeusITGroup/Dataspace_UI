@@ -15,7 +15,6 @@ import {
   ContractNegotiation,
   ContractNegotiationErrorDetail
 } from '../models/contract-negotiation.model';
-import { ManagementApiService } from 'management-sdk-be';
 
 const normalizeContractNegotiation = async (input: object): Promise<ContractNegotiation> => {
   const output = await normalizeJsonLD<ContractNegotiation>(input);
@@ -39,7 +38,6 @@ export class ContractNegotiationService {
   readonly #queryClient = inject(QueryClient);
   readonly #contractNegotiationV3Service = inject(ContractNegotiationV3Service);
   readonly #contractAgreementV3Service = inject(ContractAgreementV3Service);
-  readonly #managementApiService = inject(ManagementApiService);
 
   readonly negotiationsQuery = injectQuery(() => ({
     queryKey: ['contractNegotiations'],
@@ -54,14 +52,15 @@ export class ContractNegotiationService {
       ).then((items) => Promise.all(items.map(normalizeContractNegotiation)))
   }));
 
-  readonly negotiationsRetiredQuery = injectQuery(() => ({
-    queryKey: ['contractNegotiationsRetired'],
-    refetchOnWindowFocus: false,
-    queryFn: () =>
-      lastValueFrom(this.#managementApiService.getAllRetiredV3()).then((items) =>
-        Promise.all(items.map(normalizeContractNegotiation))
-      )
-  }));
+  // TODO: Re-enable when management-be SDK is fixed
+  // readonly negotiationsRetiredQuery = injectQuery(() => ({
+  //   queryKey: ['contractNegotiationsRetired'],
+  //   refetchOnWindowFocus: false,
+  //   queryFn: () =>
+  //     lastValueFrom(this.#managementApiService.getAllRetiredV3()).then((items) =>
+  //       Promise.all(items.map(normalizeContractNegotiation))
+  //     )
+  // }));
 
   readonly agreementsQuery = injectQuery(() => ({
     queryKey: ['contractAgreements'],

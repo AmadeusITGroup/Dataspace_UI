@@ -1,26 +1,39 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Injector } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { TestBed } from '@angular/core/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { FederatedCatalogService } from 'catalog-sdk';
 import { filter, firstValueFrom, of } from 'rxjs';
 import { CatalogService } from './catalog.service';
 
+// Mock the ManagementApiService
+const mockManagementApiService = {
+  participantcatalog: jest.fn()
+};
+
+jest.mock('management-sdk-be', () => ({
+  ManagementApiService: jest.fn().mockImplementation(() => mockManagementApiService)
+}));
+
+import { ManagementApiService } from 'management-sdk-be';
+
 describe('CatalogService', () => {
-  let getCachedCatalog: jest.Mock;
+  let participantcatalog: jest.Mock;
 
   beforeEach(() => {
-    getCachedCatalog = jest.fn();
+    participantcatalog = jest.fn();
+    mockManagementApiService.participantcatalog = participantcatalog;
   });
 
   const getCatalogService = () => {
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
-          provide: FederatedCatalogService,
-          useValue: {
-            getCachedCatalog
-          }
+          provide: ManagementApiService,
+          useValue: mockManagementApiService
         },
         provideTanStackQuery(
           new QueryClient({
@@ -42,7 +55,7 @@ describe('CatalogService', () => {
   });
 
   it('should filter empty datasets', async () => {
-    getCachedCatalog.mockReturnValue(
+    participantcatalog.mockReturnValue(
       of([
         {
           '@context': {
@@ -63,13 +76,13 @@ describe('CatalogService', () => {
       }).pipe(filter((status) => status !== 'pending'))
     );
     expect(service.catalogQuery.status()).toBe('success');
-    expect(getCachedCatalog).toHaveBeenCalled();
+    expect(participantcatalog).toHaveBeenCalled();
     expect(service.catalogQuery.isSuccess()).toBe(true);
     expect(service.catalogQuery.data()).toStrictEqual([]);
   });
 
   it('should support both arrays and singular datasets', async () => {
-    getCachedCatalog.mockReturnValue(
+    participantcatalog.mockReturnValue(
       of([
         {
           '@context': {

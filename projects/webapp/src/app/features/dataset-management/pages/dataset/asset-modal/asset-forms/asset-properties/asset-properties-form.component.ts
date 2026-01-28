@@ -5,9 +5,9 @@ import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { PATTERNS } from '../../../../../../../core/constants/patterns.const';
 import { I18N } from '../../../../../../../core/i18n/translation.en';
 import { CRUD } from '../../../../../../../core/models/crud';
+import { FieldLinkComponent } from '../../../../../../../shared/components/field-link/field-link.component';
 import { Asset } from '../../../../../model/asset/asset';
 import * as datasetUtils from '../../../../../utils/dataset.util';
-import { FieldLinkComponent } from '../../../../../../../shared/components/field-link/field-link.component';
 import { transformInAssetProperties } from '../../../../../utils/dataset.util';
 
 @Component({
@@ -29,17 +29,20 @@ export class AssetPropertiesFormComponent {
     assetInput: Asset | undefined;
   }>();
 
+  public deliveryMethodChange = output<string>();
+
   assetForm: FormGroup = this.fb.group({
     id: [{ value: '', disabled: false }, Validators.required],
     version: [{ value: '1.0', disabled: false }],
     properties: this.fb.group({
       name: [{ value: '', disabled: false }, Validators.required],
       description: [{ value: '', disabled: false }],
+      type: [{ value: '', disabled: false }],
       logoUrl: [{ value: '', disabled: false }, Validators.pattern(PATTERNS.URL)],
       documentationUrl: [{ value: '', disabled: false }, Validators.pattern(PATTERNS.URL)],
       contenttype: [{ value: 'application/json', disabled: false }, Validators.required],
       accessType: [{ value: '', disabled: false }],
-      deliveryMethod: [{ value: '', disabled: false }],
+      deliveryMethod: [{ value: 'Api', disabled: false }],
       domainCategories: [{ value: [], disabled: false }],
       containsPII: [{ value: '', disabled: false }],
       containsPaymentInfo: [{ value: '', disabled: false }],
@@ -64,6 +67,13 @@ export class AssetPropertiesFormComponent {
         this.initializeForm();
       }
     });
+
+    // Subscribe to delivery method changes
+    this.assetForm.get('properties.deliveryMethod')?.valueChanges.subscribe((value) => {
+      this.deliveryMethodChange.emit(value || '');
+      // Update type field with the selected delivery method value
+      this.assetForm.get('properties.type')?.setValue(value || '', { emitEvent: false });
+    });
   }
 
   private initializeForm(): void {
@@ -81,7 +91,8 @@ export class AssetPropertiesFormComponent {
         documentationUrl: this.asset()?.properties?.documentationUrl || '',
         contenttype: this.asset()?.properties?.contenttype || 'application/json',
         accessType: this.asset()?.properties?.accessType || '',
-        deliveryMethod: this.asset()?.properties?.deliveryMethod || '',
+        deliveryMethod: this.asset()?.properties?.deliveryMethod || 'Api',
+        type: this.asset()?.properties?.type || this.asset()?.properties?.deliveryMethod || 'Api',
         domainCategories: this.asset()?.properties?.domainCategories || '',
         containsPaymentInfo: this.asset()?.properties?.containsPaymentInfo || '',
         containsPII: this.asset()?.properties?.containsPII || '',

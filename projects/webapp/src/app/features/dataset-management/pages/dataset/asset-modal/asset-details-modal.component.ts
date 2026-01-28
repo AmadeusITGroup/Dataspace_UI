@@ -15,16 +15,21 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { SecretInputV3 } from 'management-sdk';
 import { CRUD } from '../../../../../core/models/crud';
+import { FooterAction } from '../../../../../core/models/ui-action';
 import { ToastService } from '../../../../../core/toasts/toast-service';
 import { FooterActionModalComponent } from '../../../../../shared/components/delete-footer-modal/footer-action-modal.component';
 import { Asset } from '../../../model/asset/asset';
+import {
+  DataAddress,
+  HttpDataAddress,
+  KafkaCompleteDataAddress
+} from '../../../model/asset/dataAddress';
 import { AssetManagementService } from '../../../services/asset-management.service';
 import { SecretManagementService } from '../../../services/secret-management.service';
+import { AssetDataAddressKafkaComponent } from './asset-forms/asset-data-address-kafka/asset-data-address-kafka.component';
+import { AssetDataAddressRestComponent } from './asset-forms/asset-data-address-rest/asset-data-address-rest.component';
 import { AssetPropertiesFormComponent } from './asset-forms/asset-properties/asset-properties-form.component';
 import { AssetViewComponent } from './asset-view/asset-view.component';
-import { FooterAction } from '../../../../../core/models/ui-action';
-import { AssetDataAddressRestComponent } from './asset-forms/asset-data-address-rest/asset-data-address-rest.component';
-import { DataAddress } from '../../../model/asset/dataAddress';
 
 @Component({
   selector: 'app-asset-details-modal',
@@ -35,7 +40,8 @@ import { DataAddress } from '../../../model/asset/dataAddress';
     DatePipe,
     FooterActionModalComponent,
     NgClass,
-    AssetDataAddressRestComponent
+    AssetDataAddressRestComponent,
+    AssetDataAddressKafkaComponent
   ],
   providers: [SecretManagementService, AssetManagementService],
   templateUrl: './asset-details-modal.component.html',
@@ -70,15 +76,26 @@ export class AssetDetailsModalComponent implements OnInit {
     const asset = this.asset();
     return (
       asset?.dataAddress.secretName ||
-      asset?.dataAddress['oauth2:clientSecretKey'] ||
-      asset?.dataAddress['oauth2:privateKeyName']
+      (asset?.dataAddress as HttpDataAddress)?.['oauth2:clientSecretKey'] ||
+      (asset?.dataAddress as HttpDataAddress)?.['oauth2:privateKeyName'] ||
+      (asset?.dataAddress as KafkaCompleteDataAddress)?.['kafka:sasl:username']
     );
   });
+
+  // Current delivery method signal (tracks form changes)
+  currentDeliveryMethod = signal<string>('Api');
+
+  // Computed delivery method
+  deliveryMethod = computed(
+    () => this.currentDeliveryMethod() || this.asset()?.properties?.deliveryMethod || 'Api'
+  );
 
   // ViewChild references
   @ViewChild(AssetPropertiesFormComponent) formProperties: AssetPropertiesFormComponent =
     new AssetPropertiesFormComponent();
   @ViewChild(AssetDataAddressRestComponent) formDataAddress = new AssetDataAddressRestComponent();
+  @ViewChild(AssetDataAddressKafkaComponent) formDataAddressKafka =
+    new AssetDataAddressKafkaComponent();
 
   // Constants
   public readonly CRUD = CRUD;
@@ -89,6 +106,10 @@ export class AssetDetailsModalComponent implements OnInit {
       this.toastService.showError('Asset not found for update.');
       this.activeModal.close();
     }
+
+    // Initialize currentDeliveryMethod with the asset's delivery method
+    const initialDeliveryMethod = this.asset()?.properties?.deliveryMethod || '';
+    this.currentDeliveryMethod.set(initialDeliveryMethod);
   }
 
   toggleEdit(): void {
@@ -124,21 +145,28 @@ export class AssetDetailsModalComponent implements OnInit {
   );
 
   submitAllForms(): void {
-    const anyFormInvalid =
-      !this.formProperties.isFormValid() || !this.formDataAddress.isFormValid();
+    const deliveryMethod = this.deliveryMethod();
+    const isKafka = deliveryMethod === 'Kafka';
+
+    // Select the appropriate data address form based on delivery method
+    const dataAddressForm = isKafka ? this.formDataAddressKafka : this.formDataAddress;
+
+    const anyFormInvalid = !this.formProperties.isFormValid() || !dataAddressForm.isFormValid();
     const areFormsNotTouched =
-      !this.formProperties.assetForm.dirty && !this.formDataAddress.dataAddressForm.dirty;
+      !this.formProperties.assetForm.dirty && !dataAddressForm.dataAddressForm.dirty;
+
     if (anyFormInvalid) {
       this.formProperties.assetForm.markAllAsTouched();
-      this.formDataAddress.dataAddressForm.markAllAsTouched();
+      dataAddressForm.dataAddressForm.markAllAsTouched();
       return;
     }
     if (areFormsNotTouched) {
       this.activeModal.close();
       return;
     }
+
     this.formProperties.emitFormSubmit();
-    this.formDataAddress.emitFormSubmit();
+    dataAddressForm.emitFormSubmit();
 
     const assetToSave = this.assetFormToSave() || this.asset();
     const dataAddressToSave = this.dataAddressFormToSave() || this.asset()?.dataAddress;
@@ -158,6 +186,10 @@ export class AssetDetailsModalComponent implements OnInit {
 
   onAssetFormSubmit(event: { form: FormGroup; assetInput: Asset | undefined }): void {
     this.assetFormToSave.set(event.assetInput);
+  }
+
+  onDeliveryMethodChange(deliveryMethod: string): void {
+    this.currentDeliveryMethod.set(deliveryMethod);
   }
 
   onConnectorFormSubmit(event: {
@@ -203,9 +235,11 @@ export class AssetDetailsModalComponent implements OnInit {
   }
 
   private clearSecretData(asset: Asset): void {
-    asset.dataAddress.secretName = '';
-    asset.dataAddress['oauth2:clientSecretKey'] = '';
-    asset.dataAddress['oauth2:privateKeyName'] = '';
+    const dataAddr = asset.dataAddress as HttpDataAddress & KafkaCompleteDataAddress;
+    dataAddr.secretName = '';
+    dataAddr['oauth2:clientSecretKey'] = '';
+    dataAddr['oauth2:privateKeyName'] = '';
+    dataAddr['kafka:sasl:password'] = '';
   }
 
   private performAssetOperation(updatedAsset: Asset): void {
@@ -224,8 +258,15 @@ export class AssetDetailsModalComponent implements OnInit {
   }
 
   private enableForms(): void {
+    const deliveryMethod = this.deliveryMethod();
+    const isKafka = deliveryMethod === 'Kafka';
+
     this.formProperties.enableForm();
-    this.formDataAddress.enableForm();
+    if (isKafka) {
+      this.formDataAddressKafka.enableForm();
+    } else {
+      this.formDataAddress.enableForm();
+    }
   }
 
   async processSecretAction(

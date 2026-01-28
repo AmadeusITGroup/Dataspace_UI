@@ -1,10 +1,10 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { injectQuery } from '@tanstack/angular-query-experimental';
-import { FederatedCatalogService, QuerySpec } from 'catalog-sdk';
+import { ManagementApiService } from 'management-sdk-be';
 import { lastValueFrom } from 'rxjs';
-import { noPaginationQuerySpec, normalizeJsonLD } from '../../../jsonld';
-import { CatalogItem, Dataset } from '../models/catalog.model';
 import { transformInArray } from '../../../core/utils/object.util';
+import { normalizeJsonLD } from '../../../jsonld';
+import { CatalogItem, Dataset } from '../models/catalog.model';
 
 const normalizeCatalog = async (inputCatalog: object): Promise<CatalogItem> => {
   const outputCatalog = await normalizeJsonLD<CatalogItem>(inputCatalog);
@@ -19,17 +19,12 @@ const normalizeCatalog = async (inputCatalog: object): Promise<CatalogItem> => {
 
 @Injectable()
 export class CatalogService {
-  readonly #federatedCatalogService = inject(FederatedCatalogService);
+  readonly #managementApiService = inject(ManagementApiService);
 
   readonly catalogQuery = injectQuery(() => ({
     queryKey: ['catalog'],
     queryFn: () =>
-      lastValueFrom(
-        this.#federatedCatalogService.getCachedCatalog(
-          undefined,
-          noPaginationQuerySpec as QuerySpec
-        )
-      ).then(async (items) =>
+      lastValueFrom(this.#managementApiService.participantcatalog()).then(async (items) =>
         (await Promise.all(items.map(normalizeCatalog))).filter(
           (catalog: { dataset: string | unknown[] }) => catalog.dataset.length
         )
