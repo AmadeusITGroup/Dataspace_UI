@@ -8,6 +8,7 @@
     "joip": "ng serve --configuration joip",
     "start:local-backend-consumer": "ng serve --configuration local-backend-consumer",
     "start:local-backend-provider": "ng serve --configuration local-backend-provider",
+    "start:local": "ng serve --configuration local-backend-provider",
     "start:no-auth": "ng serve --configuration no-auth",
     "kassette": "kassette -c kassette.config.cjs",
     "build": "npm run build:webapp-dev",

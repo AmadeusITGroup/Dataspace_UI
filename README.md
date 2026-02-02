@@ -28,8 +28,13 @@ By default, `npm start` connects to the test environment. To connect to the dev 
 
 The following commands can be launched in local:
 
+- `npm start` - launch the website connected to the test environment
 - `npm run dev` - launch the website connected to the dev environment
+- `npm run joip` - launch the website connected to the JOIP environment
 - `npm run start:no-auth` - launch the website in local without the login flow
+- `npm run start:local` - launch the website connected to the local backend (provider)
+- `npm run start:local-backend-provider` - launch the website connected to the local backend (provider)
+- `npm run start:local-backend-consumer` - launch the website connected to the local backend (consumer)
 - `npm run test` - launch the unit tests with jest
 - `npm run e2e` - launch the e2e tests with playwright
 - `npm run lint` - lint the repository with eslint

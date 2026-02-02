@@ -76,6 +76,10 @@
               "sourceMap": true
             },
             "local-backend": {
+              "define": {
+                "BASE_PATH": "'/api'",
+                "AUTHORITY": "'authority'"
+              },
               "fileReplacements": [
                 {
                   "replace": "projects/webapp/src/app/config/api.config.ts",
@@ -120,6 +124,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "projects/webapp/src/proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "webapp:build:production"
@@ -128,11 +135,11 @@
               "buildTarget": "webapp:build:development,dev-keys"
             },
             "no-auth": {
-              "buildTarget": "webapp:build:development,no-auth"
+              "buildTarget": "webapp:build:development,no-auth,participant-consumer"
             },
             "local-backend-consumer": {
               "buildTarget": "webapp:build:local-backend,participant-consumer",
-              "proxyConfig": "projects/webapp/src/proxy.local-backend.conf.json"
+              "proxyConfig": "projects/webapp/src/proxy.local-backend-consumer.conf.json"
             },
             "local-backend-provider": {
               "buildTarget": "webapp:build:local-backend,participant-provider",
