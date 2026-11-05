@@ -10,9 +10,7 @@
 
 
 export interface PolicyValidationResultSchema { 
-    '@context': Array<string>;
-    '@type': string;
-    isValid: boolean;
-    errors: Array<string>;
+    errors?: Array<string>;
+    isValid?: boolean;
 }
 

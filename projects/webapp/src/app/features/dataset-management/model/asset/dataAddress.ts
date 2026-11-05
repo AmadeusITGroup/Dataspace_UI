@@ -25,6 +25,26 @@ export interface KafkaDataAddress {
   tls_client_key?: string;
 }
 
+export interface AzureBlobDataAddress {
+  '@type'?: string;
+  type: 'AzureStorage';
+  account: string;
+  container: string;
+  blobName?: string;
+  keyName: string;
+}
+
+export interface S3DataAddress {
+  '@type'?: string;
+  type: 'S3Bucket';
+  bucketName: string;
+  region: string;
+  pathPrefix?: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  endpointUrl?: string;
+}
+
 export type BaseDataHeaders = Record<`header${string}`, string>;
 
 export type HttpDataAddress = BaseDataAddress &
@@ -36,4 +56,8 @@ export type KafkaCompleteDataAddress = KafkaDataAddress &
   Partial<KafkaSslAuth> &
   Partial<KafkaOAuth2Auth>;
 
-export type DataAddress = HttpDataAddress | KafkaCompleteDataAddress;
+export type DataAddress =
+  | HttpDataAddress
+  | KafkaCompleteDataAddress
+  | AzureBlobDataAddress
+  | S3DataAddress;

@@ -17,7 +17,7 @@ import {
   Validators
 } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { ContractDefinitionInputV3, Criterion1 } from 'management-sdk';
+import { ContractDefinitionInput, Criterion1 } from 'management-sdk';
 import { Policy } from '../../../../../core/models/policy';
 import { ToastService } from '../../../../../core/toasts/toast-service';
 import { resourceExistsValidator } from '../../../../../core/validators/resource-exists.validator';
@@ -142,7 +142,7 @@ export class ContractFormModalComponent {
       operator: '=',
       operandRight: formValue.asset
     };
-    const payload: ContractDefinitionInputV3 = {
+    const payload: ContractDefinitionInput = {
       '@id': formValue.contractId || this.contractDef()['@id'],
       '@type': 'ContractDefinition',
       '@context': {},

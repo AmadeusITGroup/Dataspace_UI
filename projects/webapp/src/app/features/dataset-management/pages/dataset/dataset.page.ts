@@ -10,12 +10,14 @@ import {
   Signal
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { SafeHtml } from '@angular/platform-browser';
 import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FilterOption } from '../../../../core/components/filters/filter-option.model';
 import { FiltersComponent } from '../../../../core/components/filters/filters.component';
 import { ListSummaryComponent } from '../../../../core/components/list-summary/list-summary.component';
 import { HighlightDirective } from '../../../../core/directives/highlight.directive';
 import { CRUD } from '../../../../core/models/crud';
+import { HtmlSanitizerService } from '../../../../core/services/html-sanitizer.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ToastService } from '../../../../core/toasts/toast-service';
 import { retrieveErrorMessage } from '../../../../core/utils/object.util';
@@ -55,6 +57,7 @@ export default class DatasetPageComponent {
   readonly #datePipe = inject(DatePipe);
   readonly #modalService = inject(NgbModal);
   readonly permissionService = inject(PermissionService);
+  private htmlSanitizerService = inject(HtmlSanitizerService);
   // Queries
   readonly assetQuery = inject(AssetManagementService).assetsQuery;
   readonly deleteAssetQuery = inject(AssetManagementService).deleteAssetQuery;
@@ -210,6 +213,10 @@ export default class DatasetPageComponent {
       if (dataAddress) {
         if (dataAddress.type === 'Kafka') {
           secretId = dataAddress.secretName;
+        } else if (dataAddress.type === 'AzureStorage') {
+          secretId = (dataAddress as { keyName?: string }).keyName;
+        } else if (dataAddress.type === 'S3Bucket') {
+          secretId = undefined;
         } else {
           const httpDataAddress = dataAddress as HttpDataAddress;
           secretId =
@@ -236,5 +243,9 @@ export default class DatasetPageComponent {
       return;
     }
     this.idToHighlight = (result as Asset)['@id'];
+  }
+
+  getSafeHtml(html: string): SafeHtml {
+    return this.htmlSanitizerService.getSafeHtml(html);
   }
 }

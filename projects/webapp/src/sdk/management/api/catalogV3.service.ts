@@ -17,9 +17,13 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { CatalogRequestV3 } from '../model/catalogRequestV3';
+import { Catalog } from '../model/catalog';
 // @ts-ignore
-import { DatasetRequestV3 } from '../model/datasetRequestV3';
+import { CatalogRequest } from '../model/catalogRequest';
+// @ts-ignore
+import { Dataset } from '../model/dataset';
+// @ts-ignore
+import { DatasetRequest } from '../model/datasetRequest';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -93,14 +97,14 @@ export class CatalogV3Service {
     }
 
     /**
-     * @param datasetRequestV3 
+     * @param datasetRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDatasetV3(datasetRequestV3?: DatasetRequestV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
-    public getDatasetV3(datasetRequestV3?: DatasetRequestV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
-    public getDatasetV3(datasetRequestV3?: DatasetRequestV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
-    public getDatasetV3(datasetRequestV3?: DatasetRequestV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getDatasetV3(datasetRequest?: DatasetRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Dataset>;
+    public getDatasetV3(datasetRequest?: DatasetRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Dataset>>;
+    public getDatasetV3(datasetRequest?: DatasetRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Dataset>>;
+    public getDatasetV3(datasetRequest?: DatasetRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -148,10 +152,10 @@ export class CatalogV3Service {
         }
 
         let localVarPath = `/v3/catalog/dataset/request`;
-        return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Dataset>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: datasetRequestV3,
+                body: datasetRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -163,14 +167,14 @@ export class CatalogV3Service {
     }
 
     /**
-     * @param catalogRequestV3 
+     * @param catalogRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public requestCatalogV3(catalogRequestV3?: CatalogRequestV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
-    public requestCatalogV3(catalogRequestV3?: CatalogRequestV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
-    public requestCatalogV3(catalogRequestV3?: CatalogRequestV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
-    public requestCatalogV3(catalogRequestV3?: CatalogRequestV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public requestCatalogV3(catalogRequest?: CatalogRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Catalog>;
+    public requestCatalogV3(catalogRequest?: CatalogRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Catalog>>;
+    public requestCatalogV3(catalogRequest?: CatalogRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Catalog>>;
+    public requestCatalogV3(catalogRequest?: CatalogRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -218,10 +222,10 @@ export class CatalogV3Service {
         }
 
         let localVarPath = `/v3/catalog/request`;
-        return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Catalog>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: catalogRequestV3,
+                body: catalogRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

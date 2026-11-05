@@ -13,6 +13,7 @@ import { RouterService } from './core/services/router.service';
 import { ToastsContainerComponent } from './core/toasts/toasts-container.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
 import { organizationConfig } from './config/organization/organization.config';
 
 @Component({
@@ -21,6 +22,7 @@ import { organizationConfig } from './config/organization/organization.config';
     RouterOutlet,
     SidebarComponent,
     NavbarComponent,
+    FooterComponent,
     CommonModule,
     ToastsContainerComponent
   ],
@@ -38,10 +40,12 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     // Only run in browser
     if (typeof document !== 'undefined') {
-      document.title = `Dataset Portal - ${organizationConfig.ORG_NAME}`;
+      document.title = organizationConfig.ORG_LOGO
+        ? `Dataset Portal - ${organizationConfig.ORG_NAME}`
+        : 'Dataset Portal';
       const favicon = document.querySelector("link[rel='icon']");
       if (favicon) {
-        favicon.setAttribute('href', organizationConfig.ORG_LOGO);
+        favicon.setAttribute('href', organizationConfig.ORG_LOGO ?? 'data:,');
       }
     }
   }

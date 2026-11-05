@@ -5,7 +5,7 @@ import {
   withInterceptorsFromDi
 } from '@angular/common/http';
 import { type ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideClientHydration } from '@angular/platform-browser';
+import { provideClientHydration, withNoIncrementalHydration } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import {
   MSAL_GUARD_CONFIG,
@@ -79,7 +79,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(),
+    provideClientHydration(withNoIncrementalHydration()),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideTanStackQuery(new QueryClient()),
     HomeGuard,

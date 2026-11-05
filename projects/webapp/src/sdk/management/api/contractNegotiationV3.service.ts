@@ -23,7 +23,7 @@ import { ContractAgreement } from '../model/contractAgreement';
 // @ts-ignore
 import { ContractNegotiation } from '../model/contractNegotiation';
 // @ts-ignore
-import { ContractRequestV3 } from '../model/contractRequestV3';
+import { ContractRequest } from '../model/contractRequest';
 // @ts-ignore
 import { IdResponse } from '../model/idResponse';
 // @ts-ignore
@@ -31,7 +31,7 @@ import { NegotiationState } from '../model/negotiationState';
 // @ts-ignore
 import { QuerySpec } from '../model/querySpec';
 // @ts-ignore
-import { TerminateNegotiationV3 } from '../model/terminateNegotiationV3';
+import { TerminateNegotiationSchema } from '../model/terminateNegotiationSchema';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -362,14 +362,14 @@ export class ContractNegotiationV3Service {
 
     /**
      * Initiates a contract negotiation for a given offer and with the given counter part. Please note that successfully invoking this endpoint only means that the negotiation was initiated. Clients must poll the /{id}/state endpoint to track the state
-     * @param contractRequestV3 
+     * @param contractRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public initiateContractNegotiationV3(contractRequestV3?: ContractRequestV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
-    public initiateContractNegotiationV3(contractRequestV3?: ContractRequestV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
-    public initiateContractNegotiationV3(contractRequestV3?: ContractRequestV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
-    public initiateContractNegotiationV3(contractRequestV3?: ContractRequestV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public initiateContractNegotiationV3(contractRequest?: ContractRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
+    public initiateContractNegotiationV3(contractRequest?: ContractRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
+    public initiateContractNegotiationV3(contractRequest?: ContractRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
+    public initiateContractNegotiationV3(contractRequest?: ContractRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -420,7 +420,7 @@ export class ContractNegotiationV3Service {
         return this.httpClient.request<IdResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: contractRequestV3,
+                body: contractRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -505,14 +505,14 @@ export class ContractNegotiationV3Service {
     /**
      * Terminates the contract negotiation.
      * @param id 
-     * @param terminateNegotiationV3 
+     * @param terminateNegotiationSchema 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public terminateNegotiationV3(id: string, terminateNegotiationV3?: TerminateNegotiationV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public terminateNegotiationV3(id: string, terminateNegotiationV3?: TerminateNegotiationV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public terminateNegotiationV3(id: string, terminateNegotiationV3?: TerminateNegotiationV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public terminateNegotiationV3(id: string, terminateNegotiationV3?: TerminateNegotiationV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public terminateNegotiationV3(id: string, terminateNegotiationSchema?: TerminateNegotiationSchema, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public terminateNegotiationV3(id: string, terminateNegotiationSchema?: TerminateNegotiationSchema, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public terminateNegotiationV3(id: string, terminateNegotiationSchema?: TerminateNegotiationSchema, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public terminateNegotiationV3(id: string, terminateNegotiationSchema?: TerminateNegotiationSchema, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling terminateNegotiationV3.');
         }
@@ -566,7 +566,7 @@ export class ContractNegotiationV3Service {
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: terminateNegotiationV3,
+                body: terminateNegotiationSchema,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

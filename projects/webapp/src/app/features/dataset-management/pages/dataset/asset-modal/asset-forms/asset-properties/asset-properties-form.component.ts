@@ -1,10 +1,21 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  ViewChild
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { PATTERNS } from '../../../../../../../core/constants/patterns.const';
 import { I18N } from '../../../../../../../core/i18n/translation.en';
 import { CRUD } from '../../../../../../../core/models/crud';
+import { HtmlSanitizerService } from '../../../../../../../core/services/html-sanitizer.service';
 import { FieldLinkComponent } from '../../../../../../../shared/components/field-link/field-link.component';
 import { Asset } from '../../../../../model/asset/asset';
 import * as datasetUtils from '../../../../../utils/dataset.util';
@@ -17,9 +28,10 @@ import { transformInAssetProperties } from '../../../../../utils/dataset.util';
   imports: [ReactiveFormsModule, NgClass, NgbCollapseModule, FieldLinkComponent],
   styleUrls: ['./asset-properties-form.component.scss']
 })
-export class AssetPropertiesFormComponent {
+export class AssetPropertiesFormComponent implements AfterViewInit {
   protected readonly I18N = I18N;
   readonly fb = inject(FormBuilder);
+  private htmlSanitizerService = inject(HtmlSanitizerService);
 
   public asset = input<Asset | null>();
   public mode = input<CRUD>(CRUD.CREATE);
@@ -49,7 +61,14 @@ export class AssetPropertiesFormComponent {
       accessLevel: [{ value: '', disabled: false }],
       currentLicense: [{ value: '', disabled: false }],
       licenses: [{ value: [], disabled: false }],
-      averageRecordSizeBytes: [{ value: '', disabled: false }]
+      averageRecordSizeBytes: [{ value: '', disabled: false }],
+      // Analytics Dataset specific fields
+      coverage: [{ value: '', disabled: false }],
+      historyDepth: [{ value: '', disabled: false }],
+      timeGranularity: [{ value: '', disabled: false }],
+      updateFrequency: [{ value: '', disabled: false }],
+      size: [{ value: '', disabled: false }],
+      deliveryMethods: [{ value: '', disabled: false }]
     })
   });
 
@@ -60,6 +79,8 @@ export class AssetPropertiesFormComponent {
   readonly paymentConstraints = datasetUtils.paymentConstraints;
   readonly accessLevels = datasetUtils.accessLevels;
   isCollapsed = true;
+
+  @ViewChild('descriptionEditor') descriptionEditor?: ElementRef<HTMLDivElement>;
 
   constructor() {
     effect(() => {
@@ -102,13 +123,39 @@ export class AssetPropertiesFormComponent {
             ? [this.asset()?.properties?.licenses]
             : this.asset()?.properties?.licenses || [],
         currentLicense: '',
-        averageRecordSizeBytes: this.asset()?.properties?.averageRecordSizeBytes || ''
+        averageRecordSizeBytes: this.asset()?.properties?.averageRecordSizeBytes || '',
+        // Analytics Dataset specific fields
+        coverage: this.asset()?.properties?.coverage || '',
+        historyDepth: this.asset()?.properties?.historyDepth || '',
+        timeGranularity: this.asset()?.properties?.timeGranularity || '',
+        updateFrequency: this.asset()?.properties?.updateFrequency || '',
+        size: this.asset()?.properties?.size || '',
+        deliveryMethods: this.asset()?.properties?.deliveryMethods || ''
       }
     });
 
     // Explicitly disable the 'id' field
     this.assetForm.get('id')?.disable();
+
+    // Set the editor content without triggering re-render
+    this.setEditorContent();
+
     this.emitFormSubmit();
+  }
+
+  ngAfterViewInit(): void {
+    // Set initial content when view is ready
+    this.setEditorContent();
+  }
+
+  private setEditorContent(): void {
+    if (this.descriptionEditor) {
+      const description = this.assetForm.get('properties.description')?.value || '';
+      // Only set if content is different to avoid cursor issues
+      if (this.descriptionEditor.nativeElement.innerHTML !== description) {
+        this.descriptionEditor.nativeElement.innerHTML = description;
+      }
+    }
   }
 
   onKeydownLicense(event: KeyboardEvent): void {
@@ -155,5 +202,25 @@ export class AssetPropertiesFormComponent {
 
   enableForm(): void {
     this.assetForm.enable();
+  }
+
+  // Rich text formatting methods
+  formatText(command: string, value?: string): void {
+    document.execCommand(command, false, value);
+    this.updateDescriptionValue();
+  }
+
+  onDescriptionInput(): void {
+    this.updateDescriptionValue();
+  }
+
+  private updateDescriptionValue(): void {
+    if (this.descriptionEditor) {
+      const htmlContent = this.descriptionEditor.nativeElement.innerHTML;
+      // Sanitize to only allow safe tags using shared service
+      const sanitized = this.htmlSanitizerService.sanitizeHtml(htmlContent);
+      this.assetForm.get('properties.description')?.setValue(sanitized);
+      this.assetForm.get('properties.description')?.markAsDirty();
+    }
   }
 }

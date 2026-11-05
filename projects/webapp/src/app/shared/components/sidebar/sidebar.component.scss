@@ -1,74 +1,19 @@
-@use 'colors';
 @use 'variables';
 
+// Shell placement only: DF's SideNav styles the menu itself.
 .sidebar {
+  display: block;
   transition: all 0.3s linear;
   position: fixed;
   width: variables.$sidebar-width;
   margin-left: 0;
-  height: 100%;
-  padding-top: 50px;
+
+  // Fixed below the navbar: a full 100% height would push the last items off-screen.
+  height: calc(100vh - variables.$navbar-height);
   padding-bottom: 0;
   box-shadow: 4px 0 8px 0 rgb(0 0 0 / 20%);
   z-index: 99;
-  overflow: hidden;
 
-  .nav-link {
-    border-radius: 0;
-    line-height: 50px;
-  }
-
-  .collapse {
-    box-shadow:
-      0 20px 10px -20px #b7b7b7 inset,
-      0 -20px 10px -20px #b7b7b7 inset;
-  }
-
-  ul li {
-    border-bottom: 1px solid rgb(237 235 232);
-    border-width: 1px 0;
-
-    .subitem:last-child {
-      border-bottom: none;
-    }
-
-    .subitem a {
-      padding-left: 45px;
-    }
-
-    .nav-link {
-      padding: 10px;
-      text-decoration: none;
-      display: block;
-      cursor: pointer;
-
-      :focus {
-        outline: none;
-      }
-
-      &:hover:not(.active) {
-        background: rgb(237 235 232);
-        color: colors.$primary;
-      }
-    }
-  }
-
-  span {
-    &.bi-caret-down-fill,
-    &.bi-caret-up-fill {
-      transition: all 0.3s linear;
-      margin-left: 10px;
-      float: right;
-      border: 0 solid transparent;
-    }
-
-    &.sidebar-icon {
-      font-size: x-large;
-      margin-right: 5px;
-    }
-  }
-
-  .list-unstyled {
-    overflow: hidden;
-  }
+  // No overflow on this host: between 576px and 991px DF shrinks it to width 0 and lets its
+  // drawer overflow it, so clipping here hides the menu. DF's .df-sidenav-body scrolls the menu.
 }

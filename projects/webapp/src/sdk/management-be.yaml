@@ -7,13 +7,18 @@ servers:
   - url: /
   - url: http://localhost:8080
 paths:
-  /catalog/participantCatalog:
-    get:
-      summary: Get participant catalog
-      description: Retrieves the participant's own catalog
+  /v1alpha/catalog/query:
+    post:
+      summary: Query participant catalog
+      description: Queries the participant's own catalog
       operationId: participantcatalog
       tags:
         - management-api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpec'
       responses:
         '200':
           description: The participant's catalog
@@ -134,6 +139,45 @@ components:
         type: ErrorType
         path: object.error.path
         invalidValue: this value is not valid
+    Criterion:
+      required:
+        - operandLeft
+        - operandRight
+        - operator
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
+        operandLeft:
+          type: object
+        operandRight:
+          type: object
+        operator:
+          type: string
+    QuerySpec:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
+        filterExpression:
+          type: array
+          items:
+            $ref: '#/components/schemas/Criterion'
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        sortField:
+          type: string
+        sortOrder:
+          type: string
+          enum:
+            - ASC
+            - DESC
     RetirementRequest:
       type: object
       properties:

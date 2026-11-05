@@ -1,7 +1,10 @@
 $primary: #031633;
-$danger-light-color: #ffeeed;
-$danger-dark-color: #672018;
-$danger-progress-bar-color: #ff9794;
+
+// Danger shades from DF's danger scale (10 and 30 are the former hex values exactly; 90 is the
+// closest step that keeps the dark text at least as contrasted as the former #672018).
+$danger-light-color: var(--df-theme-danger-10);
+$danger-dark-color: var(--df-theme-danger-90);
+$danger-progress-bar-color: var(--df-theme-danger-30);
 
 .bg-light-danger {
   background-color: $danger-light-color !important;

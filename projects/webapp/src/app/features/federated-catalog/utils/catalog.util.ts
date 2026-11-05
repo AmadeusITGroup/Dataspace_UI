@@ -1,21 +1,27 @@
-import { ContractAgreement } from 'management-sdk';
-import { CatalogItem, DatasetEnriched } from '../models/catalog.model';
-import { genericFilter } from '../../../core/utils/search.util';
-import { FilterOption } from '../../../core/components/filters/filter-option.model';
 import { FormControl } from '@angular/forms';
+import { ContractAgreement } from 'management-sdk';
+import { FilterOption } from '../../../core/components/filters/filter-option.model';
+import { extractShortParticipantId, isSameParticipant } from '../../../core/utils/participant.util';
+import { genericFilter } from '../../../core/utils/search.util';
+import { CatalogItem, DatasetEnriched } from '../models/catalog.model';
+
+const DEFAULT_DATASET_TYPE = 'api';
 
 export function enrichCatalogItems(
   items: CatalogItem[] | undefined,
   agreementsByDatasetId: Record<string, ContractAgreement[]> | null,
-  currentUserShortParticipantId: string | null
+  currentUserShortParticipantId: string | null,
+  currentUserFullParticipantId: string | null = null
 ): DatasetEnriched[] {
   if (!items) {
     return [];
   }
   return items.flatMap((catalogItem) => {
-    const owned = catalogItem.participantId.endsWith(currentUserShortParticipantId || '');
-    const shortParticipantId =
-      catalogItem.participantId.split(':').pop() || catalogItem.participantId;
+    const owned = isSameParticipant(catalogItem.participantId, {
+      fullId: currentUserFullParticipantId,
+      shortId: currentUserShortParticipantId
+    });
+    const shortParticipantId = extractShortParticipantId(catalogItem.participantId);
 
     return catalogItem.dataset.map((dataset) => {
       const key = `${catalogItem.participantId}/${dataset.id}`;
@@ -41,7 +47,7 @@ export function filterCatalogItems(
   filterValues: Record<string, string>
 ): DatasetEnriched[] {
   if (!items) return [];
-  const { search = '', status = '', participant = '' } = filterValues;
+  const { search = '', status = '', participant = '', deliveryType = '' } = filterValues;
 
   const SEARCH_VALUE_KEYS = ['description', 'name', 'id', 'contenttype', 'provider'];
   let filtered = items;
@@ -62,12 +68,24 @@ export function filterCatalogItems(
       filtered = filtered.filter((d) => !d.negotiated && !d.owned);
       break;
   }
+  // Filter by delivery type
+  if (deliveryType) {
+    filtered = filtered.filter((d) => {
+      const deliveryMethod = d.deliveryMethod?.toLowerCase() || DEFAULT_DATASET_TYPE; // Default to 'api' if empty
+      return deliveryMethod === deliveryType.toLowerCase();
+    });
+  }
   // Search
   return genericFilter(filtered, search, SEARCH_VALUE_KEYS);
 }
 
 export function buildFilterOptions(
-  controls: { participant: FormControl; status: FormControl; search: FormControl },
+  controls: {
+    participant: FormControl;
+    status: FormControl;
+    deliveryType: FormControl;
+    search: FormControl;
+  },
   availableParticipants: { value: string; label: string }[]
 ): FilterOption[] {
   return [
@@ -91,6 +109,19 @@ export function buildFilterOptions(
       type: 'select'
     },
     {
+      label: 'Delivery Type',
+      control: controls.deliveryType,
+      options: [
+        { value: '', label: 'All' },
+        { value: 'API', label: 'API' },
+        { value: 'Kafka', label: 'Kafka' },
+        { value: 'AnalyticsDataset', label: 'Analytics Dataset' }
+      ],
+      id: 'deliveryType',
+      type: 'select',
+      defaultValue: ''
+    },
+    {
       label: 'Search by',
       control: controls.search,
       id: 'search',
@@ -105,7 +136,7 @@ export function getAvailableParticipants(
 ): { value: string; label: string }[] {
   if (!items || items.length === 0) return [];
   const ids = Array.from(
-    new Set(items.map((item) => item.participantId.split(':').pop() || item.participantId))
+    new Set(items.map((item) => extractShortParticipantId(item.participantId)))
   ).sort();
   return [{ value: '', label: 'All' }, ...ids.map((id) => ({ value: id, label: id }))];
 }

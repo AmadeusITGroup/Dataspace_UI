@@ -2,7 +2,7 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { SecretInputV3 } from 'management-sdk';
+import { SecretInput } from 'management-sdk';
 import { I18N } from '../../../../../../../core/i18n/translation.en';
 import { CRUD } from '../../../../../../../core/models/crud';
 import { makeOthersRequiredValidator } from '../../../../../../../core/validators/make-others-required.validator';
@@ -33,11 +33,11 @@ export class AssetDataAddressKafkaComponent {
   readonly fb = inject(FormBuilder);
 
   public dataAddress = input<DataAddress | null>();
-  public secret = input<SecretInputV3 | null>();
+  public secret = input<SecretInput | null>();
   public mode = input<CRUD>(CRUD.CREATE);
 
   public secretAction = output<{
-    secret: SecretInputV3 | undefined;
+    secret: SecretInput | undefined;
     dataAddress: DataAddress;
     action: CRUD | null;
   }>();
@@ -45,7 +45,7 @@ export class AssetDataAddressKafkaComponent {
   public formSubmit = output<{
     form: FormGroup;
     dataAddress: DataAddress;
-    secretInput: SecretInputV3 | undefined;
+    secretInput: SecretInput | undefined;
     secretAction: CRUD | null;
   }>();
 
@@ -355,14 +355,14 @@ export class AssetDataAddressKafkaComponent {
 
   private getSecretActionAndInput(): {
     secretAction: CRUD | null;
-    secretInput: SecretInputV3 | undefined;
+    secretInput: SecretInput | undefined;
   } {
     const secret = transformInSecretKafka(this.dataAddressForm.getRawValue());
     const hadSecret = !!this.secret();
     const hasSecretNow = !!secret?.value || !!secret?.['@id'];
 
     let secretAction: CRUD | null = null;
-    let secretInput: SecretInputV3 | undefined = undefined;
+    let secretInput: SecretInput | undefined = undefined;
 
     if (hadSecret && !hasSecretNow) {
       secretAction = CRUD.DELETE;

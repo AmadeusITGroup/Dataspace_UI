@@ -13,6 +13,10 @@ const normalizeCatalog = async (inputCatalog: object): Promise<CatalogItem> => {
   // Normalize `hasPolicy` for each dataset item
   outputCatalog.dataset.forEach((item) => {
     item.hasPolicy = transformInArray(item.hasPolicy);
+    const deliveryMethod = item.deliveryMethod || item.type;
+    if (deliveryMethod) {
+      item.deliveryMethod = deliveryMethod;
+    }
   });
   return outputCatalog;
 };

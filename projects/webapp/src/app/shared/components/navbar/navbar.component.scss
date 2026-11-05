@@ -1,22 +1,4 @@
-@use 'colors';
-@use 'variables';
-
-.navbar {
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%);
-  height: variables.$navbar-height;
-
-  .btn-nav {
-    border-radius: 0;
-    border-top: none;
-    border-bottom: none;
-    border-right: none;
-
-    .icon-nav {
-      font-size: x-large;
-      display: block;
-    }
-  }
-}
+// The header's look (height, shadow, brand, quick-action spacing) comes from DF's TopNav.
 
 .refreshing {
   animation: rotate 500ms linear infinite;

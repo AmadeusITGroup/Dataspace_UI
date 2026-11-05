@@ -71,5 +71,22 @@ export const sidebarMenu: SidebarItem[] = [
         disabled: false
       }
     ]
+  },
+  {
+    id: 'settings',
+    title: 'Settings',
+    link: '',
+    order: 4,
+    disabled: false,
+    icon: 'gear',
+    items: [
+      {
+        id: 'storageAccounts',
+        title: 'Storage Accounts',
+        link: '/settings/storage-accounts',
+        order: 0,
+        disabled: false
+      }
+    ]
   }
 ];

@@ -1,16 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 
-$font-family-sans-serif: inter, sans-serif;
 $offcanvas-horizontal-width: min(calc(100vw - 20px), 600px);
 
+@use 'sass:color';
 @use 'assets/styles/colors';
 @use 'assets/styles/variables';
 @use 'assets/styles/animations';
 @use 'assets/styles/cards';
-@use 'bootstrap/scss/bootstrap' with (
-  $primary: colors.$primary
+
+// EONA-X brand on DF's primary tonal scale. Every DF primary token reads
+// --df-theme-primary-10..100 (60 = default fill/text, 80 = hover, 90 = pressed,
+// 20/30 = light hover/active fills). DF ships no generator, so 60 is the brand
+// colour and the other steps are tints/shades of it, as Bootstrap's own scale.
+@use 'design-factory' with (
+  $primary: colors.$primary,
+  $df-theme-primary-10: color.mix(white, colors.$primary, 92%),
+  $df-theme-primary-20: color.mix(white, colors.$primary, 80%),
+  $df-theme-primary-30: color.mix(white, colors.$primary, 65%),
+  $df-theme-primary-40: color.mix(white, colors.$primary, 45%),
+  $df-theme-primary-50: color.mix(white, colors.$primary, 25%),
+  $df-theme-primary-60: colors.$primary,
+  $df-theme-primary-70: color.mix(black, colors.$primary, 15%),
+  $df-theme-primary-80: color.mix(black, colors.$primary, 30%),
+  $df-theme-primary-90: color.mix(black, colors.$primary, 45%),
+  $df-theme-primary-100: color.mix(black, colors.$primary, 60%)
 );
 @use 'bootstrap-icons';
+
+:root {
+  // DF places its small-screen SideNav drawer below the navbar using this height (default 56px).
+  --df-navbar-height: #{variables.$navbar-height};
+}
 
 .filter-select {
   .form-select,

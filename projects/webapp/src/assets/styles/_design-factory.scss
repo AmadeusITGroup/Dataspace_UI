@@ -1,0 +1,112 @@
+// Design Factory 22.0.2 global styles, trimmed for this app.
+// Same imports and order as @design-factory/styles/scss/bundle.scss, minus parts
+// the app does not use (about 380 kB of CSS in the production build):
+//   - components/table/advancedtables: AG Grid theme (needs ag-grid-community)
+//   - @agnos-ui/core-bootstrap/scss/agnosui.scss: AgnosUI widget styles
+//     (the package stays installed: DF's variables read its SCSS variables)
+//   - @design-factory/tokens/css/root-dark: dark-mode tokens (no dark mode yet)
+//   - components/fonts/font-awesome-icons-brands: Font Awesome brand icons
+// DF's bundle compiles Bootstrap itself, so styles.scss must not @use Bootstrap
+// again. Partials are named with their file name because the package `exports`
+// only expose `scss/*.scss`. Re-check this list against bundle.scss on every DF upgrade.
+/* stylelint-disable scss/load-partial-extension, scss/load-no-partial-leading-underscore */
+
+@import '@design-factory/styles/scss/_variables.scss';
+@import '@design-factory/styles/scss/bootstrap/_maps.scss';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import '@design-factory/styles/scss/bootstrap/_mixins-override.scss';
+@import '@design-factory/styles/scss/components/fonts/_fonts-family.scss';
+@import '@design-factory/styles/scss/components/fonts/_multi-lang.mixins.scss';
+@import '@design-factory/styles/scss/_common.mixins.scss';
+@import '@design-factory/styles/scss/components/navbar-deprecated/_navbar.mixins.scss';
+
+// Root
+@import 'bootstrap/scss/root';
+@import '@design-factory/styles/scss/_common.root.scss';
+
+// Bootstrap components
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/images';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/tables';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/button-group';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/navbar';
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/accordion';
+@import 'bootstrap/scss/breadcrumb';
+@import 'bootstrap/scss/pagination';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/progress';
+@import 'bootstrap/scss/list-group';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/modal';
+@import 'bootstrap/scss/tooltip';
+@import 'bootstrap/scss/popover';
+@import 'bootstrap/scss/carousel';
+@import 'bootstrap/scss/spinners';
+@import 'bootstrap/scss/utilities';
+@import 'bootstrap/scss/offcanvas';
+@import 'bootstrap/scss/placeholders';
+@import 'bootstrap/scss/toasts';
+@import '@design-factory/styles/scss/bootstrap/_helpers.scss';
+@import '@design-factory/styles/scss/bootstrap/_utilities-override.scss';
+@import 'bootstrap/scss/utilities/api';
+
+// Design Factory components
+@import '@design-factory/styles/scss/_link.scss';
+@import '@design-factory/styles/scss/_common.scss';
+@import '@design-factory/styles/scss/components/fonts/_icon-font.scss';
+@import '@design-factory/styles/scss/components/fonts/_font-awesome-icons.scss';
+@import '@design-factory/styles/scss/components/fonts/_fonts.scss';
+@import '@design-factory/styles/scss/components/accordion/_accordion.scss';
+@import '@design-factory/styles/scss/components/separator/_separator.scss';
+@import '@design-factory/styles/scss/components/button/_button.scss';
+@import '@design-factory/styles/scss/components/media/_media.scss';
+@import '@design-factory/styles/scss/components/modal/_modal.scss';
+@import '@design-factory/styles/scss/components/typeahead/_typeahead.scss';
+@import '@design-factory/styles/scss/components/alert/_alert.scss';
+@import '@design-factory/styles/scss/components/datepicker/_datepicker.scss';
+@import '@design-factory/styles/scss/components/form/_form.scss';
+@import '@design-factory/styles/scss/components/pagination/_pagination.scss';
+@import '@design-factory/styles/scss/components/badge/_badge.scss';
+@import '@design-factory/styles/scss/components/icon/_amadeus-icon.scss';
+@import '@design-factory/styles/scss/components/navbar-deprecated/_navbar.scss';
+@import '@design-factory/styles/scss/components/tabs/_tabs.scss';
+@import '@design-factory/styles/scss/components/checkbox/_checkbox.scss';
+@import '@design-factory/styles/scss/components/radio/_radio.scss';
+@import '@design-factory/styles/scss/components/toggle/_toggle.scss';
+@import '@design-factory/styles/scss/components/inputs/_inputs.scss';
+@import '@design-factory/styles/scss/components/card/_card.scss';
+@import '@design-factory/styles/scss/components/link/_link.scss';
+@import '@design-factory/styles/scss/components/list-group/_list-group.scss';
+@import '@design-factory/styles/scss/components/brand-color/_brand-color.scss';
+@import '@design-factory/styles/scss/components/table/_table.scss';
+@import '@design-factory/styles/scss/components/popover/_popover.scss';
+@import '@design-factory/styles/scss/components/slider/_slider.scss';
+@import '@design-factory/styles/scss/components/select/_select.scss';
+@import '@design-factory/styles/scss/components/dropdown/_dropdown.scss';
+@import '@design-factory/styles/scss/components/collapse/_collapse.scss';
+@import '@design-factory/styles/scss/components/progressbar/_progressbar.scss';
+@import '@design-factory/styles/scss/components/spinner/_spinner.scss';
+@import '@design-factory/styles/scss/components/rating/_rating.scss';
+@import '@design-factory/styles/scss/components/speechbubble/_speechbubble.scss';
+@import '@design-factory/styles/scss/components/list/_list.scss';
+@import '@design-factory/styles/scss/components/breadcrumbs/_breadcrumbs.scss';
+@import '@design-factory/styles/scss/components/stepper/_stepper.scss';
+@import '@design-factory/styles/scss/components/carousel/_carousel.scss';
+@import '@design-factory/styles/scss/components/footer/_footer.scss';
+@import '@design-factory/styles/scss/components/toast/_toast.scss';
+@import '@design-factory/styles/scss/components/scrollspy/_scrollspy.scss';
+@import '@design-factory/styles/scss/components/timepicker/_timepicker.scss';
+@import '@design-factory/styles/scss/components/tooltip/_tooltip.scss';
+@import '@design-factory/styles/scss/components/waves/waves.scss';
+@import '@design-factory/styles/scss/bootstrap/_rtl-styles-override.scss';

@@ -5,7 +5,7 @@ info:
   license:
     name: 'The Apache License, Version 2.0'
     url: http://www.apache.org/licenses/LICENSE-2.0.txt
-  version: 3.1.4
+  version: 3.1.3
 servers:
   - url: http://localhost:8080
 paths:
@@ -93,7 +93,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AssetOutputV3'
+                  $ref: '#/components/schemas/AssetOutput'
         '400':
           description: Request body was malformed
           content:
@@ -122,7 +122,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssetOutputV3'
+                $ref: '#/components/schemas/AssetOutput'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -465,7 +465,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContractRequestV3'
+              $ref: '#/components/schemas/ContractRequest'
       responses:
         '200':
           description: The negotiation was successfully initiated. Returns the contract
@@ -506,7 +506,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ContractDefinitionOutputV3'
+                  $ref: '#/components/schemas/ContractDefinitionOutput'
         '400':
           description: Request was malformed
           content:
@@ -693,7 +693,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecretInputV3'
+              $ref: '#/components/schemas/SecretInput'
       responses:
         '204':
           description: Secret was updated successfully
@@ -716,7 +716,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecretInputV3'
+              $ref: '#/components/schemas/SecretInput'
       responses:
         '200':
           description: Secret was created successfully. Returns the secret Id and
@@ -802,7 +802,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SuspendTransferV3'
+              $ref: '#/components/schemas/SuspendTransfer'
       responses:
         '204':
           description: Request to suspend the transfer process was successfully received
@@ -882,7 +882,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContractDefinitionInputV3'
+              $ref: '#/components/schemas/ContractDefinitionInput'
       responses:
         '204':
           description: Contract definition was updated successfully
@@ -911,7 +911,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContractDefinitionInputV3'
+              $ref: '#/components/schemas/ContractDefinitionInput'
       responses:
         '200':
           description: contract definition was created successfully. Returns the Contract
@@ -1038,7 +1038,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PolicyDefinitionOutputV3'
+                  $ref: '#/components/schemas/PolicyDefinitionOutput'
         '400':
           description: Request was malformed
           content:
@@ -1120,7 +1120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SecretOutputV3'
+                $ref: '#/components/schemas/SecretOutput'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -1279,7 +1279,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AssetInputV3'
+              $ref: '#/components/schemas/AssetInput'
       responses:
         '204':
           description: Asset was updated successfully
@@ -1302,7 +1302,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AssetInputV3'
+              $ref: '#/components/schemas/AssetInput'
       responses:
         '200':
           description: Asset was created successfully. Returns the asset Id and created
@@ -1467,7 +1467,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransferStateV3'
+                $ref: '#/components/schemas/TransferState'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -1823,7 +1823,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyDefinitionOutputV3'
+                $ref: '#/components/schemas/PolicyDefinitionOutput'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -1858,7 +1858,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyDefinitionInputV3'
+              $ref: '#/components/schemas/PolicyDefinitionInput'
       responses:
         '204':
           description: policy definition was updated successfully.
@@ -1941,7 +1941,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EndpointDataReferenceEntryV3'
+                  $ref: '#/components/schemas/EndpointDataReferenceEntry_1'
         '400':
           description: Request body was malformed
           content:
@@ -1959,14 +1959,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CatalogRequestV3'
+              $ref: '#/components/schemas/CatalogRequest'
       responses:
         default:
           description: Gets contract offers (=catalog) of a single connector
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogV3'
+                $ref: '#/components/schemas/Catalog'
   /v3/transferprocesses/{id}/terminate:
     post:
       tags:
@@ -1988,7 +1988,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TerminateTransferV3'
+              $ref: '#/components/schemas/TerminateTransfer'
       responses:
         '204':
           description: Request to terminate the transfer process was successfully
@@ -2040,14 +2040,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyEvaluationPlanRequestSchemaV3'
+              $ref: '#/components/schemas/PolicyEvaluationPlanRequestSchema'
       responses:
         '200':
           description: Returns the evaluation plan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyEvaluationPlanSchemaV3'
+                $ref: '#/components/schemas/PolicyEvaluationPlanSchema'
         '404':
           description: "An evaluation plan could not be created, because the policy\
             \ definition does not exists"
@@ -2110,7 +2110,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TerminateNegotiationV3'
+              $ref: '#/components/schemas/TerminateNegotiationSchema'
       responses:
         '200':
           description: ContractNegotiation is terminating
@@ -2227,14 +2227,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatasetRequestV3'
+              $ref: '#/components/schemas/DatasetRequest'
       responses:
         default:
           description: Gets single dataset from a connector
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DatasetV3'
+                $ref: '#/components/schemas/Dataset'
   /v3/transferprocesses/request:
     post:
       tags:
@@ -2254,7 +2254,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TransferProcessV3'
+                  $ref: '#/components/schemas/TransferProcess_1'
         '400':
           description: Request was malformed
           content:
@@ -2283,7 +2283,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransferProcessV3'
+                $ref: '#/components/schemas/TransferProcess'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -2380,7 +2380,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransferState'
+                $ref: '#/components/schemas/TransferState_1'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -2489,7 +2489,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContractDefinitionOutputV3'
+                $ref: '#/components/schemas/ContractDefinitionOutput'
         '400':
           description: 'Request was malformed, e.g. id was null'
           content:
@@ -2623,7 +2623,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyDefinitionInputV3'
+              $ref: '#/components/schemas/PolicyDefinitionInput'
       responses:
         '200':
           description: policy definition was created successfully. Returns the Policy
@@ -2744,7 +2744,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicyValidationResultSchemaV3'
+                $ref: '#/components/schemas/PolicyValidationResultSchema'
         '404':
           description: "policy definition could not be validated, because it does\
             \ not exists"
@@ -2966,7 +2966,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransferRequestV3'
+              $ref: '#/components/schemas/TransferRequest'
       responses:
         '200':
           description: The transfer was successfully initiated. Returns the transfer
@@ -3383,7 +3383,7 @@ components:
             '@type': '@type'
             operandLeft: operandLeft
             operator: operator
-    AssetOutputV3:
+    AssetOutput:
       type: object
       properties:
         '@id':
@@ -3571,6 +3571,83 @@ components:
       not:
         required:
           - target
+      example:
+        obligation:
+          - action: null
+            constraint:
+              - null
+              - null
+          - action: null
+            constraint:
+              - null
+              - null
+        '@type': '@type'
+        profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+        prohibition:
+          - action: action
+            constraint:
+              - null
+              - null
+          - action: action
+            constraint:
+              - null
+              - null
+        permission:
+          - action: action
+            constraint:
+              - or:
+                  - null
+                  - null
+                andSequence:
+                  - null
+                  - null
+                and:
+                  - null
+                  - null
+                xone:
+                  - null
+                  - null
+              - or:
+                  - null
+                  - null
+                andSequence:
+                  - null
+                  - null
+                and:
+                  - null
+                  - null
+                xone:
+                  - null
+                  - null
+          - action: action
+            constraint:
+              - or:
+                  - null
+                  - null
+                andSequence:
+                  - null
+                  - null
+                and:
+                  - null
+                  - null
+                xone:
+                  - null
+                  - null
+              - or:
+                  - null
+                  - null
+                andSequence:
+                  - null
+                  - null
+                and:
+                  - null
+                  - null
+                xone:
+                  - null
+                  - null
+        '@id': '@id'
       allOf:
         - $ref: '#/components/schemas/PolicyClass'
         - properties:
@@ -3776,6 +3853,160 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Offer'
+      example:
+        hasPolicy:
+          - obligation:
+              - action: null
+                constraint:
+                  - null
+                  - null
+              - action: null
+                constraint:
+                  - null
+                  - null
+            '@type': '@type'
+            profile:
+              - PolicyClass_profile
+              - PolicyClass_profile
+            prohibition:
+              - action: action
+                constraint:
+                  - null
+                  - null
+              - action: action
+                constraint:
+                  - null
+                  - null
+            permission:
+              - action: action
+                constraint:
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+              - action: action
+                constraint:
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+            '@id': '@id'
+          - obligation:
+              - action: null
+                constraint:
+                  - null
+                  - null
+              - action: null
+                constraint:
+                  - null
+                  - null
+            '@type': '@type'
+            profile:
+              - PolicyClass_profile
+              - PolicyClass_profile
+            prohibition:
+              - action: action
+                constraint:
+                  - null
+                  - null
+              - action: action
+                constraint:
+                  - null
+                  - null
+            permission:
+              - action: action
+                constraint:
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+              - action: action
+                constraint:
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+                  - or:
+                      - null
+                      - null
+                    andSequence:
+                      - null
+                      - null
+                    and:
+                      - null
+                      - null
+                    xone:
+                      - null
+                      - null
+            '@id': '@id'
       allOf:
         - $ref: '#/components/schemas/AbstractDataset'
     context-schema_1:
@@ -3819,6 +4050,33 @@ components:
             type: string
         querySpec:
           $ref: '#/components/schemas/QuerySpec'
+      example:
+        counterPartyAddress: counterPartyAddress
+        protocol: protocol
+        additionalScopes:
+          - additionalScopes
+          - additionalScopes
+        '@type': '@type'
+        counterPartyId: counterPartyId
+        '@id': '@id'
+        '@context':
+          - '@context'
+          - '@context'
+        querySpec:
+          offset: 0
+          '@type': '@type'
+          sortOrder: ASC
+          limit: 1
+          sortField: sortField
+          filterExpression:
+            - operandRight: ''
+              '@type': '@type'
+              operandLeft: operandLeft
+              operator: operator
+            - operandRight: ''
+              '@type': '@type'
+              operandLeft: operandLeft
+              operator: operator
     ProvisionerWebhookRequest:
       type: object
       properties:
@@ -4051,7 +4309,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@id': id-value
         createdAt: 1688465655
-    ContractRequestV3:
+    ContractRequest:
       required:
         - '@context'
         - counterPartyAddress
@@ -4071,7 +4329,7 @@ components:
         counterPartyAddress:
           type: string
         policy:
-          $ref: '#/components/schemas/OfferV3'
+          $ref: '#/components/schemas/Offer_1'
         protocol:
           type: string
       example:
@@ -4116,7 +4374,7 @@ components:
           type: boolean
         uri:
           type: string
-    OfferV3:
+    Offer_1:
       required:
         - '@id'
         - assigner
@@ -4142,7 +4400,7 @@ components:
         permission: []
         prohibition: []
         obligation: []
-    ContractDefinitionOutputV3:
+    ContractDefinitionOutput:
       type: object
       properties:
         '@id':
@@ -4574,7 +4832,7 @@ components:
                 xone:
                   - null
                   - null
-    SecretInputV3:
+    SecretInput:
       required:
         - '@context'
         - value
@@ -4594,7 +4852,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@id': secret-id
         value: secret-value
-    SuspendTransferV3:
+    SuspendTransfer:
       type: object
       properties:
         '@type':
@@ -4607,7 +4865,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/SuspendTransfer
         reason: a reason to suspend
-    ContractDefinitionInputV3:
+    ContractDefinitionInput:
       required:
         - '@context'
         - accessPolicyId
@@ -4658,6 +4916,12 @@ components:
           type: string
         reason:
           type: string
+      example:
+        reason: reason
+        '@type': '@type'
+        '@context':
+          - '@context'
+          - '@context'
     contract-negotiation-schema:
       title: ContractNegotiationSchema
       type: object
@@ -4785,7 +5049,7 @@ components:
           type: string
         authCodeId:
           type: string
-    PolicyDefinitionOutputV3:
+    PolicyDefinitionOutput:
       type: object
       properties:
         '@id':
@@ -4863,8 +5127,8 @@ components:
       title: TransferSuspendSchema
       type: object
       allOf:
-        - $ref: '#/components/schemas/SuspendTransfer'
-    SuspendTransfer:
+        - $ref: '#/components/schemas/SuspendTransfer_1'
+    SuspendTransfer_1:
       required:
         - '@context'
         - '@type'
@@ -4880,7 +5144,7 @@ components:
           type: string
         reason:
           type: string
-    SecretOutputV3:
+    SecretOutput:
       required:
         - value
       type: object
@@ -4939,6 +5203,35 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/callback-address-schema'
+      example:
+        counterPartyAddress: counterPartyAddress
+        protocol: protocol
+        '@type': '@type'
+        contractId: contractId
+        callbackAddresses:
+          - authKey: authKey
+            '@type': '@type'
+            authCodeId: authCodeId
+            uri: uri
+            transactional: true
+            events:
+              - events
+              - events
+          - authKey: authKey
+            '@type': '@type'
+            authCodeId: authCodeId
+            uri: uri
+            transactional: true
+            events:
+              - events
+              - events
+        transferType: transferType
+        dataDestination:
+          '@type': '@type'
+          type: type
+        '@id': '@id'
+        privateProperties: '{}'
+        '@context': {}
     data-address-schema:
       title: DataAddressSchema
       type: object
@@ -4957,7 +5250,7 @@ components:
           type: string
         type:
           type: string
-    AssetInputV3:
+    AssetInput:
       required:
         - '@context'
         - dataAddress
@@ -5064,7 +5357,7 @@ components:
           type: array
           items:
             type: string
-    TransferStateV3:
+    TransferState:
       type: object
       properties:
         '@type':
@@ -5539,6 +5832,40 @@ components:
           type: string
         dataDestination:
           $ref: '#/components/schemas/data-address-schema'
+      example:
+        stateTimestamp: 0
+        '@type': '@type'
+        type: CONSUMER
+        '@context':
+          - '@context'
+          - '@context'
+        assetId: assetId
+        callbackAddresses:
+          - authKey: authKey
+            '@type': '@type'
+            authCodeId: authCodeId
+            uri: uri
+            transactional: true
+            events:
+              - events
+              - events
+          - authKey: authKey
+            '@type': '@type'
+            authCodeId: authCodeId
+            uri: uri
+            transactional: true
+            events:
+              - events
+              - events
+        contractId: contractId
+        transferType: transferType
+        errorDetail: errorDetail
+        dataDestination:
+          '@type': '@type'
+          type: type
+        correlationId: correlationId
+        '@id': '@id'
+        state: state
     QuerySpec_5:
       type: object
       properties:
@@ -5603,7 +5930,7 @@ components:
         sortOrder: DESC
         sortField: fieldName
         filterExpression: []
-    PolicyDefinitionInputV3:
+    PolicyDefinitionInput:
       required:
         - '@context'
         - policy
@@ -5650,7 +5977,7 @@ components:
                   operator: eq
                   rightOperand: https://www.wikidata.org/wiki/Q183
                   comment: i.e Germany
-    EndpointDataReferenceEntryV3:
+    EndpointDataReferenceEntry_1:
       type: object
       properties:
         '@id':
@@ -5700,7 +6027,7 @@ components:
         sortOrder: DESC
         sortField: fieldName
         filterExpression: []
-    CatalogV3:
+    Catalog_1:
       type: object
       description: DCAT catalog
       example:
@@ -5748,7 +6075,7 @@ components:
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
           dspace: https://w3id.org/dspace/v0.8/
-    CatalogRequestV3:
+    CatalogRequest_1:
       required:
         - '@context'
         - counterPartyAddress
@@ -5820,7 +6147,7 @@ components:
         sortOrder: DESC
         sortField: fieldName
         filterExpression: []
-    TerminateTransferV3:
+    TerminateTransfer_1:
       type: object
       properties:
         '@type':
@@ -5833,7 +6160,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TerminateTransfer
         reason: a reason to terminate
-    PolicyEvaluationPlanSchemaV3:
+    PolicyEvaluationPlanSchema:
       type: object
       example:
         '@type': PolicyEvaluationPlan
@@ -5862,7 +6189,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
           edc: https://w3id.org/edc/v0.0.1/ns/
           odrl: http://www.w3.org/ns/odrl/2/
-    PolicyEvaluationPlanRequestSchemaV3:
+    PolicyEvaluationPlanRequestSchema:
       type: object
       properties:
         policyScope:
@@ -5872,7 +6199,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': PolicyEvaluationPlanRequest
         policyScope: catalog
-    TerminateNegotiationV3:
+    TerminateNegotiationSchema:
       type: object
       properties:
         '@id':
@@ -5953,7 +6280,7 @@ components:
         dataAddress:
           properties:
             key: '{}'
-    DatasetV3:
+    Dataset_1:
       type: object
       description: DCAT dataset
       example:
@@ -5993,7 +6320,7 @@ components:
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
           dspace: https://w3id.org/dspace/v0.8/
-    DatasetRequestV3:
+    DatasetRequest:
       type: object
       properties:
         '@type':
@@ -6015,7 +6342,7 @@ components:
         counterPartyAddress: http://counter-party-address
         counterPartyId: counter-party-id
         protocol: dataspace-protocol-http
-    TransferProcessV3:
+    TransferProcess_1:
       type: object
       properties:
         '@id':
@@ -6073,7 +6400,7 @@ components:
               - transfer.process
             authKey: auth-key
             authCodeId: auth-code-id
-    TransferState:
+    TransferState_1:
       required:
         - '@context'
         - '@type'
@@ -6093,7 +6420,7 @@ components:
         '@context':
           - '@context'
           - '@context'
-    PolicyValidationResultSchemaV3:
+    PolicyValidationResultSchema:
       type: object
       properties:
         errors:
@@ -6182,7 +6509,7 @@ components:
             '@context':
               $ref: '#/components/schemas/context-schema'
         - $ref: '#/components/schemas/DataAddress_2'
-    TransferRequestV3:
+    TransferRequest_1:
       required:
         - '@context'
         - contractId
@@ -6244,8 +6571,8 @@ components:
       title: ContractRequestSchema
       type: object
       allOf:
-        - $ref: '#/components/schemas/ContractRequest'
-    ContractRequest:
+        - $ref: '#/components/schemas/ContractRequest_1'
+    ContractRequest_1:
       required:
         - '@context'
         - '@type'

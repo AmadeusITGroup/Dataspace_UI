@@ -23,15 +23,17 @@ import { IdResponse } from '../model/idResponse';
 // @ts-ignore
 import { QuerySpec } from '../model/querySpec';
 // @ts-ignore
-import { SuspendTransferV3 } from '../model/suspendTransferV3';
+import { SuspendTransfer } from '../model/suspendTransfer';
 // @ts-ignore
-import { TerminateTransferV3 } from '../model/terminateTransferV3';
+import { TerminateTransfer } from '../model/terminateTransfer';
 // @ts-ignore
-import { TransferProcessV3 } from '../model/transferProcessV3';
+import { TransferProcess } from '../model/transferProcess';
 // @ts-ignore
-import { TransferRequestV3 } from '../model/transferRequestV3';
+import { TransferProcess1 } from '../model/transferProcess1';
 // @ts-ignore
-import { TransferStateV3 } from '../model/transferStateV3';
+import { TransferRequest } from '../model/transferRequest';
+// @ts-ignore
+import { TransferState } from '../model/transferState';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -174,9 +176,9 @@ export class TransferProcessV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTransferProcessStateV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TransferStateV3>;
-    public getTransferProcessStateV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TransferStateV3>>;
-    public getTransferProcessStateV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TransferStateV3>>;
+    public getTransferProcessStateV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TransferState>;
+    public getTransferProcessStateV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TransferState>>;
+    public getTransferProcessStateV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TransferState>>;
     public getTransferProcessStateV3(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getTransferProcessStateV3.');
@@ -219,7 +221,7 @@ export class TransferProcessV3Service {
         }
 
         let localVarPath = `/v3/transferprocesses/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/state`;
-        return this.httpClient.request<TransferStateV3>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<TransferState>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -238,9 +240,9 @@ export class TransferProcessV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTransferProcessV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TransferProcessV3>;
-    public getTransferProcessV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TransferProcessV3>>;
-    public getTransferProcessV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TransferProcessV3>>;
+    public getTransferProcessV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TransferProcess>;
+    public getTransferProcessV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TransferProcess>>;
+    public getTransferProcessV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TransferProcess>>;
     public getTransferProcessV3(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getTransferProcessV3.');
@@ -283,7 +285,7 @@ export class TransferProcessV3Service {
         }
 
         let localVarPath = `/v3/transferprocesses/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<TransferProcessV3>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<TransferProcess>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -298,14 +300,14 @@ export class TransferProcessV3Service {
 
     /**
      * Initiates a data transfer with the given parameters. Due to the asynchronous nature of transfers, a successful response only indicates that the request was successfully received. This may take a long time, so clients must poll the /{id}/state endpoint to track the state.
-     * @param transferRequestV3 
+     * @param transferRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public initiateTransferProcessV3(transferRequestV3?: TransferRequestV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
-    public initiateTransferProcessV3(transferRequestV3?: TransferRequestV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
-    public initiateTransferProcessV3(transferRequestV3?: TransferRequestV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
-    public initiateTransferProcessV3(transferRequestV3?: TransferRequestV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public initiateTransferProcessV3(transferRequest?: TransferRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
+    public initiateTransferProcessV3(transferRequest?: TransferRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
+    public initiateTransferProcessV3(transferRequest?: TransferRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
+    public initiateTransferProcessV3(transferRequest?: TransferRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -356,7 +358,7 @@ export class TransferProcessV3Service {
         return this.httpClient.request<IdResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: transferRequestV3,
+                body: transferRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -373,9 +375,9 @@ export class TransferProcessV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public queryTransferProcessesV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<TransferProcessV3>>;
-    public queryTransferProcessesV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<TransferProcessV3>>>;
-    public queryTransferProcessesV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<TransferProcessV3>>>;
+    public queryTransferProcessesV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<TransferProcess1>>;
+    public queryTransferProcessesV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<TransferProcess1>>>;
+    public queryTransferProcessesV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<TransferProcess1>>>;
     public queryTransferProcessesV3(querySpec?: QuerySpec, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -424,7 +426,7 @@ export class TransferProcessV3Service {
         }
 
         let localVarPath = `/v3/transferprocesses/request`;
-        return this.httpClient.request<Array<TransferProcessV3>>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Array<TransferProcess1>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: querySpec,
@@ -505,14 +507,14 @@ export class TransferProcessV3Service {
     /**
      * Requests the suspension of a transfer process. Due to the asynchronous nature of transfers, a successful response only indicates that the request was successfully received. This may take a long time, so clients must poll the /{id}/state endpoint to track the state.
      * @param id 
-     * @param suspendTransferV3 
+     * @param suspendTransfer 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public suspendTransferProcessV3(id: string, suspendTransferV3?: SuspendTransferV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public suspendTransferProcessV3(id: string, suspendTransferV3?: SuspendTransferV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public suspendTransferProcessV3(id: string, suspendTransferV3?: SuspendTransferV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public suspendTransferProcessV3(id: string, suspendTransferV3?: SuspendTransferV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public suspendTransferProcessV3(id: string, suspendTransfer?: SuspendTransfer, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public suspendTransferProcessV3(id: string, suspendTransfer?: SuspendTransfer, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public suspendTransferProcessV3(id: string, suspendTransfer?: SuspendTransfer, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public suspendTransferProcessV3(id: string, suspendTransfer?: SuspendTransfer, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling suspendTransferProcessV3.');
         }
@@ -566,7 +568,7 @@ export class TransferProcessV3Service {
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: suspendTransferV3,
+                body: suspendTransfer,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -580,14 +582,14 @@ export class TransferProcessV3Service {
     /**
      * Requests the termination of a transfer process. Due to the asynchronous nature of transfers, a successful response only indicates that the request was successfully received. This may take a long time, so clients must poll the /{id}/state endpoint to track the state.
      * @param id 
-     * @param terminateTransferV3 
+     * @param terminateTransfer 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public terminateTransferProcessV3(id: string, terminateTransferV3?: TerminateTransferV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public terminateTransferProcessV3(id: string, terminateTransferV3?: TerminateTransferV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public terminateTransferProcessV3(id: string, terminateTransferV3?: TerminateTransferV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public terminateTransferProcessV3(id: string, terminateTransferV3?: TerminateTransferV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public terminateTransferProcessV3(id: string, terminateTransfer?: TerminateTransfer, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public terminateTransferProcessV3(id: string, terminateTransfer?: TerminateTransfer, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public terminateTransferProcessV3(id: string, terminateTransfer?: TerminateTransfer, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public terminateTransferProcessV3(id: string, terminateTransfer?: TerminateTransfer, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling terminateTransferProcessV3.');
         }
@@ -641,7 +643,7 @@ export class TransferProcessV3Service {
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: terminateTransferV3,
+                body: terminateTransfer,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

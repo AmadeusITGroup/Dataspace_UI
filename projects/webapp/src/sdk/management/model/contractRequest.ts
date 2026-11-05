@@ -7,17 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CallbackAddressSchema } from './callbackAddressSchema';
-import { ContractOfferSchema } from './contractOfferSchema';
+import { Offer1 } from './offer1';
+import { CallbackAddress } from './callbackAddress';
 
 
 export interface ContractRequest { 
-    '@context': Array<string>;
-    '@type': string;
-    '@id'?: string;
+    '@context': object;
+    '@type'?: string;
+    callbackAddresses?: Array<CallbackAddress>;
     counterPartyAddress: string;
+    policy: Offer1;
     protocol: string;
-    policy: ContractOfferSchema;
-    callbackAddresses?: Array<CallbackAddressSchema>;
 }
 

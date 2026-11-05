@@ -10,28 +10,29 @@ import {
   Signal
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RouterLink } from '@angular/router';
-import { DatasetDetailsModalComponent } from './dataset-modal/dataset-details-modal.component';
-import { CatalogService } from '../../services/catalog.service';
-import { ContractNegotiationService } from '../../../contract-management/services/contract-negotiation.service';
-import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
-import { EmptyPageMessageComponent } from '../../../../shared/components/empty-page-message/empty-page-message.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FilterOption } from '../../../../core/components/filters/filter-option.model';
 import { FiltersComponent } from '../../../../core/components/filters/filters.component';
-import { TableComponent } from '../../../../shared/components/table/table.component';
 import { ListSummaryComponent } from '../../../../core/components/list-summary/list-summary.component';
+import { HtmlSanitizerService } from '../../../../core/services/html-sanitizer.service';
 import { LoginService } from '../../../../core/services/login.service';
 import { ToastService } from '../../../../core/toasts/toast-service';
+import { EmptyPageMessageComponent } from '../../../../shared/components/empty-page-message/empty-page-message.component';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { TableComponent } from '../../../../shared/components/table/table.component';
+import { ColumnDefinition } from '../../../../shared/components/table/table.model';
+import { ContractNegotiationService } from '../../../contract-management/services/contract-negotiation.service';
 import { Dataset, DatasetEnriched } from '../../models/catalog.model';
+import { CatalogService } from '../../services/catalog.service';
 import {
   buildFilterOptions,
   enrichCatalogItems,
   filterCatalogItems,
   getAvailableParticipants
 } from '../../utils/catalog.util';
-import { FilterOption } from '../../../../core/components/filters/filter-option.model';
-import { ColumnDefinition } from '../../../../shared/components/table/table.model';
 import { ContractsLinkCellComponent } from './catalog-table/contracts-link-cell.component';
+import { DatasetDetailsModalComponent } from './dataset-modal/dataset-details-modal.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +56,7 @@ export default class CatalogPageComponent {
   readonly contractNegotiationService = inject(ContractNegotiationService);
   readonly loginService = inject(LoginService);
   readonly toastService = inject(ToastService);
+  readonly htmlSanitizerService = inject(HtmlSanitizerService);
 
   // queries
   readonly catalogQuery = inject(CatalogService).catalogQuery;
@@ -68,7 +70,8 @@ export default class CatalogPageComponent {
     // cf also https://github.com/eclipse-edc/Connector/discussions/4931
     const agreementsByDatasetId = this.contractNegotiationService.agreementsByDatasetId();
     const userParticipant = this.userParticipant();
-    return enrichCatalogItems(data, agreementsByDatasetId, userParticipant);
+    const userFullParticipant = this.loginService.fullParticipantId();
+    return enrichCatalogItems(data, agreementsByDatasetId, userParticipant, userFullParticipant);
   });
   readonly availableParticipants = computed(() => {
     const data = this.catalogQuery.data();
@@ -79,6 +82,7 @@ export default class CatalogPageComponent {
   readonly filterControls = {
     participant: new FormControl(''),
     status: new FormControl(''),
+    deliveryType: new FormControl(''),
     search: new FormControl('')
   };
   readonly filters: Signal<FilterOption[]> = computed(() => {
@@ -164,5 +168,9 @@ export default class CatalogPageComponent {
   viewDataset(dataset: Dataset) {
     const modalRef = this.modalService.open(DatasetDetailsModalComponent, { size: 'lg' });
     modalRef.componentInstance.dataset.set(dataset);
+  }
+
+  getSafeDescription(description: string) {
+    return this.htmlSanitizerService.getSafeHtml(description);
   }
 }

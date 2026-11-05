@@ -19,9 +19,9 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ApiErrorDetail } from '../model/apiErrorDetail';
 // @ts-ignore
-import { ContractDefinitionInputV3 } from '../model/contractDefinitionInputV3';
+import { ContractDefinitionInput } from '../model/contractDefinitionInput';
 // @ts-ignore
-import { ContractDefinitionOutputV3 } from '../model/contractDefinitionOutputV3';
+import { ContractDefinitionOutput } from '../model/contractDefinitionOutput';
 // @ts-ignore
 import { IdResponse } from '../model/idResponse';
 // @ts-ignore
@@ -100,14 +100,14 @@ export class ContractDefinitionV3Service {
 
     /**
      * Creates a new contract definition
-     * @param contractDefinitionInputV3 
+     * @param contractDefinitionInput 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
-    public createContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
-    public createContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
-    public createContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
+    public createContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
+    public createContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
+    public createContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -158,7 +158,7 @@ export class ContractDefinitionV3Service {
         return this.httpClient.request<IdResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: contractDefinitionInputV3,
+                body: contractDefinitionInput,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -239,9 +239,9 @@ export class ContractDefinitionV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getContractDefinitionV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ContractDefinitionOutputV3>;
-    public getContractDefinitionV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ContractDefinitionOutputV3>>;
-    public getContractDefinitionV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ContractDefinitionOutputV3>>;
+    public getContractDefinitionV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ContractDefinitionOutput>;
+    public getContractDefinitionV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ContractDefinitionOutput>>;
+    public getContractDefinitionV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ContractDefinitionOutput>>;
     public getContractDefinitionV3(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getContractDefinitionV3.');
@@ -284,7 +284,7 @@ export class ContractDefinitionV3Service {
         }
 
         let localVarPath = `/v3/contractdefinitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<ContractDefinitionOutputV3>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<ContractDefinitionOutput>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -303,9 +303,9 @@ export class ContractDefinitionV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public queryContractDefinitionsV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ContractDefinitionOutputV3>>;
-    public queryContractDefinitionsV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ContractDefinitionOutputV3>>>;
-    public queryContractDefinitionsV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ContractDefinitionOutputV3>>>;
+    public queryContractDefinitionsV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ContractDefinitionOutput>>;
+    public queryContractDefinitionsV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ContractDefinitionOutput>>>;
+    public queryContractDefinitionsV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ContractDefinitionOutput>>>;
     public queryContractDefinitionsV3(querySpec?: QuerySpec, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -354,7 +354,7 @@ export class ContractDefinitionV3Service {
         }
 
         let localVarPath = `/v3/contractdefinitions/request`;
-        return this.httpClient.request<Array<ContractDefinitionOutputV3>>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Array<ContractDefinitionOutput>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: querySpec,
@@ -370,14 +370,14 @@ export class ContractDefinitionV3Service {
 
     /**
      * Updated a contract definition with the given ID. The supplied JSON structure must be a valid JSON-LD object
-     * @param contractDefinitionInputV3 
+     * @param contractDefinitionInput 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public updateContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public updateContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public updateContractDefinitionV3(contractDefinitionInputV3?: ContractDefinitionInputV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updateContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public updateContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public updateContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public updateContractDefinitionV3(contractDefinitionInput?: ContractDefinitionInput, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -428,7 +428,7 @@ export class ContractDefinitionV3Service {
         return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: contractDefinitionInputV3,
+                body: contractDefinitionInput,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

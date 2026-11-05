@@ -27,7 +27,7 @@ import { TransferProcessSchema } from '../model/transferProcessSchema';
 // @ts-ignore
 import { TransferRequestSchema } from '../model/transferRequestSchema';
 // @ts-ignore
-import { TransferState } from '../model/transferState';
+import { TransferState1 } from '../model/transferState1';
 // @ts-ignore
 import { TransferSuspendSchema } from '../model/transferSuspendSchema';
 // @ts-ignore
@@ -174,9 +174,9 @@ export class TransferProcessV4alphaService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getTransferProcessStateV4(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TransferState>;
-    public getTransferProcessStateV4(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TransferState>>;
-    public getTransferProcessStateV4(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TransferState>>;
+    public getTransferProcessStateV4(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TransferState1>;
+    public getTransferProcessStateV4(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TransferState1>>;
+    public getTransferProcessStateV4(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TransferState1>>;
     public getTransferProcessStateV4(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getTransferProcessStateV4.');
@@ -219,7 +219,7 @@ export class TransferProcessV4alphaService {
         }
 
         let localVarPath = `/v4alpha/transferprocesses/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/state`;
-        return this.httpClient.request<TransferState>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<TransferState1>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

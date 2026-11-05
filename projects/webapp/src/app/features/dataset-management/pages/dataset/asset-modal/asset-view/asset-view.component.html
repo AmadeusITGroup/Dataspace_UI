@@ -14,7 +14,12 @@
           <div class="col-6 mb-3"><strong>Name</strong> {{ properties.name || '-' }}</div>
           <div class="col-6 mb-3"><strong>Version</strong> {{ properties.version || '-' }}</div>
           <div class="col-6 mb-3">
-            <strong>Description</strong> {{ properties.description || '-' }}
+            <strong>Description</strong>
+            @if (properties.description) {
+              <div [innerHTML]="getSafeHtml(properties.description)"></div>
+            } @else {
+              <span>-</span>
+            }
           </div>
           <div class="col-6 mb-3">
             <strong>Documentation</strong>
@@ -60,6 +65,34 @@
             <strong>Average Record Size</strong>
             {{ properties.averageRecordSizeBytes || '-' }}
           </div>
+
+          <!-- Analytics Dataset Specific Fields -->
+          @if (properties.deliveryMethod === 'AnalyticsDataset') {
+            <div class="col-6 mb-3">
+              <strong>Coverage</strong>
+              <div style="white-space: pre-wrap">{{ properties.coverage || '-' }}</div>
+            </div>
+            <div class="col-6 mb-3">
+              <strong>History Depth</strong>
+              <div style="white-space: pre-wrap">{{ properties.historyDepth || '-' }}</div>
+            </div>
+            <div class="col-6 mb-3">
+              <strong>Time Granularity</strong>
+              <div style="white-space: pre-wrap">{{ properties.timeGranularity || '-' }}</div>
+            </div>
+            <div class="col-6 mb-3">
+              <strong>Update Frequency</strong>
+              <div style="white-space: pre-wrap">{{ properties.updateFrequency || '-' }}</div>
+            </div>
+            <div class="col-6 mb-3">
+              <strong>Size</strong>
+              <div style="white-space: pre-wrap">{{ properties.size || '-' }}</div>
+            </div>
+            <div class="col-6 mb-3">
+              <strong>Delivery Methods</strong>
+              <div style="white-space: pre-wrap">{{ properties.deliveryMethods || '-' }}</div>
+            </div>
+          }
         }
       </div>
 
@@ -86,6 +119,7 @@
       <img class="card-logo ms-3 mw-100" [src]="logoUrl" alt="dataset logo" />
     }
   </div>
+
   <div class="private-data-section p-3 mb-4 rounded">
     <h5 class="section-label mb-2">
       <i class="bi bi-gear me-2"></i>{{ I18N.ASSET.FIELDS.DATA_ADDRESS.TITLE }}
@@ -93,8 +127,53 @@
     <p [innerHTML]="I18N.ASSET.FIELDS.DATA_ADDRESS.DESCRIPTION"></p>
     <div class="data-address border-top d-flex">
       @if (asset().dataAddress; as dataAddress) {
+        <!-- S3 BUCKET DATA ADDRESS VIEW -->
+        @if (s3DataAddress; as s3Data) {
+          <div class="data-address-section w-50 p-3 border-end">
+            <h6 class="mb-3">Bucket Configuration</h6>
+            <div class="mb-3">
+              <strong class="me-2">Bucket Name</strong>
+              {{ s3Data.bucketName || '-' }}
+            </div>
+            <div class="mb-3">
+              <strong class="me-2">Region</strong>
+              {{ s3Data.region || '-' }}
+            </div>
+            <div class="mb-3">
+              <strong class="me-2">Path Prefix</strong>
+              {{ s3Data.pathPrefix || '-' }}
+            </div>
+            @if (s3Data.endpointUrl) {
+              <div class="mb-3">
+                <strong class="me-2">Endpoint URL</strong>
+                {{ s3Data.endpointUrl }}
+              </div>
+            }
+          </div>
+          <div class="authentication-section w-50 p-3">
+            <h6 class="mb-3">Authentication</h6>
+            <div class="mb-3">
+              <strong class="me-2">Access Key ID</strong>
+              {{ s3Data.accessKeyId || '-' }}
+            </div>
+            <div class="mb-3">
+              <strong class="me-2">Secret Access Key</strong>
+              <span class="font-monospace">{{
+                showMask ? '••••••••••••' : s3Data.secretAccessKey
+              }}</span>
+              <button
+                type="button"
+                class="btn btn-sm btn-link"
+                (click)="toggleMask()"
+                title="{{ showMask ? 'Show' : 'Hide' }} secret"
+              >
+                <i class="bi" [ngClass]="showMask ? 'bi-eye' : 'bi-eye-slash'"></i>
+              </button>
+            </div>
+          </div>
+        }
         <!-- Check if it's Kafka or REST based on type -->
-        @if (kafkaDataAddress; as kafkaData) {
+        @else if (kafkaDataAddress; as kafkaData) {
           <!-- KAFKA DATA ADDRESS VIEW -->
           <div class="data-address-section w-50 p-3 border-end">
             <h6 class="mb-3">Broker Configuration</h6>
@@ -222,6 +301,39 @@
             <div class="authentication-section w-50 p-3">
               @if (authType) {
                 <div class="mb-3"><strong>Authorization Type</strong> {{ authType }}</div>
+              } @else if (azureBlobDataAddress; as azureData) {
+                <!-- AZURE BLOB DATA ADDRESS VIEW -->
+                <div class="data-address-section w-50 p-3 border-end">
+                  <h6 class="mb-3">Storage Configuration</h6>
+                  <div class="mb-3">
+                    <strong class="me-2">Storage Account</strong>
+                    {{ azureData.account || '-' }}
+                  </div>
+                  <div class="mb-3">
+                    <strong class="me-2">Container</strong>
+                    {{ azureData.container || '-' }}
+                  </div>
+                  <div class="mb-3">
+                    <strong class="me-2">Blob Name</strong>
+                    {{ azureData.blobName || '-' }}
+                  </div>
+                </div>
+                <div class="authentication-section w-50 p-3">
+                  <h6 class="mb-3">Authentication</h6>
+                  @if (azureData.keyName) {
+                    <div class="mb-3"><strong>Key Name</strong> {{ azureData.keyName || '-' }}</div>
+                    <div class="mb-3">
+                      <ng-container
+                        *ngTemplateOutlet="
+                          secretDisplay;
+                          context: { secret, secretLabel: 'Storage Key' }
+                        "
+                      ></ng-container>
+                    </div>
+                  } @else {
+                    <div class="mb-3 text-muted">No authentication configured</div>
+                  }
+                </div>
               } @else {
                 <div class="mb-3">
                   {{ I18N.ASSET.FIELDS.DATA_ADDRESS.AUTHORIZATION.NO_AUTH }}

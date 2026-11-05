@@ -9,10 +9,14 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `@if (row()?.data?.negotiated) {
     <a
-      class="text-success text-decoration-none text-nowrap"
+      class="text-success border-success text-nowrap"
       [routerLink]="['/contract-management/contract-negotiation']"
       [queryParams]="{
-        searchBy: 'counterPartyId=' + row()?.data?.shortParticipantId + ',id=' + row()?.data?.id
+        searchBy:
+          'counterPartyId=' +
+          $safeNavigationMigration(row()?.data?.shortParticipantId) +
+          ',id=' +
+          $safeNavigationMigration(row()?.data?.id)
       }"
     >
       <i class="bi bi-briefcase-fill text-success me-2"></i> Contracts

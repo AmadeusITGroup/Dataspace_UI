@@ -18,14 +18,14 @@ import { injectQuery } from '@tanstack/angular-query-experimental';
       'bg-success': isStartedState(),
       'bg-warning text-dark': isSuspendedState(),
       'bg-danger': isTerminatedState() && hasDetails(),
-      'bg-secondary': isTerminatedState() && !hasDetails(),
-      'bg-info-subtle text-dark': !isStartedState() && !isSuspendedState() && !isTerminatedState()
+      'bg-neutral': isTerminatedState() && !hasDetails(),
+      'bg-info-soft': !isStartedState() && !isSuspendedState() && !isTerminatedState()
     }"
     [ngbTooltip]="
       isStartedState()
         ? 'Communication channel open'
         : hasDetails() && (isTerminatedState() || isSuspendedState())
-          ? extractErrorReason(row()?.data)
+          ? extractErrorReason($safeNavigationMigration(row()?.data))
           : null
     "
   >

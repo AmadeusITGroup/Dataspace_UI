@@ -10,7 +10,7 @@
 
 
 export interface TransferState { 
-    '@context': Array<string>;
-    state: string;
+    '@type'?: string;
+    state?: string;
 }
 

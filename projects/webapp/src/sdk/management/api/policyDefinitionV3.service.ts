@@ -21,13 +21,13 @@ import { ApiErrorDetail } from '../model/apiErrorDetail';
 // @ts-ignore
 import { IdResponse } from '../model/idResponse';
 // @ts-ignore
-import { PolicyDefinitionInputV3 } from '../model/policyDefinitionInputV3';
+import { PolicyDefinitionInput } from '../model/policyDefinitionInput';
 // @ts-ignore
-import { PolicyDefinitionOutputV3 } from '../model/policyDefinitionOutputV3';
+import { PolicyDefinitionOutput } from '../model/policyDefinitionOutput';
 // @ts-ignore
-import { PolicyEvaluationPlanRequestSchemaV3 } from '../model/policyEvaluationPlanRequestSchemaV3';
+import { PolicyEvaluationPlanRequestSchema } from '../model/policyEvaluationPlanRequestSchema';
 // @ts-ignore
-import { PolicyValidationResultSchemaV3 } from '../model/policyValidationResultSchemaV3';
+import { PolicyValidationResultSchema } from '../model/policyValidationResultSchema';
 // @ts-ignore
 import { QuerySpec } from '../model/querySpec';
 
@@ -105,14 +105,14 @@ export class PolicyDefinitionV3Service {
     /**
      * Creates an execution plane for an existing Policy, If the Policy is not found, an error is reported
      * @param id 
-     * @param policyEvaluationPlanRequestSchemaV3 
+     * @param policyEvaluationPlanRequestSchema 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchemaV3?: PolicyEvaluationPlanRequestSchemaV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
-    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchemaV3?: PolicyEvaluationPlanRequestSchemaV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
-    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchemaV3?: PolicyEvaluationPlanRequestSchemaV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
-    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchemaV3?: PolicyEvaluationPlanRequestSchemaV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchema?: PolicyEvaluationPlanRequestSchema, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
+    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchema?: PolicyEvaluationPlanRequestSchema, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
+    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchema?: PolicyEvaluationPlanRequestSchema, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
+    public createExecutionPlaneV3(id: string, policyEvaluationPlanRequestSchema?: PolicyEvaluationPlanRequestSchema, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling createExecutionPlaneV3.');
         }
@@ -166,7 +166,7 @@ export class PolicyDefinitionV3Service {
         return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: policyEvaluationPlanRequestSchemaV3,
+                body: policyEvaluationPlanRequestSchema,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -179,14 +179,14 @@ export class PolicyDefinitionV3Service {
 
     /**
      * Creates a new policy definition
-     * @param policyDefinitionInputV3 
+     * @param policyDefinitionInput 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createPolicyDefinitionV3(policyDefinitionInputV3?: PolicyDefinitionInputV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
-    public createPolicyDefinitionV3(policyDefinitionInputV3?: PolicyDefinitionInputV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
-    public createPolicyDefinitionV3(policyDefinitionInputV3?: PolicyDefinitionInputV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
-    public createPolicyDefinitionV3(policyDefinitionInputV3?: PolicyDefinitionInputV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createPolicyDefinitionV3(policyDefinitionInput?: PolicyDefinitionInput, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IdResponse>;
+    public createPolicyDefinitionV3(policyDefinitionInput?: PolicyDefinitionInput, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IdResponse>>;
+    public createPolicyDefinitionV3(policyDefinitionInput?: PolicyDefinitionInput, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IdResponse>>;
+    public createPolicyDefinitionV3(policyDefinitionInput?: PolicyDefinitionInput, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -237,7 +237,7 @@ export class PolicyDefinitionV3Service {
         return this.httpClient.request<IdResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: policyDefinitionInputV3,
+                body: policyDefinitionInput,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -318,9 +318,9 @@ export class PolicyDefinitionV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getPolicyDefinitionV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PolicyDefinitionOutputV3>;
-    public getPolicyDefinitionV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PolicyDefinitionOutputV3>>;
-    public getPolicyDefinitionV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PolicyDefinitionOutputV3>>;
+    public getPolicyDefinitionV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PolicyDefinitionOutput>;
+    public getPolicyDefinitionV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PolicyDefinitionOutput>>;
+    public getPolicyDefinitionV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PolicyDefinitionOutput>>;
     public getPolicyDefinitionV3(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling getPolicyDefinitionV3.');
@@ -363,7 +363,7 @@ export class PolicyDefinitionV3Service {
         }
 
         let localVarPath = `/v3/policydefinitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<PolicyDefinitionOutputV3>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PolicyDefinitionOutput>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -382,9 +382,9 @@ export class PolicyDefinitionV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<PolicyDefinitionOutputV3>>;
-    public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<PolicyDefinitionOutputV3>>>;
-    public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<PolicyDefinitionOutputV3>>>;
+    public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<PolicyDefinitionOutput>>;
+    public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<PolicyDefinitionOutput>>>;
+    public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<PolicyDefinitionOutput>>>;
     public queryPolicyDefinitionsV3(querySpec?: QuerySpec, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -433,7 +433,7 @@ export class PolicyDefinitionV3Service {
         }
 
         let localVarPath = `/v3/policydefinitions/request`;
-        return this.httpClient.request<Array<PolicyDefinitionOutputV3>>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Array<PolicyDefinitionOutput>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: querySpec,
@@ -450,14 +450,14 @@ export class PolicyDefinitionV3Service {
     /**
      * Updates an existing Policy, If the Policy is not found, an error is reported
      * @param id 
-     * @param policyDefinitionInputV3 
+     * @param policyDefinitionInput 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updatePolicyDefinitionV3(id: string, policyDefinitionInputV3?: PolicyDefinitionInputV3, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public updatePolicyDefinitionV3(id: string, policyDefinitionInputV3?: PolicyDefinitionInputV3, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public updatePolicyDefinitionV3(id: string, policyDefinitionInputV3?: PolicyDefinitionInputV3, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public updatePolicyDefinitionV3(id: string, policyDefinitionInputV3?: PolicyDefinitionInputV3, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updatePolicyDefinitionV3(id: string, policyDefinitionInput?: PolicyDefinitionInput, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public updatePolicyDefinitionV3(id: string, policyDefinitionInput?: PolicyDefinitionInput, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public updatePolicyDefinitionV3(id: string, policyDefinitionInput?: PolicyDefinitionInput, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public updatePolicyDefinitionV3(id: string, policyDefinitionInput?: PolicyDefinitionInput, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling updatePolicyDefinitionV3.');
         }
@@ -511,7 +511,7 @@ export class PolicyDefinitionV3Service {
         return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: policyDefinitionInputV3,
+                body: policyDefinitionInput,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -528,9 +528,9 @@ export class PolicyDefinitionV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public validatePolicyDefinitionV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PolicyValidationResultSchemaV3>;
-    public validatePolicyDefinitionV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PolicyValidationResultSchemaV3>>;
-    public validatePolicyDefinitionV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PolicyValidationResultSchemaV3>>;
+    public validatePolicyDefinitionV3(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PolicyValidationResultSchema>;
+    public validatePolicyDefinitionV3(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PolicyValidationResultSchema>>;
+    public validatePolicyDefinitionV3(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PolicyValidationResultSchema>>;
     public validatePolicyDefinitionV3(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling validatePolicyDefinitionV3.');
@@ -573,7 +573,7 @@ export class PolicyDefinitionV3Service {
         }
 
         let localVarPath = `/v3/policydefinitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/validate`;
-        return this.httpClient.request<PolicyValidationResultSchemaV3>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PolicyValidationResultSchema>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

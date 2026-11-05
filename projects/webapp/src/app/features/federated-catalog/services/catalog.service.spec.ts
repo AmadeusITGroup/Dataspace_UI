@@ -159,4 +159,50 @@ describe('CatalogService', () => {
       }
     ]);
   });
+
+  it('should map legacy dataset type to deliveryMethod', async () => {
+    participantcatalog.mockReturnValue(
+      of([
+        {
+          '@context': {
+            '@vocab': 'https://w3id.org/edc/v0.0.1/ns/',
+            dcat: 'http://www.w3.org/ns/dcat#'
+          },
+          'dcat:dataset': {
+            name: 'file dataset',
+            description: 'legacy file dataset',
+            id: 'dataset-file',
+            type: 'File'
+          },
+          id: 'item-file',
+          '@id': 'item-file'
+        }
+      ])
+    );
+
+    const service = getCatalogService();
+    await firstValueFrom(
+      toObservable(service.catalogQuery.status, {
+        injector: TestBed.inject(Injector)
+      }).pipe(filter((status) => status !== 'pending'))
+    );
+
+    expect(service.catalogQuery.status()).toBe('success');
+    expect(service.catalogQuery.data()).toStrictEqual([
+      {
+        dataset: [
+          {
+            description: 'legacy file dataset',
+            id: 'dataset-file',
+            name: 'file dataset',
+            type: 'File',
+            deliveryMethod: 'File',
+            hasPolicy: []
+          }
+        ],
+        '@id': 'item-file',
+        id: 'item-file'
+      }
+    ]);
+  });
 });

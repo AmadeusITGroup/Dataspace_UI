@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, InputSignal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { PATTERNS } from '../../../core/constants/patterns.const';
 
 @Component({
   selector: 'app-field-link',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   styleUrls: ['./field-link.component.scss'],
   template: ` @if (validHref()) {
     <a

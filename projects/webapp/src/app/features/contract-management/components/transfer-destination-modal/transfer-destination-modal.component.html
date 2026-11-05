@@ -1,0 +1,207 @@
+<div class="modal-header">
+  <h5 class="modal-title text-primary">File Transfer Destination</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <p>Provide the Azure Blob Storage destination where the transferred data will be stored.</p>
+
+  <!-- Browse/Manual toggle -->
+  @if (hasBrowseMode()) {
+    <div class="mb-3">
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="destBrowseToggle"
+          [checked]="browseMode()"
+          (change)="toggleBrowseMode()"
+        />
+        <label class="form-check-label" for="destBrowseToggle">
+          Browse registered storage accounts
+        </label>
+      </div>
+    </div>
+  }
+
+  @if (browseError()) {
+    <div class="alert alert-warning small mb-3">
+      <i class="bi bi-exclamation-triangle me-1"></i>{{ browseError() }}
+    </div>
+  }
+
+  <form [formGroup]="destinationForm">
+    <!-- Storage Account -->
+    <div class="mb-3">
+      <label for="dest-account" class="form-label">
+        Storage Account
+        <span class="text-danger">*</span>
+      </label>
+      @if (browseMode()) {
+        <select
+          id="dest-account"
+          class="form-select"
+          (change)="selectRegisteredAccount($any($event.target).value)"
+          [class.is-invalid]="
+            destinationForm.get('account')?.invalid && destinationForm.get('account')?.touched
+          "
+        >
+          <option value="">-- Select a registered account --</option>
+          @for (acct of registeredAccounts(); track acct.accountName) {
+            <option
+              [value]="acct.accountName"
+              [selected]="destinationForm.getRawValue().account === acct.accountName"
+            >
+              {{ acct.label ? acct.label + ' (' + acct.accountName + ')' : acct.accountName }}
+            </option>
+          }
+        </select>
+      } @else {
+        <input
+          id="dest-account"
+          type="text"
+          class="form-control"
+          formControlName="account"
+          placeholder="e.g. mystorageaccount"
+          [class.is-invalid]="
+            destinationForm.get('account')?.invalid && destinationForm.get('account')?.touched
+          "
+        />
+      }
+      @if (destinationForm.get('account')?.invalid && destinationForm.get('account')?.touched) {
+        <div class="text-danger">Storage Account is required.</div>
+      }
+    </div>
+
+    <!-- Container -->
+    <div class="mb-3">
+      <label for="dest-container" class="form-label">
+        Container
+        <span class="text-danger">*</span>
+      </label>
+      @if (browseMode() && containers().length) {
+        <select
+          id="dest-container"
+          class="form-select"
+          (change)="selectContainer($any($event.target).value)"
+          [class.is-invalid]="
+            destinationForm.get('container')?.invalid && destinationForm.get('container')?.touched
+          "
+        >
+          <option value="">-- Select a container --</option>
+          @for (c of containers(); track c.name) {
+            <option
+              [value]="c.name"
+              [selected]="destinationForm.getRawValue().container === c.name"
+            >
+              {{ c.name }}
+            </option>
+          }
+        </select>
+      } @else if (browseMode() && loadingContainers()) {
+        <div class="form-control bg-light text-muted">
+          <i class="bi bi-arrow-clockwise spin me-1"></i>Loading containers...
+        </div>
+      } @else {
+        <input
+          id="dest-container"
+          type="text"
+          class="form-control"
+          formControlName="container"
+          placeholder="e.g. my-destination-container"
+          [class.is-invalid]="
+            destinationForm.get('container')?.invalid && destinationForm.get('container')?.touched
+          "
+        />
+      }
+      @if (destinationForm.get('container')?.invalid && destinationForm.get('container')?.touched) {
+        <div class="text-danger">Container name is required.</div>
+      }
+    </div>
+
+    <!-- Blob Name -->
+    <div class="mb-3">
+      <label for="dest-blobName" class="form-label">Blob Name</label>
+      @if (browseMode() && blobs().length) {
+        <select
+          id="dest-blobName"
+          class="form-select"
+          (change)="selectBlob($any($event.target).value)"
+        >
+          <option value="">-- Select a blob (optional) --</option>
+          @for (b of blobs(); track b.name) {
+            <option [value]="b.name" [selected]="destinationForm.getRawValue().blobName === b.name">
+              {{ b.name }}
+            </option>
+          }
+        </select>
+      } @else if (browseMode() && loadingBlobs()) {
+        <div class="form-control bg-light text-muted">
+          <i class="bi bi-arrow-clockwise spin me-1"></i>Loading blobs...
+        </div>
+      } @else {
+        <input
+          id="dest-blobName"
+          type="text"
+          class="form-control"
+          formControlName="blobName"
+          placeholder="e.g. received-data.json (optional)"
+        />
+      }
+    </div>
+
+    <!-- Key Name -->
+    <div class="mb-3">
+      <label for="dest-keyName" class="form-label">
+        Key Name (Vault Secret Alias)
+        <span class="text-danger">*</span>
+      </label>
+      @if (browseMode()) {
+        <input
+          id="dest-keyName"
+          type="text"
+          class="form-control"
+          [value]="destinationForm.getRawValue().keyName"
+          disabled
+        />
+        <div class="form-text">Auto-filled from registered storage account.</div>
+      } @else {
+        <input
+          id="dest-keyName"
+          type="text"
+          class="form-control"
+          formControlName="keyName"
+          placeholder="e.g. dest-storage-key"
+          [class.is-invalid]="
+            destinationForm.get('keyName')?.invalid && destinationForm.get('keyName')?.touched
+          "
+        />
+        @if (destinationForm.get('keyName')?.invalid && destinationForm.get('keyName')?.touched) {
+          <div class="text-danger">Key Name is required.</div>
+        }
+        <div class="form-text">
+          The alias of the secret in your vault that contains the destination storage account key.
+        </div>
+      }
+    </div>
+  </form>
+
+  @if (!hasBrowseMode()) {
+    <div class="alert alert-info small">
+      <i class="bi bi-info-circle me-1"></i>
+      You can register Azure Storage accounts in
+      <strong>Settings &gt; Storage Accounts</strong>
+      to enable browsing containers and blobs directly.
+    </div>
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-primary" (click)="activeModal.dismiss()">
+    Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="submit()">Start Transfer</button>
+</div>

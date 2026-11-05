@@ -1,10 +1,15 @@
 import { FormControl } from '@angular/forms';
-import { SecretInputV3 } from 'management-sdk';
+import { SecretInput } from 'management-sdk';
 import { FilterOption } from '../../../core/components/filters/filter-option.model';
 import { removeEmptyProperties } from '../../../core/utils/object.util';
 import { Asset } from '../model/asset/asset';
 import { AssetProperties } from '../model/asset/assetProperties';
-import { DataAddress, HttpDataAddress } from '../model/asset/dataAddress';
+import {
+  AzureBlobDataAddress,
+  DataAddress,
+  HttpDataAddress,
+  S3DataAddress
+} from '../model/asset/dataAddress';
 
 export const accessTypes = [
   {
@@ -33,9 +38,14 @@ export const deliveryMethods = [
     disabled: false
   },
   {
+    label: 'Analytics Dataset',
+    value: 'AnalyticsDataset',
+    disabled: false
+  },
+  {
     label: 'File',
     value: 'File',
-    disabled: true
+    disabled: false
   }
 ];
 
@@ -277,11 +287,15 @@ export function buildFilterOptions(controls: {
         {
           label: 'Kafka',
           value: 'kafka'
+        },
+        {
+          label: 'Analytics Dataset',
+          value: 'analyticsdataset'
+        },
+        {
+          label: 'File',
+          value: 'file'
         }
-        // {
-        //   label: 'File',
-        //   value: 'file'
-        // }
       ],
       widthSize: 'small'
     },
@@ -378,7 +392,7 @@ export function transformInSecret(formValues: {
   authType: string;
   baseAuth: { secretName: string; authCode: string };
   oAuth2: { clientSecretKey: string; privateKeyName: string; secretValue: string };
-}): SecretInputV3 | undefined {
+}): SecretInput | undefined {
   const authType = formValues.authType;
   // Handle BaseAuth
   if (authType === 'BaseAuth' && formValues.baseAuth.secretName && formValues.baseAuth.authCode) {
@@ -463,7 +477,7 @@ export function transformInDataAddressRest(
 export function transformInSecretKafka(formValues: {
   securityProtocol: string;
   saslAuth?: { secretName: string; password: string };
-}): SecretInputV3 | undefined {
+}): SecretInput | undefined {
   const securityProtocol = formValues.securityProtocol;
 
   // Handle SASL Authentication (for both SASL_PLAINTEXT and SASL_SSL)
@@ -576,5 +590,65 @@ export function transformInDataAddressKafka(
   }
 
   // Clean up empty or undefined properties
+  return removeEmptyProperties(dataAddress) as unknown as DataAddress;
+}
+
+export function transformInSecretAzureBlob(formValues: {
+  keyName: string;
+  storageKey: string;
+}): SecretInput | undefined {
+  if (formValues.keyName && formValues.storageKey) {
+    return {
+      '@context': { '@vocab': '' },
+      '@type': 'Secret',
+      '@id': formValues.keyName,
+      value: formValues.storageKey
+    };
+  }
+  return undefined;
+}
+
+export function transformInDataAddressAzureBlob(
+  formValues: {
+    account: string;
+    container: string;
+    blobName: string;
+    keyName: string;
+    storageKey: string;
+  },
+  deleteSecretInfo = false
+): DataAddress {
+  const dataAddress: Partial<AzureBlobDataAddress> = {
+    '@type': 'DataAddress',
+    type: 'AzureStorage',
+    account: formValues.account,
+    container: formValues.container,
+    blobName: formValues.blobName || undefined,
+    keyName: deleteSecretInfo ? '' : formValues.keyName
+  };
+
+  // Clean up empty or undefined properties
+  return removeEmptyProperties(dataAddress) as unknown as DataAddress;
+}
+
+export function transformInDataAddressS3(formValues: {
+  bucketName: string;
+  region: string;
+  pathPrefix: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  endpointUrl: string;
+}): DataAddress {
+  const dataAddress: Partial<S3DataAddress> = {
+    '@type': 'DataAddress',
+    type: 'S3Bucket',
+    bucketName: formValues.bucketName,
+    region: formValues.region,
+    pathPrefix: formValues.pathPrefix || undefined,
+    accessKeyId: formValues.accessKeyId,
+    secretAccessKey: formValues.secretAccessKey,
+    endpointUrl: formValues.endpointUrl || undefined
+  };
+
   return removeEmptyProperties(dataAddress) as unknown as DataAddress;
 }

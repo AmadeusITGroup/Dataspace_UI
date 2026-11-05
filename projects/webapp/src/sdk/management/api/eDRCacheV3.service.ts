@@ -21,7 +21,7 @@ import { ApiErrorDetail } from '../model/apiErrorDetail';
 // @ts-ignore
 import { DataAddress } from '../model/dataAddress';
 // @ts-ignore
-import { EndpointDataReferenceEntryV3 } from '../model/endpointDataReferenceEntryV3';
+import { EndpointDataReferenceEntry1 } from '../model/endpointDataReferenceEntry1';
 // @ts-ignore
 import { QuerySpec } from '../model/querySpec';
 
@@ -230,9 +230,9 @@ export class EDRCacheV3Service {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public requestEdrEntriesV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<EndpointDataReferenceEntryV3>>;
-    public requestEdrEntriesV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<EndpointDataReferenceEntryV3>>>;
-    public requestEdrEntriesV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<EndpointDataReferenceEntryV3>>>;
+    public requestEdrEntriesV3(querySpec?: QuerySpec, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<EndpointDataReferenceEntry1>>;
+    public requestEdrEntriesV3(querySpec?: QuerySpec, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<EndpointDataReferenceEntry1>>>;
+    public requestEdrEntriesV3(querySpec?: QuerySpec, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<EndpointDataReferenceEntry1>>>;
     public requestEdrEntriesV3(querySpec?: QuerySpec, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -281,7 +281,7 @@ export class EDRCacheV3Service {
         }
 
         let localVarPath = `/v3/edrs/request`;
-        return this.httpClient.request<Array<EndpointDataReferenceEntryV3>>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<Array<EndpointDataReferenceEntry1>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: querySpec,

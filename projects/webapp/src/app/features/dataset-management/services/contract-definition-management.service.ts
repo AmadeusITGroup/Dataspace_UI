@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { injectMutation, injectQuery } from '@tanstack/angular-query-experimental';
 import {
-  ContractDefinitionInputV3,
-  ContractDefinitionOutputV3,
+  ContractDefinitionInput,
+  ContractDefinitionOutput,
   ContractDefinitionV3Service
 } from 'management-sdk';
 import { lastValueFrom } from 'rxjs';
@@ -10,7 +10,7 @@ import { addContext, noPaginationQuerySpec, normalizeJsonLD } from '../../../jso
 import { ContractDefinition } from '../model/contract/contract-definition.model';
 
 const formatContractDefinition = async (
-  promise: Promise<ContractDefinitionOutputV3>
+  promise: Promise<ContractDefinitionOutput>
 ): Promise<ContractDefinition> => {
   const item = await promise;
   const selectors = Array.isArray(item.assetsSelector)
@@ -49,7 +49,7 @@ export class ContractDefinitionManagementService {
         this.#contractDefV3.queryContractDefinitionsV3(noPaginationQuerySpec, undefined)
       ).then(async (items) => {
         const formattedItems = await Promise.all(
-          items.map(normalizeJsonLD<ContractDefinitionOutputV3>).map(formatContractDefinition)
+          items.map(normalizeJsonLD<ContractDefinitionOutput>).map(formatContractDefinition)
         );
         return formattedItems.filter(
           (contractDefinition) => contractDefinition && contractDefinition['@id']
@@ -67,10 +67,10 @@ export class ContractDefinitionManagementService {
 
   createContractDefinitionQuery = injectMutation(() => ({
     mutationKey: ['createContract'],
-    mutationFn: (newContractDefinition: ContractDefinitionInputV3) => {
+    mutationFn: (newContractDefinition: ContractDefinitionInput) => {
       return lastValueFrom(
         this.#contractDefV3.createContractDefinitionV3(
-          addContext<ContractDefinitionInputV3>(newContractDefinition, ['@vocab'])
+          addContext<ContractDefinitionInput>(newContractDefinition, ['@vocab'])
         )
       );
     }
@@ -78,10 +78,10 @@ export class ContractDefinitionManagementService {
 
   updateContractDefinitionQuery = injectMutation(() => ({
     mutationKey: ['updateContract'],
-    mutationFn: (contractDefinition: ContractDefinitionInputV3) => {
+    mutationFn: (contractDefinition: ContractDefinitionInput) => {
       return lastValueFrom(
         this.#contractDefV3.updateContractDefinitionV3(
-          addContext<ContractDefinitionInputV3>(contractDefinition, ['@vocab'])
+          addContext<ContractDefinitionInput>(contractDefinition, ['@vocab'])
         )
       );
     }

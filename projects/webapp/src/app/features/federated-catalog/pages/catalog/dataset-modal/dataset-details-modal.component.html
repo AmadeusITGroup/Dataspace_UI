@@ -29,11 +29,11 @@
   </div>
   <div class="d-flex flex-column mb-3">
     <h4 class="fs-5">Description</h4>
-    <div>{{ dataset().description }}</div>
+    <div [innerHTML]="getSafeDescription(dataset().description)"></div>
   </div>
   <div class="d-flex flex-column mb-3">
     <h4 class="fs-5">Type</h4>
-    <div>{{ dataset().type }}</div>
+    <div>{{ dataset().deliveryMethod }}</div>
   </div>
 
   <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
@@ -68,7 +68,7 @@
         <i class="bi bi-person-check-fill text-success me-2"> Own </i>
         @let contractsSearch = 'type=Provider,id=' + dataset().id;
         <a
-          class="text-success text-decoration-none"
+          class="text-success border-success"
           [routerLink]="['/contract-management/contract-negotiation']"
           [queryParams]="{ searchBy: contractsSearch }"
           (click)="activeModal.close()"
@@ -83,7 +83,7 @@
           ',id=' +
           dataset().id;
         <a
-          class="text-success text-decoration-none"
+          class="text-success border-success"
           [routerLink]="['/contract-management/contract-negotiation']"
           [queryParams]="{ searchBy: contractsSearch }"
           (click)="activeModal.close()"
@@ -105,7 +105,7 @@
               @let specificContractSearch = '@id=' + negotiationId;
               <div>
                 <a
-                  class="text-success text-decoration-none"
+                  class="text-success border-success"
                   [routerLink]="['/contract-management/contract-negotiation']"
                   [queryParams]="{ searchBy: specificContractSearch }"
                   (click)="activeModal.close()"
@@ -118,6 +118,7 @@
               @let canNegotiate = !dataset().owned;
               @if (canNegotiate) {
                 <button
+                  id="negotiate-offer-{{ i }}"
                   class="btn btn-outline-primary"
                   [disabled]="isOfferTemporarilyDisabled(i)"
                   (click)="negotiate(offer, dataset(), i)"

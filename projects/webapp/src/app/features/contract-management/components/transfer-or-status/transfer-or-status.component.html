@@ -4,13 +4,181 @@
       <ng-container *ngTemplateOutlet="statusTextTemplate"></ng-container>
     } @else {
       <button
-        class="btn btn-outline-primary me-2 bi bi-arrow-right-circle"
-        (click)="onTransfer($event)"
-        [title]="isTransferInProgress() ? 'A Transfer is already registered' : 'Start Transfer'"
+        class="btn btn-outline-primary bi bi-arrow-right-circle"
+        (click)="openTransferConfig($event)"
+        [title]="
+          isTransferInProgress()
+            ? 'A Transfer is already registered'
+            : 'Configure and start transfer'
+        "
         [disabled]="transferPending()"
       >
         Transfer
       </button>
+
+      @if (transferConfigOpen()) {
+        <div
+          class="modal fade show d-block"
+          tabindex="-1"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="transferConfigModalTitle"
+          (click)="$event.target === $event.currentTarget && closeTransferConfig($event)"
+          (keydown.enter)="closeTransferConfig($event)"
+          (keydown.space)="closeTransferConfig($event)"
+        >
+          <div
+            class="modal-dialog"
+            role="document"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 id="transferConfigModalTitle" class="modal-title">Initiate transfer</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  aria-label="Close"
+                  (click)="closeTransferConfig($event)"
+                ></button>
+              </div>
+              <div class="modal-body d-flex flex-column gap-3">
+                <div>
+                  <label class="form-label" for="transferDestinationType">Type</label>
+                  <select
+                    id="transferDestinationType"
+                    class="form-select"
+                    [(ngModel)]="destinationType"
+                  >
+                    @for (destinationType of destinationTypeOptions; track destinationType) {
+                      <option [value]="destinationType">{{ destinationType }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-check">
+                  <input
+                    id="dataAddressPull"
+                    class="form-check-input"
+                    type="checkbox"
+                    [checked]="dataAddressPull()"
+                    (click)="$event.stopPropagation()"
+                    (change)="dataAddressPull.set(!dataAddressPull())"
+                  />
+                  <label class="form-check-label" for="dataAddressPull">Data Address Pull</label>
+                </div>
+
+                <div class="d-flex flex-column gap-2" [class.opacity-50]="dataAddressPull()">
+                  <div>
+                    <label class="form-label" for="transferPushMethod">Method</label>
+                    <select
+                      id="transferPushMethod"
+                      class="form-select"
+                      [(ngModel)]="pushMethod"
+                      [disabled]="dataAddressPull()"
+                    >
+                      @for (methodOption of methodOptions; track methodOption) {
+                        <option [value]="methodOption">{{ methodOption }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushBaseUrl">Base URL</label>
+                    <input
+                      id="transferPushBaseUrl"
+                      class="form-control"
+                      placeholder="https://..."
+                      [(ngModel)]="pushBaseUrl"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushPath">Path</label>
+                    <input
+                      id="transferPushPath"
+                      class="form-control"
+                      placeholder="/events"
+                      [(ngModel)]="pushPath"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushQueryParams">Query params</label>
+                    <input
+                      id="transferPushQueryParams"
+                      class="form-control"
+                      placeholder="k1=v1&k2=v2"
+                      [(ngModel)]="pushQueryParams"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushAuthentication"
+                      >Authentication</label
+                    >
+                    <input
+                      id="transferPushAuthentication"
+                      class="form-control"
+                      placeholder="Bearer / Basic / API Key"
+                      [(ngModel)]="pushAuthentication"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushAuthKey">Auth key</label>
+                    <input
+                      id="transferPushAuthKey"
+                      class="form-control"
+                      placeholder="Authorization"
+                      [(ngModel)]="pushAuthKey"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushAuthCode"
+                      >Auth code (optional)</label
+                    >
+                    <input
+                      id="transferPushAuthCode"
+                      class="form-control"
+                      [(ngModel)]="pushAuthCode"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-label" for="transferPushHeaders">Headers</label>
+                    <input
+                      id="transferPushHeaders"
+                      class="form-control"
+                      placeholder="k:v, x-id:123"
+                      [(ngModel)]="pushHeaders"
+                      [disabled]="dataAddressPull()"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="closeTransferConfig($event)"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="onTransfer($event)"
+                  [disabled]="transferPending() || isPushConfigInvalid()"
+                >
+                  Start transfer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+      }
     }
   }
 </div>

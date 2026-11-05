@@ -104,6 +104,21 @@ export const I18N = {
             SECRET_NAME:
               'Alias of the secret stored in the vault containing the OAuth2 client secret'
           }
+        },
+        AZURE_BLOB: {
+          TITLE: 'Azure Blob Storage Settings',
+          DESCRIPTION:
+            'Configure Azure Blob Storage connection details and authentication for file-based data transfer',
+          ACCOUNT:
+            'The Azure Storage account name (e.g., mystorageaccount). This is the globally unique name of your storage account',
+          CONTAINER:
+            'The name of the blob container within the storage account. Must be lowercase, 3-63 characters, and contain only letters, numbers, and hyphens',
+          BLOB_NAME:
+            'Optional specific blob (file) name within the container. If omitted, the entire container may be used',
+          KEY_NAME:
+            'Alias of the secret stored in the vault that contains the storage account key. This name is used to reference the secret without exposing the actual key',
+          STORAGE_KEY:
+            'The Azure Storage account access key. This key provides full access to the storage account and should be kept secure'
         }
       }
     }
@@ -127,6 +142,22 @@ export const I18N = {
     CONTRACT_NEGOTIATION_TOOLTIPS: {
       SEARCH_TEXT:
         'The search filters contract negotiations by matching the search text (case-insensitive) against the negotiation ID, contract ID, counter party ID, state, type, dataset ID, dataset description, or dataset name.'
+    }
+  },
+  SETTINGS: {
+    STORAGE_ACCOUNTS: {
+      TITLE: 'Azure Storage Accounts',
+      DESCRIPTION:
+        'Register Azure Storage accounts to enable browsing containers and blobs when creating assets or initiating file transfers.',
+      ACCOUNT_NAME:
+        'The globally unique Azure Storage account name (lowercase, 3-24 characters, letters and numbers only).',
+      ACCOUNT_KEY:
+        'The access key for the storage account. This will be stored securely in the EDC vault and never saved in the browser.',
+      LABEL: 'An optional display name to help identify this storage account in dropdown menus.',
+      VAULT_SECRET:
+        'The vault secret ID used to store the account key. Must match the Azure Storage account name exactly.',
+      BROWSE_MODE:
+        'When enabled, you can select from registered storage accounts and browse their containers and blobs directly instead of typing values manually.'
     }
   }
 };

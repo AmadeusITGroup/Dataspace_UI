@@ -1,0 +1,26 @@
+<footer class="df-app-footer px-5 pb-3">
+  <hr class="mt-0 mb-3" />
+  <div class="df-app-footer-line flex-md-row flex-column">
+    @if (organizationConfig.ORG_ADDRESS) {
+      <a
+        class="df-footer-brand mb-3 mb-md-0"
+        [href]="organizationConfig.ORG_ADDRESS"
+        target="_blank"
+        rel="noopener"
+      >
+        @if (organizationConfig.ORG_LOGO) {
+          <!-- Height only: the width follows the tenant logo's own aspect ratio. -->
+          <img
+            [alt]="organizationConfig.ORG_NAME + ' website'"
+            [src]="organizationConfig.ORG_LOGO"
+            height="24"
+          />
+        } @else {
+          <span class="fw-bold">{{ organizationConfig.ORG_NAME }}</span>
+        }
+        <span class="visually-hidden">&nbsp;(opens in a new tab)</span>
+      </a>
+    }
+    <div class="ms-md-5">&copy; {{ year }} {{ organizationConfig.ORG_NAME }}</div>
+  </div>
+</footer>

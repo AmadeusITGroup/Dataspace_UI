@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -31,7 +30,6 @@ import { PolicyDetailsModalComponent } from './policy-modal/policy-details-modal
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    CommonModule,
     SpinnerComponent,
     NgbDropdownModule,
     HighlightDirective,

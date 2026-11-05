@@ -20,7 +20,6 @@
 <div class="modal-body d-flex flex-column gap-2">
   @if (modeVar === CRUD.CREATE || modeVar === CRUD.UPDATE) {
     @if (!secretByIdQuery.isPending() || modeVar === CRUD.CREATE) {
-      <!-- ASSET PROPERTIES -->
       <app-asset-properties-form
         [asset]="assetVar"
         [mode]="modeVar"
@@ -28,19 +27,34 @@
         (deliveryMethodChange)="onDeliveryMethodChange($event)"
       ></app-asset-properties-form>
 
-      <!-- ASSET PRIVATE CONNECTION SETTINGS - Conditional based on delivery method -->
       <div class="private-data-section p-3 rounded">
         @if (deliveryMethod() === 'Kafka') {
           <app-asset-data-address-kafka-component
-            [dataAddress]="asset()?.dataAddress"
+            [dataAddress]="$safeNavigationMigration(asset()?.dataAddress)"
             [secret]="secret()"
             [mode]="mode()"
             (formSubmit)="onConnectorFormSubmit($event)"
             (secretAction)="onSecretActionEmit($event)"
           ></app-asset-data-address-kafka-component>
+        } @else if (deliveryMethod() === 'AnalyticsDataset') {
+          <app-asset-data-address-s3
+            [dataAddress]="$safeNavigationMigration(asset()?.dataAddress)"
+            [secret]="secret()"
+            [mode]="mode()"
+            (formSubmit)="onConnectorFormSubmit($event)"
+            (secretAction)="onSecretActionEmit($event)"
+          ></app-asset-data-address-s3>
+        } @else if (deliveryMethod() === 'File') {
+          <app-asset-data-address-azure-blob-component
+            [dataAddress]="$safeNavigationMigration(asset()?.dataAddress)"
+            [secret]="secret()"
+            [mode]="mode()"
+            (formSubmit)="onConnectorFormSubmit($event)"
+            (secretAction)="onSecretActionEmit($event)"
+          ></app-asset-data-address-azure-blob-component>
         } @else {
           <app-asset-data-address-rest-component
-            [dataAddress]="asset()?.dataAddress"
+            [dataAddress]="$safeNavigationMigration(asset()?.dataAddress)"
             [secret]="secret()"
             [mode]="mode()"
             (formSubmit)="onConnectorFormSubmit($event)"

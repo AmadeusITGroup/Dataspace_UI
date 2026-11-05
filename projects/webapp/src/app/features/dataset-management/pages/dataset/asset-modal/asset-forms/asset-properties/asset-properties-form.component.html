@@ -68,7 +68,70 @@
     <!-- DESCRIPTION -->
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
-      <textarea id="description" class="form-control" formControlName="description"></textarea>
+      <div class="description-editor-wrapper border rounded">
+        <!-- Formatting Toolbar -->
+        <div class="formatting-toolbar border-bottom p-2 bg-light d-flex gap-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Bold"
+            (click)="formatText('bold')"
+          >
+            <i class="bi bi-type-bold"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Italic"
+            (click)="formatText('italic')"
+          >
+            <i class="bi bi-type-italic"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Underline"
+            (click)="formatText('underline')"
+          >
+            <i class="bi bi-type-underline"></i>
+          </button>
+          <div class="vr"></div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Bullet List"
+            (click)="formatText('insertUnorderedList')"
+          >
+            <i class="bi bi-list-ul"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Numbered List"
+            (click)="formatText('insertOrderedList')"
+          >
+            <i class="bi bi-list-ol"></i>
+          </button>
+          <div class="vr"></div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            title="Remove Formatting"
+            (click)="formatText('removeFormat')"
+          >
+            <i class="bi bi-eraser"></i>
+          </button>
+        </div>
+        <!-- Contenteditable Editor -->
+        <div
+          id="description"
+          #descriptionEditor
+          class="description-editor form-control"
+          contenteditable="true"
+          (input)="onDescriptionInput()"
+          style="min-height: 100px; max-height: 300px; overflow-y: auto"
+        ></div>
+      </div>
     </div>
 
     <!-- LOGO & DOCUMENTATION URL -->
@@ -92,7 +155,7 @@
             <span class="input-group-text bg-white border-start-0 p-0" style="height: 100%">
               <img
                 class="thumbnail"
-                [src]="assetForm.get('properties.logoUrl')?.value"
+                [src]="$safeNavigationMigration(assetForm.get('properties.logoUrl')?.value)"
                 alt="logo entered"
               />
             </span>
@@ -125,7 +188,7 @@
             assetForm.get('properties.documentationUrl')?.value
           ) {
             <app-field-link
-              [url]="assetForm.get('properties.documentationUrl')?.value"
+              [url]="$safeNavigationMigration(assetForm.get('properties.documentationUrl')?.value)"
             ></app-field-link>
           }
         </div>
@@ -236,7 +299,7 @@
             track license;
             let i = $index
           ) {
-            <span class="badge text-bg-primary me-2 p-2"
+            <span class="badge bg-info me-2 p-2"
               >{{ license }}
               <i
                 class="bi bi-x"
@@ -251,6 +314,76 @@
         </div>
       </div>
     </div>
+
+    <!-- ANALYTICS DATASET SPECIFIC FIELDS -->
+    @if (assetForm.get('properties.deliveryMethod')?.value === 'AnalyticsDataset') {
+      <div class="row mt-3" formGroupName="properties">
+        <!-- COVERAGE -->
+        <div class="col-6 mb-3">
+          <label for="coverage" class="form-label">Coverage</label>
+          <textarea
+            id="coverage"
+            class="form-control"
+            formControlName="coverage"
+            rows="1"
+          ></textarea>
+        </div>
+
+        <!-- HISTORY DEPTH -->
+        <div class="col-6 mb-3">
+          <label for="historyDepth" class="form-label">History Depth</label>
+          <textarea
+            id="historyDepth"
+            class="form-control"
+            formControlName="historyDepth"
+            rows="1"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="row" formGroupName="properties">
+        <!-- TIME GRANULARITY -->
+        <div class="col-6 mb-3">
+          <label for="timeGranularity" class="form-label">Time Granularity</label>
+          <textarea
+            id="timeGranularity"
+            class="form-control"
+            formControlName="timeGranularity"
+            rows="1"
+          ></textarea>
+        </div>
+
+        <!-- UPDATE FREQUENCY -->
+        <div class="col-6 mb-3">
+          <label for="updateFrequency" class="form-label">Update Frequency</label>
+          <textarea
+            id="updateFrequency"
+            class="form-control"
+            formControlName="updateFrequency"
+            rows="1"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="row" formGroupName="properties">
+        <!-- SIZE -->
+        <div class="col-6 mb-3">
+          <label for="size" class="form-label">Size</label>
+          <textarea id="size" class="form-control" formControlName="size" rows="1"></textarea>
+        </div>
+
+        <!-- DELIVERY METHODS -->
+        <div class="col-6 mb-3">
+          <label for="deliveryMethods" class="form-label">Delivery Methods</label>
+          <textarea
+            id="deliveryMethods"
+            class="form-control"
+            formControlName="deliveryMethods"
+            rows="1"
+          ></textarea>
+        </div>
+      </div>
+    }
   </div>
 
   <div class="d-flex justify-content-center my-3">

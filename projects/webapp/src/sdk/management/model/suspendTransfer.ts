@@ -10,8 +10,7 @@
 
 
 export interface SuspendTransfer { 
-    '@context': Array<string>;
-    '@type': string;
-    reason?: string;
+    '@type'?: string;
+    state?: string;
 }
 

@@ -81,16 +81,17 @@ export class ContractNegotiationDetailsModalComponent {
   });
 
   public canDeleteContract: Signal<boolean> = computed(() => {
-    return false;
-    // To be enabled when backend ready with delete
-    // (
-    //   [ContractStateEnum.TERMINATED, ContractStateEnum.FINALIZED].includes(
-    //     this.enrichedNegotiation()?.negotiation?.state as ContractStateEnum
-    //   ) && !this.enrichedNegotiation().agreement
-    // );
+    return (
+      [ContractStateEnum.TERMINATED, ContractStateEnum.FINALIZED].includes(
+        this.enrichedNegotiation()?.negotiation?.state as ContractStateEnum
+      ) && !this.enrichedNegotiation().agreement
+    );
   });
 
+  public isDeleteInProgress = false;
+
   public terminateContract(reason: string) {
+    this.isDeleteInProgress = true;
     this.contractNegotiationService.terminate.mutate(
       { contractId: this.negotiation()['@id'] as string, reason: reason },
       {
@@ -99,6 +100,7 @@ export class ContractNegotiationDetailsModalComponent {
         },
         onError: (error: unknown) => {
           console.log(error);
+          this.isDeleteInProgress = false;
         }
       }
     );

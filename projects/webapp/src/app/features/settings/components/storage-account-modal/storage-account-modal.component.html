@@ -1,0 +1,91 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    {{ isEditMode ? 'Edit Storage Account' : 'Register Storage Account' }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Account Name -->
+    <div class="mb-3">
+      <label for="accountName" class="form-label"
+        >Account Name <span class="text-danger">*</span></label
+      >
+      <input
+        id="accountName"
+        type="text"
+        class="form-control"
+        formControlName="accountName"
+        placeholder="e.g. mystorageaccount"
+      />
+      @if (form.get('accountName')?.touched && form.get('accountName')?.errors) {
+        <div class="text-danger mt-1 small">
+          @if (form.get('accountName')?.errors?.['required']) {
+            Account name is required.
+          } @else if (form.get('accountName')?.errors?.['pattern']) {
+            Must be 3-24 lowercase letters and numbers only.
+          } @else if (form.get('accountName')?.errors?.['duplicate']) {
+            This account is already registered.
+          }
+        </div>
+      }
+      <div class="form-text">
+        The globally unique Azure Storage account name (lowercase, 3-24 characters, letters and
+        numbers only).
+      </div>
+    </div>
+
+    <!-- Account Key -->
+    <div class="mb-3">
+      <label for="accountKey" class="form-label">
+        Account Key
+        @if (!isEditMode) {
+          <span class="text-danger">*</span>
+        }
+      </label>
+      <input
+        id="accountKey"
+        type="password"
+        class="form-control"
+        formControlName="accountKey"
+        placeholder="{{
+          isEditMode ? 'Leave blank to keep existing key' : 'Paste your storage account access key'
+        }}"
+      />
+      @if (form.get('accountKey')?.touched && form.get('accountKey')?.errors?.['required']) {
+        <div class="text-danger mt-1 small">Account key is required.</div>
+      }
+      <div class="form-text">
+        The access key will be stored securely in the EDC vault. It is never stored in the browser.
+      </div>
+    </div>
+
+    <!-- Label -->
+    <div class="mb-3">
+      <label for="label" class="form-label">Label</label>
+      <input
+        id="label"
+        type="text"
+        class="form-control"
+        formControlName="label"
+        placeholder="e.g. Production Storage"
+      />
+      <div class="form-text">Optional display name to help identify this account.</div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">
+    Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid">
+    {{ isEditMode ? 'Update' : 'Register' }}
+  </button>
+</div>

@@ -1,0 +1,145 @@
+<h5 class="section-label mb-2"><i class="bi bi-database me-2"></i>S3 Bucket Information</h5>
+<p>Configure the S3 bucket connection details for your analytics dataset.</p>
+
+<div class="data-address border-top d-flex pe-3" [formGroup]="dataAddressForm">
+  <!-- Left Section: Bucket Configuration -->
+  <div class="data-address-section w-50 p-3 border-end">
+    <h6 class="mb-3">Bucket Configuration</h6>
+
+    <!-- Bucket Name -->
+    <div class="mb-3">
+      <label for="bucketName" class="form-label">
+        Bucket Name
+        <span class="text-danger">*</span>
+      </label>
+      <input
+        id="bucketName"
+        type="text"
+        class="form-control"
+        formControlName="bucketName"
+        placeholder="my-analytics-bucket"
+        [class.is-invalid]="
+          dataAddressForm.get('bucketName')?.invalid && dataAddressForm.get('bucketName')?.touched
+        "
+      />
+      @if (
+        dataAddressForm.get('bucketName')?.invalid && dataAddressForm.get('bucketName')?.touched
+      ) {
+        <div class="text-danger">Bucket Name is required.</div>
+      }
+    </div>
+
+    <!-- Region -->
+    <div class="mb-3">
+      <label for="region" class="form-label">
+        Region
+        <span class="text-danger">*</span>
+      </label>
+      <input
+        id="region"
+        type="text"
+        class="form-control"
+        formControlName="region"
+        placeholder="us-east-1"
+        [class.is-invalid]="
+          dataAddressForm.get('region')?.invalid && dataAddressForm.get('region')?.touched
+        "
+      />
+      @if (dataAddressForm.get('region')?.invalid && dataAddressForm.get('region')?.touched) {
+        <div class="text-danger">Region is required.</div>
+      }
+    </div>
+
+    <!-- Path Prefix (Optional) -->
+    <div class="mb-3">
+      <label for="pathPrefix" class="form-label"> Path Prefix </label>
+      <input
+        id="pathPrefix"
+        type="text"
+        class="form-control"
+        formControlName="pathPrefix"
+        placeholder="data/analytics/"
+      />
+    </div>
+  </div>
+
+  <!-- Right Section: Authentication -->
+  <div class="authentication-section w-50 ps-3">
+    <h6 class="mb-3">Authentication</h6>
+
+    <!-- Access Key ID -->
+    <div class="mb-3">
+      <label for="accessKeyId" class="form-label">
+        Access Key ID
+        <span class="text-danger">*</span>
+      </label>
+      <input
+        id="accessKeyId"
+        type="text"
+        class="form-control"
+        formControlName="accessKeyId"
+        placeholder="AKIAIOSFODNN7EXAMPLE"
+        [class.is-invalid]="
+          dataAddressForm.get('accessKeyId')?.invalid && dataAddressForm.get('accessKeyId')?.touched
+        "
+      />
+      @if (
+        dataAddressForm.get('accessKeyId')?.invalid && dataAddressForm.get('accessKeyId')?.touched
+      ) {
+        <div class="text-danger">Access Key ID is required.</div>
+      }
+    </div>
+
+    <!-- Secret Access Key -->
+    <div class="mb-3">
+      <label for="secretAccessKey" class="form-label">
+        Secret Access Key
+        <span class="text-danger">*</span>
+      </label>
+      <input
+        id="secretAccessKey"
+        [type]="showSecret ? 'text' : 'password'"
+        class="form-control"
+        formControlName="secretAccessKey"
+        placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        [class.is-invalid]="
+          dataAddressForm.get('secretAccessKey')?.invalid &&
+          dataAddressForm.get('secretAccessKey')?.touched
+        "
+      />
+      @if (
+        dataAddressForm.get('secretAccessKey')?.invalid &&
+        dataAddressForm.get('secretAccessKey')?.touched
+      ) {
+        <div class="text-danger">Secret Access Key is required.</div>
+      }
+    </div>
+
+    <!-- Show Secret Checkbox -->
+    <div class="mb-3 form-check">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="showSecret"
+        [(ngModel)]="showSecret"
+        [ngModelOptions]="{ standalone: true }"
+      />
+      <label class="form-check-label" for="showSecret"> Show Secret Access Key </label>
+    </div>
+
+    <!-- Endpoint URL (Optional for S3-compatible services) -->
+    <div class="mb-3">
+      <label for="endpointUrl" class="form-label">
+        Endpoint URL
+        <small class="text-muted">(Optional, for S3-compatible services)</small>
+      </label>
+      <input
+        id="endpointUrl"
+        type="text"
+        class="form-control"
+        formControlName="endpointUrl"
+        placeholder="https://s3.custom-endpoint.com"
+      />
+    </div>
+  </div>
+</div>

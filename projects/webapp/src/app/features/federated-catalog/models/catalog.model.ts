@@ -19,6 +19,7 @@ export interface Dataset {
   contenttype?: string;
   hasPolicy: Offer[];
   type?: string;
+  deliveryMethod?: string;
 }
 export interface DatasetEnriched extends Dataset {
   negotiations: ContractAgreement[];

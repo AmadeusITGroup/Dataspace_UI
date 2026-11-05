@@ -1,14 +1,14 @@
 <div ngbAccordion class="w-100" [closeOthers]="true">
   <!-- PERMISSIONS -->
-  @let permissions = transformInArray(policy()?.['odrl:permission']);
-  @let obligations = transformInArray(policy()?.['odrl:obligation']);
-  @let prohibitions = transformInArray(policy()?.['odrl:prohibition']);
+  @let permissions = transformInArray($safeNavigationMigration(policy()?.['odrl:permission']));
+  @let obligations = transformInArray($safeNavigationMigration(policy()?.['odrl:obligation']));
+  @let prohibitions = transformInArray($safeNavigationMigration(policy()?.['odrl:prohibition']));
   @if (permissions.length || showEmptyItems()) {
     <div ngbAccordionItem>
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
           Permissions
-          <span class="ms-2 badge rounded-pill bg-primary">{{ permissions.length || 0 }}</span>
+          <span class="ms-2 badge rounded-pill bg-info">{{ permissions.length || 0 }}</span>
         </button>
       </h2>
       <div ngbAccordionCollapse>
@@ -30,7 +30,7 @@
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
           Obligations
-          <span class="ms-2 badge rounded-pill bg-primary">{{ obligations.length || 0 }}</span>
+          <span class="ms-2 badge rounded-pill bg-info">{{ obligations.length || 0 }}</span>
         </button>
       </h2>
       <div ngbAccordionCollapse>
@@ -52,7 +52,7 @@
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
           Prohibitions
-          <span class="ms-2 badge rounded-pill bg-primary">{{ prohibitions.length || 0 }}</span>
+          <span class="ms-2 badge rounded-pill bg-info">{{ prohibitions.length || 0 }}</span>
         </button>
       </h2>
       <div ngbAccordionCollapse>

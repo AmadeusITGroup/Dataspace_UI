@@ -24,7 +24,9 @@
           "
         />
         @if (dataAddressForm.get('baseUrl')?.valid && dataAddressForm.get('baseUrl')?.value) {
-          <app-field-link [url]="dataAddressForm.get('baseUrl')?.value"></app-field-link>
+          <app-field-link
+            [url]="$safeNavigationMigration(dataAddressForm.get('baseUrl')?.value)"
+          ></app-field-link>
         }
       </div>
       @if (dataAddressForm.get('baseUrl')?.invalid && dataAddressForm.get('baseUrl')?.touched) {
@@ -190,7 +192,7 @@
               dataAddressForm.get('oAuth2.tokenUrl')?.value
             ) {
               <app-field-link
-                [url]="dataAddressForm.get('oAuth2.tokenUrl')?.value"
+                [url]="$safeNavigationMigration(dataAddressForm.get('oAuth2.tokenUrl')?.value)"
               ></app-field-link>
             }
           </div>

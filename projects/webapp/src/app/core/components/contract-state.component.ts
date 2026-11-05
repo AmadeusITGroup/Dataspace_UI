@@ -19,14 +19,15 @@ import { ContractStateEnum } from '../enums/contract-state.enum';
         'bg-success': isFinalized(),
         'bg-warning text-dark': isFinalizedButNoAgree(),
         'bg-danger': isTerminatedState() && hasDetails(),
-        'bg-secondary': isTerminatedState() && !hasDetails(),
-        'bg-info-subtle text-dark': !isFinalized() && !isTerminatedState()
+        'bg-neutral': isTerminatedState() && !hasDetails(),
+        'bg-info-soft': !isFinalized() && !isTerminatedState()
       }"
       [ngbTooltip]="
         isFinalized()
           ? 'Finalized contract'
           : hasDetails() && isTerminatedState()
-            ? 'Contract terminated: ' + extractErrorReason(contract()?.negotiation)
+            ? 'Contract terminated: ' +
+              extractErrorReason($safeNavigationMigration(contract()?.negotiation))
             : null
       "
     >

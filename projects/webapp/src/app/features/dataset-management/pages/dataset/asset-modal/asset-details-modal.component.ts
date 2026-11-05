@@ -13,21 +13,25 @@ import {
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { injectQuery } from '@tanstack/angular-query-experimental';
-import { SecretInputV3 } from 'management-sdk';
+import { SecretInput } from 'management-sdk';
 import { CRUD } from '../../../../../core/models/crud';
 import { FooterAction } from '../../../../../core/models/ui-action';
 import { ToastService } from '../../../../../core/toasts/toast-service';
 import { FooterActionModalComponent } from '../../../../../shared/components/delete-footer-modal/footer-action-modal.component';
 import { Asset } from '../../../model/asset/asset';
 import {
+  AzureBlobDataAddress,
   DataAddress,
   HttpDataAddress,
-  KafkaCompleteDataAddress
+  KafkaCompleteDataAddress,
+  S3DataAddress
 } from '../../../model/asset/dataAddress';
 import { AssetManagementService } from '../../../services/asset-management.service';
 import { SecretManagementService } from '../../../services/secret-management.service';
+import { AssetDataAddressAzureBlobComponent } from './asset-forms/asset-data-address-azure-blob/asset-data-address-azure-blob.component';
 import { AssetDataAddressKafkaComponent } from './asset-forms/asset-data-address-kafka/asset-data-address-kafka.component';
 import { AssetDataAddressRestComponent } from './asset-forms/asset-data-address-rest/asset-data-address-rest.component';
+import { AssetDataAddressS3Component } from './asset-forms/asset-data-address-s3/asset-data-address-s3.component';
 import { AssetPropertiesFormComponent } from './asset-forms/asset-properties/asset-properties-form.component';
 import { AssetViewComponent } from './asset-view/asset-view.component';
 
@@ -41,7 +45,9 @@ import { AssetViewComponent } from './asset-view/asset-view.component';
     FooterActionModalComponent,
     NgClass,
     AssetDataAddressRestComponent,
-    AssetDataAddressKafkaComponent
+    AssetDataAddressKafkaComponent,
+    AssetDataAddressAzureBlobComponent,
+    AssetDataAddressS3Component
   ],
   providers: [SecretManagementService, AssetManagementService],
   templateUrl: './asset-details-modal.component.html',
@@ -49,55 +55,56 @@ import { AssetViewComponent } from './asset-view/asset-view.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssetDetailsModalComponent implements OnInit {
-  // Services
   readonly activeModal = inject(NgbActiveModal);
   readonly assetManagementService = inject(AssetManagementService);
   readonly secretManagementService = inject(SecretManagementService);
   readonly toastService = inject(ToastService);
 
-  // Signals and state
   public asset = signal<Asset | null>(null);
   public mode = signal<CRUD>(CRUD.CREATE);
   public deleteAsset = output<Asset>();
   public footerAction = signal<FooterAction | null>(null);
 
-  // Form outputs
   assetFormToSave = signal<Asset | undefined>(undefined);
   dataAddressFormToSave = signal<DataAddress | undefined>(undefined);
-  secretFormToSave = signal<SecretInputV3 | undefined>(undefined);
+  secretFormToSave = signal<SecretInput | undefined>(undefined);
   secretActionToSave = signal<CRUD | null>(null);
 
-  // Secret signals
-  secret: Signal<SecretInputV3 | null | undefined> = computed(() => this.secretByIdQuery.data());
+  secret: Signal<SecretInput | null | undefined> = computed(() => this.secretByIdQuery.data());
   readonly secretByIdQuery = injectQuery(() =>
     this.secretManagementService.getSecretByIdQuery(this.secretId())
   );
   secretId = computed(() => {
-    const asset = this.asset();
+    const dataAddress = this.asset()?.dataAddress;
+    if (!dataAddress || dataAddress.type === 'S3Bucket') {
+      return undefined;
+    }
+
+    if (dataAddress.type === 'AzureStorage') {
+      return (dataAddress as AzureBlobDataAddress).keyName;
+    }
+
     return (
-      asset?.dataAddress.secretName ||
-      (asset?.dataAddress as HttpDataAddress)?.['oauth2:clientSecretKey'] ||
-      (asset?.dataAddress as HttpDataAddress)?.['oauth2:privateKeyName'] ||
-      (asset?.dataAddress as KafkaCompleteDataAddress)?.['kafka:sasl:username']
+      (dataAddress as HttpDataAddress)?.secretName ||
+      (dataAddress as HttpDataAddress)?.['oauth2:clientSecretKey'] ||
+      (dataAddress as HttpDataAddress)?.['oauth2:privateKeyName'] ||
+      (dataAddress as KafkaCompleteDataAddress)?.secretName
     );
   });
 
-  // Current delivery method signal (tracks form changes)
   currentDeliveryMethod = signal<string>('Api');
 
-  // Computed delivery method
   deliveryMethod = computed(
     () => this.currentDeliveryMethod() || this.asset()?.properties?.deliveryMethod || 'Api'
   );
 
-  // ViewChild references
-  @ViewChild(AssetPropertiesFormComponent) formProperties: AssetPropertiesFormComponent =
-    new AssetPropertiesFormComponent();
-  @ViewChild(AssetDataAddressRestComponent) formDataAddress = new AssetDataAddressRestComponent();
-  @ViewChild(AssetDataAddressKafkaComponent) formDataAddressKafka =
-    new AssetDataAddressKafkaComponent();
+  @ViewChild(AssetPropertiesFormComponent) formProperties!: AssetPropertiesFormComponent;
+  @ViewChild(AssetDataAddressRestComponent) formDataAddress!: AssetDataAddressRestComponent;
+  @ViewChild(AssetDataAddressKafkaComponent) formDataAddressKafka!: AssetDataAddressKafkaComponent;
+  @ViewChild(AssetDataAddressAzureBlobComponent)
+  formDataAddressAzureBlob!: AssetDataAddressAzureBlobComponent;
+  @ViewChild(AssetDataAddressS3Component) formDataAddressS3!: AssetDataAddressS3Component;
 
-  // Constants
   public readonly CRUD = CRUD;
   public readonly FooterAction = FooterAction;
 
@@ -107,7 +114,6 @@ export class AssetDetailsModalComponent implements OnInit {
       this.activeModal.close();
     }
 
-    // Initialize currentDeliveryMethod with the asset's delivery method
     const initialDeliveryMethod = this.asset()?.properties?.deliveryMethod || '';
     this.currentDeliveryMethod.set(initialDeliveryMethod);
   }
@@ -146,10 +152,15 @@ export class AssetDetailsModalComponent implements OnInit {
 
   submitAllForms(): void {
     const deliveryMethod = this.deliveryMethod();
-    const isKafka = deliveryMethod === 'Kafka';
 
-    // Select the appropriate data address form based on delivery method
-    const dataAddressForm = isKafka ? this.formDataAddressKafka : this.formDataAddress;
+    const dataAddressForm =
+      deliveryMethod === 'Kafka'
+        ? this.formDataAddressKafka
+        : deliveryMethod === 'AnalyticsDataset'
+          ? this.formDataAddressS3
+          : deliveryMethod === 'File'
+            ? this.formDataAddressAzureBlob
+            : this.formDataAddress;
 
     const anyFormInvalid = !this.formProperties.isFormValid() || !dataAddressForm.isFormValid();
     const areFormsNotTouched =
@@ -194,7 +205,7 @@ export class AssetDetailsModalComponent implements OnInit {
 
   onConnectorFormSubmit(event: {
     form: FormGroup;
-    secretInput: SecretInputV3 | undefined;
+    secretInput: SecretInput | undefined;
     dataAddress: DataAddress;
     secretAction: CRUD | null;
   }): void {
@@ -204,7 +215,7 @@ export class AssetDetailsModalComponent implements OnInit {
   }
 
   onSecretActionEmit(event: {
-    secret: SecretInputV3 | undefined;
+    secret: SecretInput | undefined;
     dataAddress: DataAddress;
     action: CRUD | null;
   }): void {
@@ -215,7 +226,7 @@ export class AssetDetailsModalComponent implements OnInit {
 
   async handleAssetSave(
     updatedAsset: Asset | undefined,
-    secret: SecretInputV3 | undefined,
+    secret: SecretInput | undefined,
     secretAction: CRUD | null
   ): Promise<void> {
     try {
@@ -235,11 +246,18 @@ export class AssetDetailsModalComponent implements OnInit {
   }
 
   private clearSecretData(asset: Asset): void {
-    const dataAddr = asset.dataAddress as HttpDataAddress & KafkaCompleteDataAddress;
-    dataAddr.secretName = '';
-    dataAddr['oauth2:clientSecretKey'] = '';
-    dataAddr['oauth2:privateKeyName'] = '';
-    dataAddr['kafka:sasl:password'] = '';
+    const dataAddr = asset.dataAddress;
+    if ((dataAddr as AzureBlobDataAddress).type === 'AzureStorage') {
+      (dataAddr as AzureBlobDataAddress).keyName = '';
+    } else if ((dataAddr as S3DataAddress).type === 'S3Bucket') {
+      return;
+    } else {
+      const httpKafkaAddr = dataAddr as HttpDataAddress & KafkaCompleteDataAddress;
+      httpKafkaAddr.secretName = '';
+      httpKafkaAddr['oauth2:clientSecretKey'] = '';
+      httpKafkaAddr['oauth2:privateKeyName'] = '';
+      httpKafkaAddr['kafka:sasl:password'] = '';
+    }
   }
 
   private performAssetOperation(updatedAsset: Asset): void {
@@ -259,20 +277,20 @@ export class AssetDetailsModalComponent implements OnInit {
 
   private enableForms(): void {
     const deliveryMethod = this.deliveryMethod();
-    const isKafka = deliveryMethod === 'Kafka';
 
     this.formProperties.enableForm();
-    if (isKafka) {
+    if (deliveryMethod === 'Kafka') {
       this.formDataAddressKafka.enableForm();
+    } else if (deliveryMethod === 'AnalyticsDataset') {
+      this.formDataAddressS3.enableForm();
+    } else if (deliveryMethod === 'File') {
+      this.formDataAddressAzureBlob.enableForm();
     } else {
       this.formDataAddress.enableForm();
     }
   }
 
-  async processSecretAction(
-    action: CRUD | null,
-    payload?: SecretInputV3 | undefined
-  ): Promise<void> {
+  async processSecretAction(action: CRUD | null, payload?: SecretInput | undefined): Promise<void> {
     switch (action) {
       case CRUD.CREATE:
       case CRUD.UPDATE:
@@ -287,7 +305,7 @@ export class AssetDetailsModalComponent implements OnInit {
     }
   }
 
-  private async createOrUpdateSecret(action: CRUD, payload?: SecretInputV3): Promise<void> {
+  private async createOrUpdateSecret(action: CRUD, payload?: SecretInput): Promise<void> {
     if (!payload) return;
     const serviceQuery =
       action === CRUD.CREATE

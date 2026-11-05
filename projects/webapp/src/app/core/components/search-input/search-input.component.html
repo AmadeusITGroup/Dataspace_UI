@@ -1,9 +1,10 @@
 <div class="position-relative w-100">
-  <span class="position-absolute top-50 translate-middle-y ps-3 pe-none">
+  <!-- DF spacing scale: ps-5 = 1rem, ps-9 = 3rem (ps-9 is not in plain Bootstrap). -->
+  <span class="position-absolute top-50 translate-middle-y ps-5 pe-none">
     <i class="bi bi-search text-secondary"></i>
   </span>
   <input
-    class="form-control search ps-5 w-50"
+    class="form-control search ps-9 w-50"
     [id]="id()"
     [formControl]="control()"
     [placeholder]="placeholder()"

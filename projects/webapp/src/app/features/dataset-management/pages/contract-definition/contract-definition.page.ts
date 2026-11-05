@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -42,7 +41,6 @@ import { FiltersComponent } from '../../../../core/components/filters/filters.co
   providers: [AssetManagementService, ContractDefinitionManagementService, PolicyManagementService],
   imports: [
     ReactiveFormsModule,
-    CommonModule,
     HighlightDirective,
     SpinnerComponent,
     NgbDropdownModule,

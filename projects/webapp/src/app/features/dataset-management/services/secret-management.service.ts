@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { SecretInputV3, SecretV3Service } from 'management-sdk';
+import { SecretInput, SecretV3Service } from 'management-sdk';
 import { injectMutation, QueryClient, queryOptions } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
 import { addContext, normalizeJsonLD } from '../../../jsonld';
@@ -14,21 +14,21 @@ export class SecretManagementService {
 
   readonly createSecretQuery = injectMutation(() => ({
     mutationKey: ['createSecret'],
-    onSuccess: async (data, secret: SecretInputV3) => {
+    onSuccess: async (data, secret: SecretInput) => {
       this.#toastService.showSuccess(`Secret "${secret['@id']}" was created successfully.`);
     },
     onError: (error: Error) => {
       const composedMessage = composedErrorMessage(error, 'creating', 'secret');
       this.#toastService.showError(composedMessage);
     },
-    mutationFn: (secret: SecretInputV3) => {
+    mutationFn: (secret: SecretInput) => {
       return lastValueFrom(this.#secretsV3.createSecretV3(addContext(secret, ['@vocab'])));
     }
   }));
 
   readonly updateSecretQuery = injectMutation(() => ({
     mutationKey: ['updateSecret'],
-    onSuccess: async (data, secret: SecretInputV3) => {
+    onSuccess: async (data, secret: SecretInput) => {
       await this.#queryClient.invalidateQueries({ queryKey: ['getSecretById', secret['@id']] });
       this.#toastService.showSuccess(`Secret "${secret['@id']}" was updated successfully.`);
     },
@@ -36,7 +36,7 @@ export class SecretManagementService {
       const composedMessage = composedErrorMessage(error, 'updating', 'secret');
       this.#toastService.showError(composedMessage);
     },
-    mutationFn: (secret: SecretInputV3) => {
+    mutationFn: (secret: SecretInput) => {
       return lastValueFrom(this.#secretsV3.updateSecretV3(addContext(secret, ['@vocab'])));
     }
   }));
@@ -49,7 +49,7 @@ export class SecretManagementService {
           return Promise.resolve(null);
         }
         return lastValueFrom(this.#secretsV3.getSecretV3(id))
-          .then(async (item) => await normalizeJsonLD<SecretInputV3>(item))
+          .then(async (item) => await normalizeJsonLD<SecretInput>(item))
           .catch(() => Promise.resolve(null));
       }
     });

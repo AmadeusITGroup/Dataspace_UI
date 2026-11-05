@@ -7,7 +7,9 @@ import { EnrichedNegotiation } from '../../../models/contract-negotiation.model'
   selector: 'app-contract-negotiation-state-cell',
   standalone: true,
   imports: [ContractStateComponent],
-  template: ` <app-contract-state [contract]="row()?.data"></app-contract-state>`,
+  template: ` <app-contract-state
+    [contract]="$safeNavigationMigration(row()?.data)"
+  ></app-contract-state>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContractNegotiationStateCellComponent {

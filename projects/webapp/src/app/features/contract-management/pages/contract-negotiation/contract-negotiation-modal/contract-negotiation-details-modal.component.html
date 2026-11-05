@@ -168,7 +168,6 @@
           }
           <div class="mt-2 mb-2">
             <app-transfer-or-status
-              (click)="this.activeModal.close()"
               [enrichedNegotiation]="enrichedNegotiationVar"
               [transfersInProgress]="transferProcessesStarted()"
             ></app-transfer-or-status>
@@ -180,7 +179,7 @@
             <a
               class="mt-2 mb-2"
               [routerLink]="['/contract-management/contract-transfer']"
-              [queryParams]="{ contractId: agreementVar?.['@id'] }"
+              [queryParams]="{ contractId: $safeNavigationMigration(agreementVar?.['@id']) }"
               (click)="activeModal.close()"
             >
               See Transfers for contract
@@ -193,7 +192,7 @@
     <div class="mt-2 mb-2">
       <app-policy-viewer
         [showEmptyItems]="false"
-        [policy]="agreementVar?.policy"
+        [policy]="$safeNavigationMigration(agreementVar?.policy)"
       ></app-policy-viewer>
     </div>
   }
@@ -223,6 +222,7 @@
             class="btn btn-outline-danger bi bi-trash ms-2"
             aria-label="Delete"
             (click)="footerAction.set(FooterAction.DELETE)"
+            [disabled]="isDeleteInProgress"
           >
             Delete
           </button>

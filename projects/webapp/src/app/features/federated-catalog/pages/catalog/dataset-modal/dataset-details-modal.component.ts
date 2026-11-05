@@ -7,14 +7,15 @@ import {
   signal,
   WritableSignal
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Buffer } from 'buffer';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
-import { RouterLink } from '@angular/router';
 import { PolicyViewerComponent } from '../../../../../core/components/policy-viewver/policy-viewer.component';
+import { HtmlSanitizerService } from '../../../../../core/services/html-sanitizer.service';
+import { extractShortParticipantId } from '../../../../../core/utils/participant.util';
 import { ContractNegotiationService } from '../../../../contract-management/services/contract-negotiation.service';
 import { DatasetEnriched, Offer } from '../../../models/catalog.model';
-import { extractShortParticipantId } from '../../../../../core/utils/participant.util';
 
 @Component({
   imports: [DatePipe, NgbAccordionModule, NgxJsonViewerModule, PolicyViewerComponent, RouterLink],
@@ -29,6 +30,7 @@ export class DatasetDetailsModalComponent {
   // services
   readonly activeModal = inject(NgbActiveModal);
   readonly contractNegotiationService = inject(ContractNegotiationService);
+  readonly htmlSanitizerService = inject(HtmlSanitizerService);
   // others
   private temporarilyDisabled = new Set<number>();
   public nonPersistentNegotiationId: WritableSignal<string | undefined> = signal(undefined);
@@ -44,7 +46,7 @@ export class DatasetDetailsModalComponent {
       await this.contractNegotiationService.negotiate.mutateAsync(
         { dataset, policy },
         {
-          onSuccess: (negotiationId) => {
+          onSuccess: ({ negotiationId }) => {
             this.nonPersistentNegotiationId.set(negotiationId);
           }
         }
@@ -66,5 +68,9 @@ export class DatasetDetailsModalComponent {
       console.error('Failed to decode Base64 text:', error);
       return '';
     }
+  }
+
+  getSafeDescription(description: string) {
+    return this.htmlSanitizerService.getSafeHtml(description);
   }
 }

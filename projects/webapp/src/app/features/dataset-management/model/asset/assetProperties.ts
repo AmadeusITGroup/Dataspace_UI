@@ -18,4 +18,11 @@ export interface AssetProperties {
   accessLevel?: string;
   licenses?: string[];
   averageRecordSizeBytes?: number;
+  // Analytics Dataset specific fields
+  coverage?: string;
+  historyDepth?: string;
+  timeGranularity?: string;
+  updateFrequency?: string;
+  size?: string;
+  deliveryMethods?: string;
 }

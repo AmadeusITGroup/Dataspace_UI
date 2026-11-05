@@ -2,7 +2,7 @@
 
 REST API documentation for the management-api
 
-The version of the OpenAPI document: 3.1.4
+The version of the OpenAPI document: 3.1.3
 
 ### Building
 

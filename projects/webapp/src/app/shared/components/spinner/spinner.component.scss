@@ -1,7 +1,7 @@
 :host {
   width: 8vmax;
   height: 8vmax;
-  border-right: 4px solid var(--bs-primary);
+  border-right: 4px solid var(--df-primary);
   border-radius: 100%;
   animation: spin-right 800ms linear infinite;
 
@@ -14,7 +14,7 @@
     position: absolute;
     top: calc(50% - 3vmax);
     left: calc(50% - 3vmax);
-    border-left: 3px solid var(--bs-primary);
+    border-left: 3px solid var(--df-primary);
     border-radius: 100%;
     animation: spin-left 800ms linear infinite;
   }
@@ -25,7 +25,7 @@
     top: calc(50% - 2vmax);
     left: calc(50% - 2vmax);
     border: 0;
-    border-right: 2px solid var(--bs-primary);
+    border-right: 2px solid var(--df-primary);
     animation: none;
   }
 }

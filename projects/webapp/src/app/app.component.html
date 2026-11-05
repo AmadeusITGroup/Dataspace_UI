@@ -9,16 +9,24 @@
         <app-sidebar />
       </div>
     }
-    <div class="w-100" [class]="{ 'overflow-y-scroll': isNavigationEnabled() }">
-      <main>
+    <div
+      class="w-100"
+      [ngClass]="{ 'overflow-y-scroll d-flex flex-column': isNavigationEnabled() }"
+    >
+      <!-- Flex column: the page fills the viewport and DF's footer (margin-top: auto) sits at
+           the bottom on short pages, after the content on long ones. -->
+      <main [ngClass]="{ 'd-flex flex-column flex-grow-1': isNavigationEnabled() }">
         <div
           [ngClass]="{
-            'container-fluid p-5 bg-body-tertiary page-container': isNavigationEnabled()
+            'container-fluid p-5 bg-body-tertiary flex-grow-1': isNavigationEnabled()
           }"
         >
           <router-outlet />
         </div>
       </main>
+      @if (isNavigationEnabled()) {
+        <app-footer />
+      }
     </div>
   </div>
 </div>

@@ -74,8 +74,8 @@
             <span class="text-muted">Created : {{ negotiation.createdAt | date }}</span>
             @if (agreement) {
             <span class="text-success ms-1">
-              <i class="bi bi-check-circle"></i> Signed: {{ agreement?.contractSigningDate |
-              utcSecondsToDate }}
+              <i class="bi bi-check-circle"></i> Signed: {{
+              $safeNavigationMigration(agreement?.contractSigningDate) | utcSecondsToDate }}
             </span>
             }
           </div>

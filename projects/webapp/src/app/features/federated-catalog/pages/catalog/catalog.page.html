@@ -60,7 +60,10 @@
             } @else { {{ dataset.shortParticipantId }} }
           </div>
           <div class="h-100">
-            <p class="card-text card-description text-muted">{{ dataset.description }}</p>
+            <p
+              class="card-text card-description text-muted"
+              [innerHTML]="getSafeDescription(dataset.description)"
+            ></p>
           </div>
           <hr />
           <div class="d-flex flex-row justify-content-between">
@@ -75,7 +78,7 @@
             <span class="text-success me-2"><i class="bi bi-person-check-fill"></i> Own</span>
             } @else { @if (dataset.negotiated) {
             <a
-              class="text-success text-decoration-none text-nowrap"
+              class="text-success border-success text-nowrap"
               [routerLink]="['/contract-management/contract-negotiation']"
               [queryParams]="{ searchBy: 'counterPartyId=' + dataset.shortParticipantId + ',id=' + dataset.id }"
             >
@@ -85,7 +88,11 @@
             } @else {
             <div></div>
             } }
-            <button class="btn btn-outline-primary" (click)="viewDataset(dataset)">
+            <button
+              class="btn btn-outline-primary"
+              (click)="viewDataset(dataset)"
+              [id]="'view-details-'+ $index"
+            >
               <i class="bi bi-eye"></i> View details
             </button>
           </div>

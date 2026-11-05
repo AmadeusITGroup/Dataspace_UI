@@ -10,8 +10,6 @@
 
 
 export interface PolicyEvaluationPlanRequestSchema { 
-    '@context': Array<string>;
-    '@type': string;
-    policyScope: string;
+    policyScope?: string;
 }
 

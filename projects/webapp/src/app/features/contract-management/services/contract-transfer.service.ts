@@ -9,23 +9,47 @@ import {
 import {
   QuerySpec,
   TransferProcess as SdkTransferProcess,
-  TransferProcessV3 as SdkTransferProcessV3,
+  TransferProcess1 as SdkTransferProcessV1,
   TerminateTransfer,
   TransferProcessV3Service,
-  TransferRequestV3
+  TransferRequest
 } from 'management-sdk';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from '../../../core/toasts/toast-service';
 import { composedErrorMessage } from '../../../core/utils/object.util';
 import { noPaginationQuerySpec, normalizeJsonLDID } from '../../../jsonld';
+import { EVENT_HUB_CONFIG, getEventHubUrl } from '../config/event-hub.config';
 import { ContractRoleEnum } from '../constants/role.enum';
 import { TransferStateEnum } from '../constants/transfer-state.enum';
 import { EnrichedNegotiation } from '../models/contract-negotiation.model';
 import { TransferProcess } from '../models/transfer-process.model';
 import { buildTransferFilterOptions } from '../utils/contract-transfer.util';
+import { SasTokenService } from './sas-token.service';
+
+interface PushTransferOptions {
+  baseUrl?: string;
+  authKey?: string;
+  authCode?: string;
+  connectorId?: string;
+}
+
+interface PushTransferRequest {
+  enrichedNegotiation: EnrichedNegotiation;
+  options?: PushTransferOptions;
+}
+
+export interface TransferInitiationRequest {
+  enrichedNegotiation: EnrichedNegotiation;
+  dataDestination?: {
+    account: string;
+    container: string;
+    blobName?: string;
+    keyName: string;
+  };
+}
 
 export async function normalizedTransferProcess(
-  item: SdkTransferProcess | SdkTransferProcessV3
+  item: SdkTransferProcess | SdkTransferProcessV1
 ): Promise<TransferProcess> {
   const normalized = await normalizeJsonLDID<TransferProcess>(item);
   return {
@@ -40,6 +64,7 @@ export class TransferService {
   readonly #toastService = inject(ToastService);
   readonly #queryClient = inject(QueryClient);
   readonly #transferService = inject(TransferProcessV3Service);
+  readonly #sasTokenService = inject(SasTokenService);
 
   private refreshEnabledMap = new Map<string, WritableSignal<boolean>>();
 
@@ -60,29 +85,55 @@ export class TransferService {
   };
 
   readonly transfer = injectMutation(() => ({
-    mutationFn: async (enrichedNegotiation: EnrichedNegotiation) => {
+    mutationFn: async (request: TransferInitiationRequest) => {
+      const { enrichedNegotiation, dataDestination } = request;
       const contractNegotiation = enrichedNegotiation.negotiation;
+      const transferKind =
+        enrichedNegotiation.dataset?.deliveryMethod?.toLowerCase() ||
+        enrichedNegotiation.dataset?.type?.toLowerCase() ||
+        '';
 
-      // Determine transferType based on asset's dataAddress type
+      // Determine transferType based on dataset type (from asset properties.type / delivery method)
       let transferType = 'HttpData-PULL'; // Default
 
-      if (enrichedNegotiation.dataset?.type?.toLowerCase() === 'kafka') {
+      if (transferKind === 'kafka') {
         transferType = 'KafkaBroker-PULL';
+      } else if (transferKind === 'file') {
+        transferType = 'AzureStorage-PUSH';
       }
 
-      const payload = {
+      // Validate required options for specific transfer types
+      if (transferType === 'AzureStorage-PUSH' && !dataDestination) {
+        throw new Error('A data destination is required for Azure Storage push transfers.');
+      }
+
+      const payload: Record<string, unknown> = {
         '@context': {
           '@vocab': 'https://w3id.org/edc/v0.0.1/ns/'
-        } as unknown,
+        },
         '@type': 'TransferRequest',
         counterPartyAddress: contractNegotiation.counterPartyAddress!,
         protocol: 'dataspace-protocol-http',
         contractId: contractNegotiation.contractAgreementId!,
+        assetId: enrichedNegotiation.dataset?.id,
         privateProperties: {},
         transferType
-      } as TransferRequestV3;
+      };
+
+      // Add dataDestination for PUSH transfers
+      if (transferType === 'AzureStorage-PUSH') {
+        payload['dataDestination'] = {
+          '@type': 'DataAddress',
+          type: 'AzureStorage',
+          account: dataDestination!.account,
+          container: dataDestination!.container,
+          ...(dataDestination!.blobName ? { blobName: dataDestination!.blobName } : {}),
+          keyName: dataDestination!.keyName
+        };
+      }
+
       const response = await lastValueFrom(
-        this.#transferService.initiateTransferProcessV3(payload)
+        this.#transferService.initiateTransferProcessV3(payload as unknown as TransferRequest)
       );
       return (response as { '@id': string })['@id'];
     },
@@ -95,6 +146,61 @@ export class TransferService {
     },
     onError: (error: Error) => {
       const composedMessage = composedErrorMessage(error, 'initiate', 'transfer process');
+      this.#toastService.showError(composedMessage);
+    }
+  }));
+
+  readonly pushTransfer = injectMutation(() => ({
+    mutationFn: async ({ enrichedNegotiation, options }: PushTransferRequest) => {
+      const contractNegotiation = enrichedNegotiation.negotiation;
+
+      let authCode = options?.authCode?.trim();
+      if (!authCode) {
+        const sasTokenResult = await this.#sasTokenService.generateSasToken(EVENT_HUB_CONFIG);
+        authCode = sasTokenResult.token;
+      }
+
+      const baseUrl = options?.baseUrl?.trim() || getEventHubUrl();
+      const authKey = options?.authKey?.trim() || 'Authorization';
+      const connectorId = options?.connectorId?.trim();
+
+      const payload = {
+        '@context': {
+          '@vocab': 'https://w3id.org/edc/v0.0.1/ns/'
+        } as unknown,
+        '@type': 'TransferRequest',
+        connectorId,
+        counterPartyAddress: contractNegotiation.counterPartyAddress!,
+        protocol: 'dataspace-protocol-http',
+        contractId: contractNegotiation.contractAgreementId!,
+        privateProperties: {},
+        transferType: 'HttpData-PUSH',
+        assetId: enrichedNegotiation.dataset?.id,
+        nonChunkedTransfer: 'false',
+        dataDestination: {
+          '@type': 'DataAddress',
+          type: 'HttpData',
+          properties: {
+            baseUrl,
+            authKey,
+            authCode
+          }
+        }
+      } as TransferRequest;
+      const response = await lastValueFrom(
+        this.#transferService.initiateTransferProcessV3(payload)
+      );
+      return (response as { '@id': string })['@id'];
+    },
+    onSuccess: async (transferId) => {
+      this.#toastService.showSuccess(
+        `Push transfer process successfully initiated (${transferId})`
+      );
+      // Only invalidate the specific transfer state, not all transfers
+      await this.#queryClient.invalidateQueries({ queryKey: ['getTransferState', transferId] });
+    },
+    onError: (error: Error) => {
+      const composedMessage = composedErrorMessage(error, 'initiate', 'push transfer process');
       this.#toastService.showError(composedMessage);
     }
   }));
