@@ -55,7 +55,9 @@ export class AssetManagementService {
       this.#toastService.showError(composedMessage);
     },
     mutationFn: (newAsset: Asset) => {
-      return lastValueFrom(this.#assetV3.createAssetV3(addContext<Asset>(newAsset, ['@vocab'])));
+      return lastValueFrom(
+        this.#assetV3.createAssetV3(addContext<Asset>(newAsset, ['@vocab', 'dcat', 'dcterms']))
+      );
     }
   }));
 
@@ -70,7 +72,9 @@ export class AssetManagementService {
       this.#toastService.showError(composedMessage);
     },
     mutationFn: (asset: Asset) => {
-      return lastValueFrom(this.#assetV3.updateAssetV3(addContext<Asset>(asset, ['@vocab'])));
+      return lastValueFrom(
+        this.#assetV3.updateAssetV3(addContext<Asset>(asset, ['@vocab', 'dcat', 'dcterms']))
+      );
     }
   }));
 

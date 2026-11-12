@@ -1,0 +1,194 @@
+<section class="ontology-section border-bottom pb-3 mb-3">
+  <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+    <div>
+      <h4 class="fs-5 mb-1">Ontology validation</h4>
+      <p class="text-muted mb-0">
+        Optionally validate this dataset's OpenAPI responses against a platform ontology.
+      </p>
+    </div>
+    @if (ontologyQuery.data()) {
+      <button type="button" class="btn btn-sm btn-outline-primary" (click)="downloadProfile()">
+        <i class="bi bi-download me-1"></i>Full schema
+      </button>
+    }
+  </div>
+
+  @if (ontologiesQuery.isPending()) {
+    <div class="d-flex align-items-center gap-2 text-muted py-2">
+      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+      Loading available ontologies...
+    </div>
+  } @else if (ontologiesQuery.isError()) {
+    <div class="alert alert-danger py-2 mb-2">
+      Could not load ontologies: {{ errorMessage(ontologiesQuery.error()) }}
+    </div>
+  } @else {
+    <label for="ontology" class="form-label">Dataset ontology</label>
+    <select
+      id="ontology"
+      class="form-select"
+      [value]="selectedOntologyId()"
+      (change)="selectOntology($any($event.target).value)"
+    >
+      <option value="">No ontology validation</option>
+      @for (ontology of ontologiesQuery.data(); track ontology.id) {
+        <option [value]="ontology.id">{{ ontology.ontologyName }}</option>
+      }
+    </select>
+    @if (selectedOntologyId()) {
+      <p class="form-text mb-0">
+        {{ selectedOntologyDescription() || 'Loading ontology details...' }}
+      </p>
+    }
+  }
+
+  @if (selectedOntologyId() && ontologyQuery.isPending()) {
+    <div class="d-flex align-items-center gap-2 text-muted py-3">
+      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+      Loading ontology details...
+    </div>
+  } @else if (selectedOntologyId() && ontologyQuery.isError()) {
+    <div class="alert alert-danger mt-3 mb-0">
+      Could not load ontology details: {{ errorMessage(ontologyQuery.error()) }}
+    </div>
+  } @else if (ontologyQuery.data(); as ontology) {
+    <div class="ontology-details mt-3 ps-3 border-start border-3 border-primary">
+      <div class="d-flex flex-wrap gap-3 align-items-baseline mb-3">
+        <strong>{{ ontology.ontologyName }}</strong>
+        <span class="text-muted">Version {{ ontology.version }}</span>
+        <code>{{ ontology.profileIri }}</code>
+      </div>
+
+      <h5 class="fs-6">Required to activate validation</h5>
+      <ol class="small ps-3 mb-3">
+        <li>
+          Enter a reachable OpenAPI document below. The asset will publish it as
+          <code>{{ ontology.publication.openApiDocumentProperty }}</code
+          >.
+        </li>
+        <li>
+          The asset will include <code>{{ ontology.publication.triggerProperty }}</code> with this
+          profile IRI.
+        </li>
+        <li>
+          Annotate successful JSON response schemas with
+          <code>{{ ontology.publication.openApiClassAnnotation }}</code> and a class IRI such as
+          <code>{{ ontology.namespace }}Ack</code>.
+        </li>
+      </ol>
+
+      <label for="endpointDescription" class="form-label">
+        OpenAPI document URL <span class="text-danger">*</span>
+      </label>
+      <input
+        id="endpointDescription"
+        type="url"
+        class="form-control"
+        placeholder="https://api.example.com/openapi.yaml"
+        [formControl]="endpointDescription"
+        [class.is-invalid]="endpointDescription.invalid && endpointDescription.touched"
+      />
+      @if (endpointDescription.invalid && endpointDescription.touched) {
+        <div class="invalid-feedback">Enter a reachable HTTP or HTTPS OpenAPI URL.</div>
+      }
+
+      <button
+        type="button"
+        class="schema-explorer-trigger btn btn-outline-secondary w-100 mt-4 d-flex align-items-center justify-content-between gap-3 text-start"
+        (click)="openSchemaExplorer(schemaExplorer)"
+      >
+        <span><i class="bi bi-diagram-3 me-2"></i>Schema explorer</span>
+        <span class="small text-muted">
+          {{ schemaCount() }} classes <i class="bi bi-chevron-right ms-1"></i>
+        </span>
+      </button>
+    </div>
+  }
+</section>
+
+<ng-template #schemaExplorer let-modal>
+  <div class="modal-header">
+    <div>
+      <h3 class="modal-title fs-4">Schema explorer</h3>
+      <div class="text-muted small">{{ schemaCount() }} ontology classes available</div>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body schema-explorer-modal">
+    <label for="ontologyClassSearch" class="form-label">Ontology class</label>
+    <input
+      id="ontologyClassSearch"
+      type="search"
+      class="form-control"
+      placeholder="Search classes, for example Ack"
+      [value]="classSearch()"
+      (input)="classSearch.set($any($event.target).value)"
+    />
+    <div class="class-results mt-3" role="list">
+      @for (name of filteredClassNames(); track name) {
+        <div class="schema-class border rounded mb-2 overflow-hidden">
+          <button
+            type="button"
+            class="schema-class-toggle btn w-100 d-flex align-items-center justify-content-between gap-3 rounded-0 text-start"
+            [class.active]="selectedClassName() === name"
+            [attr.aria-expanded]="selectedClassName() === name"
+            (click)="selectClass(name)"
+          >
+            <span>{{ name }}</span>
+            <i
+              class="bi"
+              [class.bi-chevron-down]="selectedClassName() !== name"
+              [class.bi-chevron-up]="selectedClassName() === name"
+            ></i>
+          </button>
+          @if (selectedClassName() === name) {
+            @if (selectedSchema(); as schema) {
+              <div class="schema-class-details border-top p-3">
+                <h4 class="fs-5 mb-1">{{ schema.title || name }}</h4>
+                @if (schema.description) {
+                  <p class="small text-muted">{{ schema.description }}</p>
+                }
+                @if (selectedProperties().length) {
+                  <div class="table-responsive schema-properties">
+                    <table class="table table-sm align-middle mb-2">
+                      <thead>
+                        <tr>
+                          <th>Field</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (property of selectedProperties(); track property.name) {
+                          <tr [class.table-warning]="property.required">
+                            <td>
+                              <code>{{ property.name }}</code>
+                              @if (property.required) {
+                                <span class="badge text-bg-warning ms-2">Required</span>
+                              }
+                            </td>
+                            <td>{{ property.type }}</td>
+                            <td class="small">{{ property.description }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+                <details>
+                  <summary class="small text-primary">View raw class schema</summary>
+                  <pre class="schema-json mt-2"><code>{{ schemaJson() }}</code></pre>
+                </details>
+              </div>
+            }
+          }
+        </div>
+      } @empty {
+        <div class="text-muted small p-3 border rounded">No matching ontology classes.</div>
+      }
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

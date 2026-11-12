@@ -1,0 +1,33 @@
+:host {
+  display: block;
+  margin-top: 1rem;
+}
+
+.class-results {
+  max-height: 62vh;
+  overflow-y: auto;
+}
+
+.schema-class-toggle {
+  padding: 0.75rem 1rem;
+  border: 0;
+  background: var(--bs-body-bg);
+}
+
+.schema-class-toggle:hover,
+.schema-class-toggle.active {
+  color: var(--bs-primary);
+  background: var(--bs-primary-bg-subtle);
+}
+
+.schema-class-details {
+  background: var(--bs-body-bg);
+}
+
+.schema-json {
+  max-height: 18rem;
+  overflow: auto;
+  padding: 0.75rem;
+  background: var(--bs-light-bg-subtle);
+  border: 1px solid var(--bs-border-color);
+}

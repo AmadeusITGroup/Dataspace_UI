@@ -20,12 +20,22 @@
 <div class="modal-body d-flex flex-column gap-2">
   @if (modeVar === CRUD.CREATE || modeVar === CRUD.UPDATE) {
     @if (!secretByIdQuery.isPending() || modeVar === CRUD.CREATE) {
+      @if (publicationError()) {
+        <div class="alert alert-danger" role="alert">
+          <strong>Dataset publication failed.</strong>
+          <div>{{ publicationError() }}</div>
+        </div>
+      }
       <app-asset-properties-form
         [asset]="assetVar"
         [mode]="modeVar"
         (formSubmit)="onAssetFormSubmit($event)"
         (deliveryMethodChange)="onDeliveryMethodChange($event)"
-      ></app-asset-properties-form>
+      >
+        @if (modeVar === CRUD.CREATE) {
+          <app-ontology-selector after-delivery-method></app-ontology-selector>
+        }
+      </app-asset-properties-form>
 
       <div class="private-data-section p-3 rounded">
         @if (deliveryMethod() === 'Kafka') {

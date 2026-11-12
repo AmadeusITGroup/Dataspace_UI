@@ -17,6 +17,7 @@ import { SecretInput } from 'management-sdk';
 import { CRUD } from '../../../../../core/models/crud';
 import { FooterAction } from '../../../../../core/models/ui-action';
 import { ToastService } from '../../../../../core/toasts/toast-service';
+import { retrieveErrorMessage } from '../../../../../core/utils/object.util';
 import { FooterActionModalComponent } from '../../../../../shared/components/delete-footer-modal/footer-action-modal.component';
 import { Asset } from '../../../model/asset/asset';
 import {
@@ -34,6 +35,8 @@ import { AssetDataAddressRestComponent } from './asset-forms/asset-data-address-
 import { AssetDataAddressS3Component } from './asset-forms/asset-data-address-s3/asset-data-address-s3.component';
 import { AssetPropertiesFormComponent } from './asset-forms/asset-properties/asset-properties-form.component';
 import { AssetViewComponent } from './asset-view/asset-view.component';
+import { OntologySelectorComponent } from './ontology-selector/ontology-selector.component';
+import { addOntologyMetadata } from '../../../utils/ontology.util';
 
 @Component({
   selector: 'app-asset-details-modal',
@@ -47,7 +50,8 @@ import { AssetViewComponent } from './asset-view/asset-view.component';
     AssetDataAddressRestComponent,
     AssetDataAddressKafkaComponent,
     AssetDataAddressAzureBlobComponent,
-    AssetDataAddressS3Component
+    AssetDataAddressS3Component,
+    OntologySelectorComponent
   ],
   providers: [SecretManagementService, AssetManagementService],
   templateUrl: './asset-details-modal.component.html',
@@ -64,6 +68,7 @@ export class AssetDetailsModalComponent implements OnInit {
   public mode = signal<CRUD>(CRUD.CREATE);
   public deleteAsset = output<Asset>();
   public footerAction = signal<FooterAction | null>(null);
+  public publicationError = signal('');
 
   assetFormToSave = signal<Asset | undefined>(undefined);
   dataAddressFormToSave = signal<DataAddress | undefined>(undefined);
@@ -104,6 +109,7 @@ export class AssetDetailsModalComponent implements OnInit {
   @ViewChild(AssetDataAddressAzureBlobComponent)
   formDataAddressAzureBlob!: AssetDataAddressAzureBlobComponent;
   @ViewChild(AssetDataAddressS3Component) formDataAddressS3!: AssetDataAddressS3Component;
+  @ViewChild(OntologySelectorComponent) ontologySelector?: OntologySelectorComponent;
 
   public readonly CRUD = CRUD;
   public readonly FooterAction = FooterAction;
@@ -162,9 +168,13 @@ export class AssetDetailsModalComponent implements OnInit {
             ? this.formDataAddressAzureBlob
             : this.formDataAddress;
 
-    const anyFormInvalid = !this.formProperties.isFormValid() || !dataAddressForm.isFormValid();
+    const ontologyInvalid = this.mode() === CRUD.CREATE && !this.ontologySelector?.isValid();
+    const anyFormInvalid =
+      !this.formProperties.isFormValid() || !dataAddressForm.isFormValid() || ontologyInvalid;
     const areFormsNotTouched =
-      !this.formProperties.assetForm.dirty && !dataAddressForm.dataAddressForm.dirty;
+      !this.formProperties.assetForm.dirty &&
+      !dataAddressForm.dataAddressForm.dirty &&
+      !this.ontologySelector?.isDirty();
 
     if (anyFormInvalid) {
       this.formProperties.assetForm.markAllAsTouched();
@@ -187,11 +197,16 @@ export class AssetDetailsModalComponent implements OnInit {
       return;
     }
 
-    const updatedAsset: Asset = {
+    let updatedAsset: Asset = {
       ...assetToSave,
       dataAddress: dataAddressToSave
     };
 
+    if (this.mode() === CRUD.CREATE) {
+      updatedAsset = addOntologyMetadata(updatedAsset, this.ontologySelector?.selection() ?? null);
+    }
+
+    this.publicationError.set('');
     this.handleAssetSave(updatedAsset, this.secretFormToSave(), this.secretActionToSave());
   }
 
@@ -268,10 +283,14 @@ export class AssetDetailsModalComponent implements OnInit {
 
     assetOperationQuery.mutate(updatedAsset, {
       onSuccess: () => {
+        this.publicationError.set('');
         this.mode.set(CRUD.READ);
         this.asset.set(updatedAsset);
       },
-      onError: () => this.enableForms()
+      onError: (error) => {
+        this.publicationError.set(retrieveErrorMessage(error));
+        this.enableForms();
+      }
     });
   }
 

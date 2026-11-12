@@ -25,4 +25,12 @@ export interface AssetProperties {
   updateFrequency?: string;
   size?: string;
   deliveryMethods?: string;
+  'dcat:distribution'?: {
+    '@type': 'dcat:Distribution';
+    'dcat:accessService': {
+      '@type': 'dcat:DataService';
+      'dcterms:conformsTo': { '@id': string };
+      'dcat:endpointDescription': { '@id': string };
+    };
+  }[];
 }

@@ -28,7 +28,12 @@ export const jsonLDContext = {
   target: { '@type': '@id', '@id': 'odrl:target' }
 };
 
-type KeyJsonLDContext = keyof typeof jsonLDContext;
+const jsonLDInputContext = {
+  ...jsonLDContext,
+  dcterms: 'http://purl.org/dc/terms/'
+};
+
+type KeyJsonLDContext = keyof typeof jsonLDInputContext;
 
 /**
  * Normalizes DSP input for backward compatibility:
@@ -75,7 +80,7 @@ export const addContext = <T extends object>(
 ): T & { '@context': object } => {
   const context = keys.reduce(
     (acc, key) => {
-      acc[key] = jsonLDContext[key];
+      acc[key] = jsonLDInputContext[key];
       return acc;
     },
     {} as Record<string, unknown>
